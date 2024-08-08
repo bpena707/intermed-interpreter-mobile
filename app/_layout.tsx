@@ -54,18 +54,18 @@ function RootLayoutNav() {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name="(tabs)/index"
-          options={{
-          headerShown: false,
-        }}
-        />
-        <Stack.Screen
-          name="(tabs)/settings"
-          options={{
-          headerShown: false,
-        }}
-        />
+        {/*<Stack.Screen*/}
+        {/*  name="(tabs)/index"*/}
+        {/*  options={{*/}
+        {/*  headerShown: false,*/}
+        {/*}}*/}
+        {/*/>*/}
+        {/*<Stack.Screen*/}
+        {/*  name="(tabs)/settings"*/}
+        {/*  options={{*/}
+        {/*  headerShown: false,*/}
+        {/*}}*/}
+        {/*/>*/}
       </Stack>
 
   );
