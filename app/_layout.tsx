@@ -68,7 +68,8 @@ function RootLayoutNav() {
               name="(modals)/appointmentActions"
               options={{
                   headerTitle: 'Appointment Actions',
-                  presentation: 'modal',
+                  presentation: 'transparentModal',
+                  animation: 'fade_from_bottom',
                   headerLeft: () =>(
                         <TouchableOpacity onPress={() => router.back()}>
                             <Ionicons name={'close-outline'} size={24} color={'black'} />
@@ -76,20 +77,19 @@ function RootLayoutNav() {
                   )
               }}
           />
-
-
-        {/*<Stack.Screen*/}
-        {/*  name="(tabs)/index"*/}
-        {/*  options={{*/}
-        {/*  headerShown: false,*/}
-        {/*}}*/}
-        {/*/>*/}
-        {/*<Stack.Screen*/}
-        {/*  name="(tabs)/settings"*/}
-        {/*  options={{*/}
-        {/*  headerShown: false,*/}
-        {/*}}*/}
-        {/*/>*/}
+          <Stack.Screen
+              name="(modals)/searchModal"
+              options={{
+                  headerTitle: 'Appointment Actions',
+                  presentation: 'transparentModal',
+                  animation: 'fade_from_bottom',
+                  headerLeft: () =>(
+                      <TouchableOpacity onPress={() => router.back()}>
+                          <Ionicons name={'close-outline'} size={24} color={'black'} />
+                      </TouchableOpacity>
+                  )
+              }}
+          />
       </Stack>
 
   );

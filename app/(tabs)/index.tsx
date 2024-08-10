@@ -1,11 +1,17 @@
 import { View, Text, StyleSheet } from 'react-native';
-import {Link} from "expo-router";
+import {Link, Stack} from "expo-router";
+import IndexHeader from "@/app/components/indexHeader";
 
 export default function Tab() {
     return (
-        <View style={styles.container}>
-            <Text>Tab Home</Text>
-            <Link href={`/appointment/123`}>appointment detail</Link>
+        <View style={{ flex: 1 }}>
+            <Stack.Screen
+                options={{
+                    header: () => <IndexHeader />
+                }}
+            />
+            {/*<Text>Tab Home</Text>*/}
+            {/*<Link href={`/appointment/123`}>appointment detail</Link>*/}
         </View>
     );
 }
