@@ -1,10 +1,12 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import {Stack, useRouter} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import {TouchableOpacity} from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,6 +47,8 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 
+    const router = useRouter();
+
   return (
 
       <Stack>
@@ -54,6 +58,26 @@ function RootLayoutNav() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+            name="appointment/[id]"
+            options={{
+                headerTitle: 'Appointment',
+            }}
+        />
+          <Stack.Screen
+              name="(modals)/appointmentActions"
+              options={{
+                  headerTitle: 'Appointment Actions',
+                  presentation: 'modal',
+                  headerLeft: () =>(
+                        <TouchableOpacity onPress={() => router.back()}>
+                            <Ionicons name={'close-outline'} size={24} color={'black'} />
+                        </TouchableOpacity>
+                  )
+              }}
+          />
+
+
         {/*<Stack.Screen*/}
         {/*  name="(tabs)/index"*/}
         {/*  options={{*/}
