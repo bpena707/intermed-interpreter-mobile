@@ -1,17 +1,17 @@
 import { View, Text, StyleSheet } from 'react-native';
 import {Link, Stack} from "expo-router";
 import IndexHeader from "@/app/components/indexHeader";
+import { Agenda } from "react-native-calendars";
 
 export default function Tab() {
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, marginTop: 100 }}>
             <Stack.Screen
                 options={{
                     header: () => <IndexHeader />
                 }}
             />
-            {/*<Text>Tab Home</Text>*/}
-            {/*<Link href={`/appointment/123`}>appointment detail</Link>*/}
+            <Agenda />
         </View>
     );
 }

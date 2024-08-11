@@ -12,7 +12,7 @@ const IndexHeader = () => {
                         {/*asChild allows link to be used around touchable opacity */}
                         <Link href={'/(modals)/searchModal'} asChild>
                             <TouchableOpacity style={styles.searchButton}>
-                                <Ionicons name={'search'} size={20}   />
+                                <Ionicons name={'search'} size={20} />
                                 <View>
                                     <Text>
                                         Search patient by name
