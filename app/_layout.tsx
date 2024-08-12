@@ -8,6 +8,10 @@ import 'react-native-reanimated';
 import {TouchableOpacity} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+
+const client = new QueryClient()
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -50,7 +54,7 @@ function RootLayoutNav() {
     const router = useRouter();
 
   return (
-
+      <QueryClientProvider client={client}>
       <Stack>
         <Stack.Screen
           name="(tabs)"
@@ -91,6 +95,6 @@ function RootLayoutNav() {
               }}
           />
       </Stack>
-
+      </QueryClientProvider>
   );
 }
