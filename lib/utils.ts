@@ -11,8 +11,11 @@ export interface Appointment {
     patientId: string;
 }
 
-export interface AgendaItem {
+export interface AgendaEntry {
     id: string;
+    name: string;
+    height: number;
+    day: string;
     startTime: string;
     endTime: string;
     appointmentType: string;
@@ -24,14 +27,14 @@ export interface AgendaItem {
 }
 
 export interface AgendaItemsMap {
-    [date: string]: AgendaItem[];
+    [date: string]: AgendaEntry[];
 }
 
 //this function is used to format the data for the agenda component which is rendered in the index
-export const formatDataForAgenda = (data: Appointment[]): AgendaItemsMap => {
+export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap => {
     const formattedData: AgendaItemsMap = {};
 
-    data.forEach((appointment) => {
+    appointments.forEach((appointment) => {
         const dateKey = appointment.date.split('T')[0];
 
         if (!formattedData[dateKey]) {
@@ -40,6 +43,9 @@ export const formatDataForAgenda = (data: Appointment[]): AgendaItemsMap => {
 
         formattedData[dateKey].push({
             id: appointment.id,
+            name: appointment.patient, // Use the patient's name as the name
+            height: 100, // Set a fixed height for each item (customize as needed)
+            day: dateKey, // Use the formatted date as the day
             startTime: appointment.startTime,
             endTime: appointment.endTime,
             appointmentType: appointment.appointmentType,

@@ -2,31 +2,34 @@ import {View, Text, StyleSheet, Pressable, Alert} from 'react-native';
 import {Link, Stack} from "expo-router";
 import IndexHeader from "@/app/components/indexHeader";
 import {Agenda, AgendaEntry} from "react-native-calendars";
+import {useGetAppointments} from "@/app/api/use-get-appointments";
+import {AgendaItemsMap, formatDataForAgenda} from "@/lib/utils";
 
-const events = {
-    "2024-08-10": [
-        {
-            "id": "1",
-            "name": "Live: notJust.Hack Kickstart",
-            "height": 50,
-            "day": "2022-11-24"
-        }
-    ],
-    "2024-08-11": [
-        {
-            "id": "2",
-            "name": "Workshop: Build any mobile application with React Native",
-            "height": 50,
-            "day": "2022-11-25"
-        },
-        {
-            "id": "3",
-            "name": "Q&A session",
-            "height": 50,
-            "day": "2022-11-25"
-        }
-    ],
-}
+
+// const events = {
+//     "2024-08-10": [
+//         {
+//             "id": "1",
+//             "name": "Live: notJust.Hack Kickstart",
+//             "height": 50,
+//             "day": "2022-11-24"
+//         }
+//     ],
+//     "2024-08-11": [
+//         {
+//             "id": "2",
+//             "name": "Workshop: Build any mobile application with React Native",
+//             "height": 50,
+//             "day": "2022-11-25"
+//         },
+//         {
+//             "id": "3",
+//             "name": "Q&A session",
+//             "height": 50,
+//             "day": "2022-11-25"
+//         }
+//     ],
+// }
 
 export default function Tab() {
 
@@ -50,13 +53,18 @@ export default function Tab() {
 
     // this is for if i had a scrollable agenda with multiple days render at the bottom of the calendar for now only one date at a time
     const renderEmptyDate = () => {
+
+
         return (
             <View style={styles.emptyDate}>
                 <Text>No appointments</Text>
             </View>
         )
     }
-
+    const {data, isLoading, error} = useGetAppointments()
+    if (isLoading) return <Text>Loading...</Text>;
+    if (error) return <Text>Error: {error.message}</Text>;
+    const formattedData: AgendaItemsMap = formatDataForAgenda(data ?? [])
     return (
         <View style={{ flex: 1, marginTop: 100 }}>
             <Stack.Screen
@@ -65,7 +73,7 @@ export default function Tab() {
                 }}
             />
             <Agenda
-                items={events}
+                items={formattedData}
                 renderItem={renderItem}
                 renderEmptyDate={renderEmptyDate}
                 showOnlySelectedDayItems

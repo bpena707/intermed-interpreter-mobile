@@ -1,11 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
-
+export interface Appointment {
+    id: string;
+    date: string;
+    notes: string | null;
+    startTime: string;
+    endTime: string;
+    appointmentType: string;
+    facility: string;
+    facilityId: string;
+    patient: string;
+    patientId: string;
+}
 
 
 export const useGetAppointments = () => {
 
     //define the query
-    const query = useQuery({
+    const query = useQuery<Appointment[]>({
 
         //queryKey is the name of the data stored in cache to be reused later again instead or parsing data all over again
         queryKey: ['appointments'],

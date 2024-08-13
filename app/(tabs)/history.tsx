@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 import { useQuery } from "@tanstack/react-query";
 import { useGetAppointments } from "@/app/api/use-get-appointments";
+import {AgendaItemsMap, formatDataForAgenda} from "@/lib/utils";
 
 interface Appointment {
     id: string;
@@ -15,20 +16,25 @@ interface Appointment {
     patientId: string | null;
 
 }
+export interface FormattedAppointment {
+    id: string;
+    startTime: string;
+    endTime: string;
+    appointmentType: string;
+    facility: string;
+    patient: string;
+    notes: string | null;
+    date: string;  // Adding a formatted date string for display
+}
 
 export default function Tab() {
     const { data } = useGetAppointments()
 
+    const formattedData: AgendaItemsMap = formatDataForAgenda(data);
+
     return (
-        <View style={styles.container}>
-            <Text>Appointments</Text>
-            {data?.map((appointment: Appointment) => (
-                <View key={appointment.id}>
-                    <Text>{appointment.date}</Text>
-                    <Text>{appointment.facility}</Text>
-                    <Text>{appointment.patient}</Text>
-                </View>
-            ))}
+        <View>
+            <Text>History</Text>
         </View>
     );
 }
