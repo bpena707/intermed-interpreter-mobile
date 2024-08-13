@@ -9,22 +9,18 @@ const TabLayout = () => {
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Today',
+                    title: 'Appointments',
                     tabBarIcon: ({ color, size }) => <Ionicons name="today" size={size} color={color} />,
+                    tabBarLabelStyle: { fontWeight: '600'},
                 }}
             />
-            <Tabs.Screen
-                name="history"
-                options={{
-                    title: 'History',
-                    tabBarIcon: ({ color, size }) => <FontAwesome size={size} name="history" color={color} />,
-                }}
-            />
+
             <Tabs.Screen
                 name="stats"
                 options={{
                     title: 'Stats',
                     tabBarIcon: ({ color, size }) => <FontAwesome size={size} name="line-chart" color={color} />,
+                    tabBarLabelStyle: { fontWeight: '600'},
                 }}
             />
             <Tabs.Screen
@@ -32,6 +28,7 @@ const TabLayout = () => {
                 options={{
                     title: 'Profile',
                     tabBarIcon: ({ color, size }) => <Ionicons size={size} name="person-circle-outline" color={color} />,
+                    tabBarLabelStyle: { fontWeight: '600'},
                 }}
             />
             <Tabs.Screen
@@ -39,6 +36,7 @@ const TabLayout = () => {
                 options={{
                     title: 'Rating',
                     tabBarIcon: ({ color, size }) => <Ionicons size={size} name="star" color={color} />,
+                    tabBarLabelStyle: { fontWeight: '600'},
                 }}
             />
         </Tabs>
