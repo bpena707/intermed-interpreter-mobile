@@ -12,7 +12,7 @@ export default function Tab() {
                 }}
             />
                 <AgendaComponent />
-                <Text>Profile</Text>
+
         </View>
 
     );
