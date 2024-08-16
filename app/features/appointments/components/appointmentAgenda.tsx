@@ -1,14 +1,13 @@
 //this file will contain the agenda component from react-native-calendars
 
-import {View, Text, StyleSheet, ActivityIndicator, Pressable} from "react-native";
+import {ActivityIndicator, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Agenda} from "react-native-calendars";
 import {useGetAppointments} from "@/app/features/appointments/api/use-get-appointments";
 import Colors from "@/constants/Colors";
-import {AgendaItemsMap, formatDataForAgenda} from "@/lib/utils";
-import app from "react-native/template/App";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {formatDataForAgenda} from "@/lib/utils";
 import {FontAwesome6} from "@expo/vector-icons";
-import {bold} from "colorette";
+import { format, parse } from 'date-fns';
+import {Link, router} from "expo-router";
 
 const AgendaComponent = () => {
     const { data, isLoading, isError } = useGetAppointments();
@@ -16,7 +15,7 @@ const AgendaComponent = () => {
 
     if (isLoading) {
         return (
-            <View>
+            <View style={styles.loader}>
                 <ActivityIndicator size={"large"} color= {Colors.primary} />
             </View>
         )
@@ -31,16 +30,30 @@ const AgendaComponent = () => {
     }
 
     const renderItem =(appointment: any) => {
+        const timeStringStartTime = appointment.startTime;
+        const parsedStartTime = parse(timeStringStartTime, "HH:mm:ss", new Date());
+        const formattedStartTime = format(parsedStartTime, "hh:mm a");
+
+        const timeStringEndTime = appointment.endTime;
+        const parsedEndTime = parse(timeStringEndTime, "HH:mm:ss", new Date());
+        const formattedEndTime = format(parsedEndTime, "hh:mm a");
+
+
+
         return(
-            <Pressable style={[styles.item, { height: appointment.height }]}>
-                <Text >{appointment.name}</Text>
-                <Text>{appointment.startTime}-{appointment.endTime}</Text>
-                <Text>{"Appointment Type: " + appointment.appointmentType}</Text>
+            <Link 
+                href={`/appointment/${appointment.id}`}
+                style={[styles.item, { height: appointment.height }]}
+                asChild>
+                <TouchableOpacity
 
-
-            </Pressable>
+                >
+                    <Text >{appointment.name}</Text>
+                    <Text>{formattedStartTime}-{formattedEndTime}</Text>
+                    <Text>{"Appointment Type: " + appointment.appointmentType}</Text>
+                </TouchableOpacity>
+            </Link>
         )
-
     }
 
     const renderEmptyDate = () => {
@@ -91,5 +104,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    loader:{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })

@@ -18,7 +18,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
         agendaItemsMap[dateKey].push({
             id: appointment.id,
             name: appointment.patient,
-            height: 100,
+            height: 80,
             day: dateKey,
             startTime: appointment.startTime,
             endTime: appointment.endTime,
