@@ -1,9 +1,10 @@
 import {View, Text, StyleSheet, Pressable, Alert} from 'react-native';
 import {Link, Stack} from "expo-router";
-import IndexHeader from "@/app/components/indexHeader";
+import IndexHeader from "@/app/features/appointments/components/indexHeader";
 import {Agenda, AgendaEntry} from "react-native-calendars";
-import {useGetAppointments} from "@/app/api/use-get-appointments";
+import {useGetAppointments} from "@/app/features/appointments/api/use-get-appointments";
 import {AgendaItemsMap, formatDataForAgenda} from "@/lib/utils";
+import AgendaComponent from "@/app/features/appointments/components/appointmentAgenda";
 
 
 // const events = {
@@ -72,6 +73,7 @@ export default function Tab() {
                     header: () => <IndexHeader />
                 }}
             />
+
             <Agenda
                 items={formattedData}
                 renderItem={renderItem}

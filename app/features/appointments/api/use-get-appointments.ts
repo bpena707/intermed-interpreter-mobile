@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-export interface Appointment {
-    id: string;
-    date: string;
-    notes: string | null;
-    startTime: string;
-    endTime: string;
-    appointmentType: string;
-    facility: string;
-    facilityId: string;
-    patient: string;
-    patientId: string;
-}
+import { Appointment } from '@/types/appointmentTypes';
+// export interface Appointment {
+//     id: string;
+//     date: string;
+//     notes: string | null;
+//     startTime: string;
+//     endTime: string;
+//     appointmentType: string;
+//     facility: string;
+//     facilityId: string;
+//     patient: string;
+//     patientId: string;
+// }
 
 
 export const useGetAppointments = () => {

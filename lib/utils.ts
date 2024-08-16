@@ -1,33 +1,10 @@
-export interface Appointment {
-    id: string;
-    date: string;
-    notes: string | null;
-    startTime: string;
-    endTime: string;
-    appointmentType: string;
-    facility: string;
-    facilityId: string;
-    patient: string;
-    patientId: string;
-}
+import {Appointment} from '@/types/appointmentTypes';
+import {AppointmentEntry} from '@/types/appointmentTypes';
 
-export interface AgendaEntry {
-    id: string;
-    name: string;
-    height: number;
-    day: string;
-    startTime: string;
-    endTime: string;
-    appointmentType: string;
-    facility: string;
-    facilityId: string;
-    patient: string;
-    patientId: string;
-    notes: string | null;
-}
-
+//AgendaItemsMap maps through the Appointment Entry that is coming in from the API and formats it in a way that the agenda component can read it
+//date is the key and the value is an array of appointment entries required for the agenda component
 export interface AgendaItemsMap {
-    [date: string]: AgendaEntry[];
+    [date: string]: AppointmentEntry[];
 }
 
 //this function is used to format the data for the agenda component which is rendered in the index
@@ -35,6 +12,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
     const formattedData: AgendaItemsMap = {};
 
     appointments.forEach((appointment) => {
+        // Split the date and time from the date string as passed in the api as dateTtime
         const dateKey = appointment.date.split('T')[0];
 
         if (!formattedData[dateKey]) {
