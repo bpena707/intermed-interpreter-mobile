@@ -41,16 +41,16 @@ const AgendaComponent = () => {
 
 
         return(
-            <Link 
+            <Link
                 href={`/appointment/${appointment.id}`}
                 style={[styles.item, { height: appointment.height }]}
                 asChild>
                 <TouchableOpacity
-
                 >
                     <Text >{appointment.name}</Text>
                     <Text>{formattedStartTime}-{formattedEndTime}</Text>
                     <Text>{"Appointment Type: " + appointment.appointmentType}</Text>
+                    <Text>{appointment.facility}</Text>
                 </TouchableOpacity>
             </Link>
         )
