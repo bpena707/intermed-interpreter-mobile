@@ -1,5 +1,5 @@
-import {View, Text, StyleSheet, SafeAreaView, Button, ActivityIndicator} from 'react-native';
-import {Link, useLocalSearchParams} from "expo-router";
+import {View, Text, StyleSheet, SafeAreaView, Button, ActivityIndicator, ScrollView} from 'react-native';
+import {Link, Stack, useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
@@ -30,8 +30,16 @@ export default function Tab() {
     console.log(facility.address)
     return (
         <SafeAreaView style={{ flex:1  }}>
+            <Stack.Screen
+                options={{
+                    headerTitle: '',
+                    headerTransparent: true,
+                    headerBackTitle: 'Back',
+                    headerTintColor: 'black',
+                }}
+            />
 
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 <View >
                     <Text style={styles.headerText}>Certified Medical</Text>
                     <Text>Confirmed</Text>
@@ -40,9 +48,10 @@ export default function Tab() {
                     <Map />
                 </View>
                 <View style={styles.infoContainer}>
-                    <Text>{appointment.id}</Text>
-                    <Text>Patient: {patient.firstName}{patient.lastName}</Text>
-                    <Text>{facility.id}</Text>
+                    <View>
+                        <Text>Patient: {patient.firstName} {patient.lastName}</Text>
+                        <Text>Contact: {patient.phoneNumber}</Text>
+                    </View>
                     <Text>Facility: {facility.name}</Text>
                     <Text>Address: {facility?.address}</Text>
                     <FontAwesome6 name="location-dot" size={16} color="black" />
@@ -57,7 +66,7 @@ export default function Tab() {
                     <Button title={'Confirm'} />
                     <Link href={'/(modals)/appointmentActions'}>appointmentActions</Link>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
 
     );
