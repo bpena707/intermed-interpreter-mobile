@@ -67,6 +67,7 @@ function RootLayoutNav() {
             options={{
                 headerTitle: 'Appointment',
             }}
+
         />
           <Stack.Screen
               name="(modals)/appointmentActions"
