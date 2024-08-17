@@ -2,6 +2,7 @@ import {View, Text, StyleSheet, SafeAreaView, Button, ActivityIndicator} from 'r
 import {Link, useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
+import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
 import Map from "@/app/components/map";
 import {FontAwesome6} from "@expo/vector-icons";
 
@@ -19,9 +20,10 @@ export default function Tab() {
 
     const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id)
     const { data: facility, isLoading: isFacilityLoading, error: facilityError } = useGetIndividualFacility(appointment?.facilityId);
+    const {data: patient, isLoading: isPatientLoading, error: patientError} = useGetIndividualPatient(appointment?.patientId)
 
 
-    if (isAppointmentLoading || isFacilityLoading) return <ActivityIndicator size='large' />
+    if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
 
     console.log(facility)
@@ -39,6 +41,7 @@ export default function Tab() {
                 </View>
                 <View style={styles.infoContainer}>
                     <Text>{appointment.id}</Text>
+                    <Text>Patient: {patient.firstName}{patient.lastName}</Text>
                     <Text>{facility.id}</Text>
                     <Text>Facility: {facility.name}</Text>
                     <Text>Address: {facility?.address}</Text>

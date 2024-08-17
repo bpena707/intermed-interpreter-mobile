@@ -7,10 +7,10 @@ export const useGetIndividualPatient = (id?: string) => {
     const query = useQuery({
 
         //queryKey is the name of the data stored in cache to be reused later again instead or parsing data all over again
-        queryKey: ['facility', {id}],
+        queryKey: ['patient', {id}],
         //queryFn is function that query will use to request data as promise which resloves data or a throws error if it fails
         queryFn: async () => {
-            const response = await fetch (`http://localhost:3000/api/facilities/${id}`)
+            const response = await fetch (`http://localhost:3000/api/patients/${id}`)
 
             if (!response.ok) {
                 throw new Error('Failed to fetch facility')
