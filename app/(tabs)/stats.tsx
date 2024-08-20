@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native';
+import CustomButton from "@/app/components/ui/CustomButton";
 
 export default function Tab() {
     return (
-        <View style={styles.container}>
-            <Text>Stats</Text>
+        <View className={'items-center justify-center'}>
+
+                <CustomButton title={"Confirm"} bgVariant={'danger'} textVariant={'danger'}   />
+
         </View>
     );
 }

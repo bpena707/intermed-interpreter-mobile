@@ -5,6 +5,7 @@ import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-in
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
 import Map from "@/app/components/map";
 import {FontAwesome6} from "@expo/vector-icons";
+import CustomButton from "@/app/components/ui/CustomButton";
 
 export default function Tab() {
 
@@ -63,8 +64,10 @@ export default function Tab() {
                     <Text>{appointment.startTime}</Text>
                     <Text>{appointment.endTime}</Text>
                     <Text>{appointment.appointmentType}</Text>
-                    <Button title={'Confirm'} />
                     <Link href={'/(modals)/appointmentActions'}>appointmentActions</Link>
+                </View>
+                <View className={'mx-5 mt-10'}>
+                    <CustomButton title={"Confirm"} bgVariant={'primary'} textVariant={'primary'}  />
                 </View>
             </ScrollView>
         </SafeAreaView>
