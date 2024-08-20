@@ -1,6 +1,13 @@
 import { Appointment } from '@/types/appointmentTypes';
 import { AppointmentEntry } from '@/types/appointmentTypes';
 
+import { ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export const cn = (...inputs: ClassValue[]) => {
+    return twMerge(clsx(inputs))
+}
+
 export interface AgendaItemsMap {
     [date: string]: AppointmentEntry[];
 }
