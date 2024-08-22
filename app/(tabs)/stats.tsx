@@ -7,6 +7,7 @@ import { Card,
     CardContent,
     CardFooter
 } from "@/app/components/ui/card";
+import Separator from "@/app/components/ui/separator";
 
 
 export default function Tab() {
@@ -35,6 +36,8 @@ export default function Tab() {
                     <Text>Card Footer</Text>
                 </CardFooter>
             </Card>
+
+            <Separator/>
 
 
 

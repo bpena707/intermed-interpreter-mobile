@@ -30,6 +30,7 @@ const AgendaComponent = () => {
     }
 
     const renderItem =(appointment: any) => {
+        //the start time and end time are in 24 hour format, so we need to convert them to 12 hour format useing date-fns parser and formatter
         const timeStringStartTime = appointment.startTime;
         const parsedStartTime = parse(timeStringStartTime, "HH:mm:ss", new Date());
         const formattedStartTime = format(parsedStartTime, "hh:mm a");
@@ -47,10 +48,12 @@ const AgendaComponent = () => {
                 asChild>
                 <TouchableOpacity
                 >
-                    <Text >{appointment.name}</Text>
-                    <Text>{formattedStartTime}-{formattedEndTime}</Text>
-                    <Text>{"Appointment Type: " + appointment.appointmentType}</Text>
-                    <Text>{appointment.facility}</Text>
+                    <View className='justify-center'>
+                        <Text className='capitalize' >{appointment.name}</Text>
+                        <Text>{formattedStartTime}-{formattedEndTime}</Text>
+                        <Text className='capitalize'>{appointment.facility}</Text>
+                    </View>
+
                 </TouchableOpacity>
             </Link>
         )

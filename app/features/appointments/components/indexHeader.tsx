@@ -24,7 +24,6 @@ const IndexHeader = () => {
                         <TouchableOpacity style={styles.alertButton} >
                             <FontAwesome name={'bell'} size={20} color={'#000'} />
                         </TouchableOpacity>
-
                     </View>
                 </View>
         </SafeAreaView>
@@ -35,7 +34,7 @@ const IndexHeader = () => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        height: 100,
+        height: 70,
     },
     actionRow: {
         flexDirection: 'row',

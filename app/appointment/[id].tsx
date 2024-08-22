@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, SafeAreaView, Button, ActivityIndicator, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, Button, ActivityIndicator, ScrollView, RefreshControl} from 'react-native';
 import {Link, Stack, useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
@@ -6,6 +6,9 @@ import {useGetIndividualPatient} from "@/app/features/patients/use-get-individua
 import Map from "@/app/components/map";
 import {FontAwesome6} from "@expo/vector-icons";
 import CustomButton from "@/app/components/ui/CustomButton";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import {useCallback, useState} from "react";
 
 export default function Tab() {
 
@@ -26,38 +29,80 @@ export default function Tab() {
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => setRefreshing(false), 2000);
+
+    },[])
+
 
     console.log(facility)
     console.log(facility.address)
     return (
-        <SafeAreaView style={{ flex:1  }}>
+        <SafeAreaView style={{ flex:1, marginBottom: 0 }}>
             <Stack.Screen
                 options={{
                     headerTitle: '',
-                    headerTransparent: true,
+                    headerStyle: {
+                        backgroundColor: '#fff',
+                    },
                     headerBackTitle: 'Back',
-                    headerTintColor: 'black',
+                    headerShadowVisible: false,
+
                 }}
             />
 
-            <ScrollView style={styles.container}>
-                <View >
-                    <Text style={styles.headerText}>Certified Medical</Text>
-                    <Text>Confirmed</Text>
+            <ScrollView
+                className={'flex-1'}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
+            >
+                <View>
+                    <Card className={'rounded-t-none'}>
+                        <CardHeader className='pt-0'>
+                            <CardTitle >
+                                <Text >Certified Medical</Text>
+                            </CardTitle>
+                            <CardDescription>
+                                <Text>Confirmed</Text>
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <View style={{ height: 300, width: 300, marginLeft:30 }}>
+                                <Map />
+                            </View>
+                        </CardContent>
+                        <CardFooter>
+                            <View className={'flex flex-row items-center justify-start'}>
+                                <Ionicons name="location-outline" size={20} color="#f43f5e" />
+                                <Text >{facility.address} {facility.city}, {facility.state} {facility.zipCode}</Text>
+                            </View>
+                        </CardFooter>
+                    </Card>
                 </View>
-                <View style={{ height: 300, width: 300, marginLeft:50 }}>
-                    <Map />
+                <View className='mt-2'>
+                    <Card>
+                        <CardHeader >
+                            <CardTitle>
+                                <Text>Patient</Text>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Text className='capitalize'>Patient: {patient.firstName} {patient.lastName}</Text>
+                            <Text>Contact: {patient.phoneNumber}</Text>
+                        </CardContent>
+                        <CardFooter>
+                            <Text>Card Footer</Text>
+                        </CardFooter>
+                    </Card>
                 </View>
                 <View style={styles.infoContainer}>
-                    <View>
-                        <Text>Patient: {patient.firstName} {patient.lastName}</Text>
-                        <Text>Contact: {patient.phoneNumber}</Text>
-                    </View>
-                    <Text>Facility: {facility.name}</Text>
-                    <Text>Address: {facility?.address}</Text>
-                    <FontAwesome6 name="location-dot" size={16} color="black" />
-                    <Text>{facility.city} {facility.state}</Text>
-                    <Text>{facility.zip}</Text>
+
                     <Text>{facility.operatingHours}</Text>
                     <Text>{facility.phoneNumber}</Text>
                     <Text>{facility.facilityType}</Text>
@@ -69,6 +114,7 @@ export default function Tab() {
                 <View className={'mx-5 mt-10'}>
                     <CustomButton title={"Confirm"} bgVariant={'primary'} textVariant={'primary'}  />
                 </View>
+
             </ScrollView>
         </SafeAreaView>
 

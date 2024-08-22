@@ -30,15 +30,15 @@ const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
 };
 
 const CustomButton = ({
-                          onPress,
-                          title,
-                          bgVariant = "primary",
-                          textVariant = "default",
-                          IconLeft,
-                          IconRight,
-                          className,
-                          ...props
-                      }: ButtonProps) => {
+onPress,
+title,
+bgVariant = "primary",
+textVariant = "default",
+IconLeft,
+IconRight,
+className,
+...props
+}: ButtonProps) => {
     return (
         <TouchableOpacity
             onPress={onPress}
