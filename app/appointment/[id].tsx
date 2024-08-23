@@ -9,6 +9,7 @@ import CustomButton from "@/app/components/ui/CustomButton";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useCallback, useState} from "react";
+import { Facility } from "@/types/apiTypes";
 
 export default function Tab() {
 
@@ -23,22 +24,22 @@ export default function Tab() {
     // const facility = facilityQuery.data || []
 
     const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id)
-    const { data: facility, isLoading: isFacilityLoading, error: facilityError } = useGetIndividualFacility(appointment?.facilityId);
+    const { data: facility , isLoading: isFacilityLoading, error: facilityError } = useGetIndividualFacility(appointment?.facilityId);
     const {data: patient, isLoading: isPatientLoading, error: patientError} = useGetIndividualPatient(appointment?.patientId)
 
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
-    const [refreshing, setRefreshing] = useState(false);
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => setRefreshing(false), 2000);
-
-    },[])
+    // const [refreshing, setRefreshing] = useState(false);
+    // const onRefresh = useCallback(() => {
+    //     setRefreshing(true);
+    //     setTimeout(() => setRefreshing(false), 2000);
+    //
+    // },[])
 
 
     console.log(facility)
-    console.log(facility.address)
+    console.log(facility?.address)
     return (
         <SafeAreaView style={{ flex:1, marginBottom: 0 }}>
             <Stack.Screen
@@ -55,18 +56,18 @@ export default function Tab() {
 
             <ScrollView
                 className={'flex-1'}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }
+                // refreshControl={
+                //     <RefreshControl
+                //         refreshing={refreshing}
+                //         onRefresh={onRefresh}
+                //     />
+                // }
             >
                 <View>
                     <Card className={'rounded-t-none'}>
-                        <CardHeader className='pt-0'>
-                            <CardTitle >
-                                <Text >Certified Medical</Text>
+                        <CardHeader className='pt-0 '>
+                            <CardTitle className='flex-row justify-between' >
+                                <Text>Certified Medical</Text>
                             </CardTitle>
                             <CardDescription>
                                 <Text>Confirmed</Text>
@@ -78,10 +79,14 @@ export default function Tab() {
                             </View>
                         </CardContent>
                         <CardFooter>
-                            <View className={'flex flex-row items-center justify-start'}>
-                                <Ionicons name="location-outline" size={20} color="#f43f5e" />
-                                <Text >{facility.address} {facility.city}, {facility.state} {facility.zipCode}</Text>
-                            </View>
+                            {facility ? (
+                                <View className={'flex flex-row items-center justify-start'}>
+                                    <Ionicons name="location-outline" size={20} color="#f43f5e" />
+                                    <Text >{facility.address} {facility.city}, {facility.state} {facility.zipCode}</Text>
+                                </View>
+                            ) : (
+                                <Text>Facility not found</Text>
+                            )}
                         </CardFooter>
                     </Card>
                 </View>
@@ -93,8 +98,14 @@ export default function Tab() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Text className='capitalize'>Patient: {patient.firstName} {patient.lastName}</Text>
-                            <Text>Contact: {patient.phoneNumber}</Text>
+                            {patient ? (
+                                <View>
+                                    <Text className='capitalize'>Patient: {patient.firstName} {patient.lastName}</Text>
+                                    <Text>Contact: {patient.phoneNumber}</Text>
+                                </View>
+                            ) : (
+                                <Text>Patient not found</Text>
+                            )}
                         </CardContent>
                         <CardFooter>
                             <Text>Card Footer</Text>
@@ -102,13 +113,6 @@ export default function Tab() {
                     </Card>
                 </View>
                 <View style={styles.infoContainer}>
-
-                    <Text>{facility.operatingHours}</Text>
-                    <Text>{facility.phoneNumber}</Text>
-                    <Text>{facility.facilityType}</Text>
-                    <Text>{appointment.startTime}</Text>
-                    <Text>{appointment.endTime}</Text>
-                    <Text>{appointment.appointmentType}</Text>
                     <Link href={'/(modals)/appointmentActions'}>appointmentActions</Link>
                 </View>
                 <View className={'mx-5 mt-10'}>

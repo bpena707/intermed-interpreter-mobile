@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Appointment } from '@/types/appointmentTypes';
+import { Appointment } from '@/types/apiTypes';
 
 
 

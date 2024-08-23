@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { Appointment } from '@/types/appointmentTypes';
+import { Appointment } from '@/types/apiTypes';
 
 export const useGetIndividualAppointment = (id?: string) => {
 
     //define the query
-    const query = useQuery({
+    const query = useQuery<Appointment>({
 
         //queryKey is the name of the data stored in cache to be reused later again instead or parsing data all over again
         queryKey: ['appointment', {id}],

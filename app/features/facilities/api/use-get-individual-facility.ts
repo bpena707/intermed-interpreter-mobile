@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+import {Facility} from "@/types/apiTypes";
 
 
 export const useGetIndividualFacility = (id?: string) => {
 
     //define the query
-    const query = useQuery({
+    const query = useQuery<Facility>({
 
         //queryKey is the name of the data stored in cache to be reused later again instead or parsing data all over again
         queryKey: ['facility', {id}],

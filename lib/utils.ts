@@ -1,5 +1,5 @@
-import { Appointment } from '@/types/appointmentTypes';
-import { AppointmentEntry } from '@/types/appointmentTypes';
+import { Appointment } from '@/types/apiTypes';
+import { AppointmentEntry } from '@/types/apiTypes';
 
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'

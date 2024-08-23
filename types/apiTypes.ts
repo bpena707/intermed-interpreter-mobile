@@ -27,3 +27,29 @@ export interface Appointment {
     patient: string;
     patientId: string;
 }
+
+export interface Facility {
+    id: string;
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    county: string;
+    zipCode: string;
+    email: string;
+    phoneNumber: string;
+    facilityType: string;
+    operatingHours: string;
+    averageWaitTime: string;
+
+}
+
+export interface Patient {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    insuranceCarrier: string;
+    preferredLanguage: string;
+}
