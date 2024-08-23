@@ -31,8 +31,13 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
             endTime: appointment.endTime,
             appointmentType: appointment.appointmentType,
             facility: appointment.facility,
+            facilityAddress: appointment.facilityAddress,
+            facilityCity: appointment.facilityCity,
+            facilityState: appointment.facilityState,
             facilityId: appointment.facilityId,
             patient: appointment.patient,
+            patientFirstName: appointment.patientFirstName,
+            patientLastName: appointment.patientLastName,
             patientId: appointment.patientId,
             notes: appointment.notes,
         });

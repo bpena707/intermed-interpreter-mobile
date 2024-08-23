@@ -52,12 +52,10 @@ const AgendaComponent = () => {
 
                 >
                     <View className='justify-center gap-y-1'>
-                        <Text className='capitalize' >{appointment.name}</Text>
+                        <Text className='capitalize' >{appointment.patient} {appointment.patientLastName}</Text>
                         <Text>{formattedStartTime}-{formattedEndTime}</Text>
                         <Text className='capitalize'>{appointment.facility}</Text>
-                        {appointment.facility && (
-                            <Text>{appointment.facility.address} {appointment.facility.city}, {appointment.facility.state} {appointment.facility.zipCode}</Text>
-                        )}
+                        <Text>{appointment.facilityAddress} {appointment.facilityCity} {appointment.facilityState}</Text>
                     </View>
                     <View>
                         <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />

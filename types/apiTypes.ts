@@ -7,8 +7,13 @@ export interface AppointmentEntry extends AgendaEntry {
     startTime: string;
     endTime: string;
     patient: string;
+    patientFirstName: string;
+    patientLastName: string;
     patientId: string;
     facility: string;
+    facilityAddress: string;
+    facilityCity: string;
+    facilityState: string;
     facilityId: string;
     appointmentType: string;
     notes: string | null;
@@ -23,8 +28,13 @@ export interface Appointment {
     endTime: string;
     appointmentType: string;
     facility: string;
+    facilityAddress: string;
+    facilityCity: string;
+    facilityState: string;
     facilityId: string;
     patient: string;
+    patientFirstName: string;
+    patientLastName: string;
     patientId: string;
 }
 
