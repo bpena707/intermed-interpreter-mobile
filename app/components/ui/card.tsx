@@ -18,7 +18,7 @@ function CardHeader({
                         className,
                         ...props
                     }: React.ComponentPropsWithoutRef<typeof View>) {
-    return <View className={cn('p-4', className)} {...props} />;
+    return <View className={cn('pr-4 pl-4 pt-2 pb-1', className)} {...props} />;
 }
 
 function CardTitle({
@@ -96,7 +96,9 @@ function SimpleCard({
             </CardHeader>
             {content && (
                 <CardContent>
-                    <Text className="text-base text-primary">{content}</Text>
+                    <View>
+                        <Text className="text-lg text-primary">{content}</Text>
+                    </View>
                 </CardContent>
             )}
             {footer && (

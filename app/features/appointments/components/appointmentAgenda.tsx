@@ -5,13 +5,14 @@ import {Agenda} from "react-native-calendars";
 import {useGetAppointments} from "@/app/features/appointments/api/use-get-appointments";
 import Colors from "@/constants/Colors";
 import {formatDataForAgenda} from "@/lib/utils";
-import {FontAwesome6} from "@expo/vector-icons";
+import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import { format, parse } from 'date-fns';
 import {Link, router} from "expo-router";
+import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 
 const AgendaComponent = () => {
-    const { data, isLoading, isError } = useGetAppointments();
-    const formattedData: any = formatDataForAgenda(data ?? []);
+    const { data: appointment, isLoading, isError } = useGetAppointments();
+    const formattedData: any = formatDataForAgenda(appointment ?? []);
 
     if (isLoading) {
         return (
@@ -47,13 +48,20 @@ const AgendaComponent = () => {
                 style={[styles.item, { height: appointment.height }]}
                 asChild>
                 <TouchableOpacity
+                    className='flex-row justify-between items-center'
+
                 >
-                    <View className='justify-center'>
+                    <View className='justify-center gap-y-1'>
                         <Text className='capitalize' >{appointment.name}</Text>
                         <Text>{formattedStartTime}-{formattedEndTime}</Text>
                         <Text className='capitalize'>{appointment.facility}</Text>
+                        {appointment.facility && (
+                            <Text>{appointment.facility.address} {appointment.facility.city}, {appointment.facility.state} {appointment.facility.zipCode}</Text>
+                        )}
                     </View>
-
+                    <View>
+                        <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />
+                    </View>
                 </TouchableOpacity>
             </Link>
         )
@@ -101,7 +109,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginRight: 10,
-        marginTop: 17
+        marginTop: 17,
+        shadowColor: 'rgba(0,0,0, .4)', // IOS
+        shadowOffset: { height: 0.5, width: 0.5 }, // IOS
+        shadowOpacity: 0.5, // IOS
+        shadowRadius: 10, //IOS
+        elevation: 1, // Android
     },
     emptyData: {
         flex: 1,
@@ -112,5 +125,16 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    button: {
+        shadowColor: 'rgba(0,0,0, .4)', // IOS
+        shadowOffset: { height: 1, width: 1 }, // IOS
+        shadowOpacity: 1, // IOS
+        shadowRadius: 1, //IOS
+        backgroundColor: '#fff',
+        elevation: 2, // Android
+
+
+
     }
 })

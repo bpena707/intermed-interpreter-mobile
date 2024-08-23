@@ -25,7 +25,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
         agendaItemsMap[dateKey].push({
             id: appointment.id,
             name: appointment.patient,
-            height: 80,
+            height: 100,
             day: dateKey,
             startTime: appointment.startTime,
             endTime: appointment.endTime,
@@ -40,3 +40,12 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
 
     return agendaItemsMap;
 };
+
+export function formatPhoneNumber(phoneNumberString: string) {
+    const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+        return '(' + match[1] + ') ' + match[2] + '-' + match[3];
+    }
+    return null;
+}

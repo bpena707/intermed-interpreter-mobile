@@ -10,6 +10,8 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} f
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {useCallback, useState} from "react";
 import { Facility } from "@/types/apiTypes";
+import {format, parse} from "date-fns";
+import {formatPhoneNumber} from "@/lib/utils";
 
 export default function Tab() {
 
@@ -36,6 +38,15 @@ export default function Tab() {
     //     setTimeout(() => setRefreshing(false), 2000);
     //
     // },[])
+
+    const timeStringStartTime = appointment?.startTime;
+    const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
+    const formattedStartTime = format(parsedStartTime, "hh:mm a");
+
+    const timeStringEndTime = appointment?.endTime;
+    const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
+    const formattedEndTime = format(parsedEndTime, "hh:mm a");
+
 
 
     console.log(facility)
@@ -73,8 +84,8 @@ export default function Tab() {
                                 <Text>Confirmed</Text>
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <View style={{ height: 300, width: 300, marginLeft:30 }}>
+                        <CardContent className='justify-center items-center'>
+                            <View style={{ height: 200, width: '100%' }}>
                                 <Map />
                             </View>
                         </CardContent>
@@ -101,22 +112,39 @@ export default function Tab() {
                             {patient ? (
                                 <View>
                                     <Text className='capitalize'>Patient: {patient.firstName} {patient.lastName}</Text>
-                                    <Text>Contact: {patient.phoneNumber}</Text>
+                                    <Text>Contact: {formatPhoneNumber(patient.phoneNumber)}</Text>
+                                    <Text className='capitalize'>Language: {patient.preferredLanguage}</Text>
                                 </View>
                             ) : (
                                 <Text>Patient not found</Text>
                             )}
                         </CardContent>
-                        <CardFooter>
-                            <Text>Card Footer</Text>
-                        </CardFooter>
                     </Card>
                 </View>
-                <View style={styles.infoContainer}>
-                    <Link href={'/(modals)/appointmentActions'}>appointmentActions</Link>
+                <View className='mt-2'>
+                    <Card>
+                        <CardHeader >
+                            <CardTitle>
+                                <Text>Appointment Details</Text>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {appointment && facility ? (
+                                <View>
+                                    <Text className='capitalize'>Facility: {facility.name} | Specialty: {facility.facilityType}</Text>
+                                    <Text className='capitalize'>Facility Contact: {formatPhoneNumber(facility.phoneNumber)}</Text>
+                                    <Text className='capitalize'>Appointment Type: {appointment.appointmentType}</Text>
+                                    <Text>Duration: {formattedStartTime} - {formattedEndTime}</Text>
+                                </View>
+                            ) : (
+                                <Text>Patient not found</Text>
+                            )}
+                        </CardContent>
+                    </Card>
                 </View>
-                <View className={'mx-5 mt-10'}>
-                    <CustomButton title={"Confirm"} bgVariant={'primary'} textVariant={'primary'}  />
+                <View className={'mx-5 mt-5 flex-col'}>
+                    <CustomButton title={"Confirm"} bgVariant={'primary'} textVariant={'primary'} className='mb-4'  />
+                    <CustomButton title={"Return"} bgVariant={'danger'} textVariant={'primary'}  />
                 </View>
 
             </ScrollView>
