@@ -16,6 +16,7 @@ export interface AppointmentEntry extends AgendaEntry {
     facilityState: string;
     facilityId: string;
     appointmentType: string;
+    status: string;
     notes: string | null;
 }
 
@@ -27,6 +28,7 @@ export interface Appointment {
     startTime: string;
     endTime: string;
     appointmentType: string;
+    status: string;
     facility: string;
     facilityAddress: string;
     facilityCity: string;

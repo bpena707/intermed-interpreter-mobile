@@ -47,6 +47,35 @@ export default function Tab() {
     const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
     const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
+    const appointmentStatus = () =>{
+        switch (appointment?.status) {
+            case 'Confirmed':
+                return (
+                    <View className='flex-row items-center bg-[#10b981] rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold'>Confirmed</Text>
+                    </View>
+                )
+            case 'Pending':
+                return (
+                    <View className='flex-row items-center bg-[#fde047] rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold'>Pending</Text>
+                    </View>
+                )
+            case 'Closed':
+                return (
+                    <View className='flex-row items-center bg-[#0ea5e9] rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold'>Closed</Text>
+                    </View>
+                )
+            case 'Cancelled':
+                return (
+                    <View className='flex-row items-center bg-red-500 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold'>Cancelled</Text>
+                    </View>
+                )
+        }
+    }
+
 
 
     console.log(facility)
@@ -77,11 +106,11 @@ export default function Tab() {
                 <View>
                     <Card className={'rounded-t-none'}>
                         <CardHeader className='pt-0 '>
-                            <CardTitle className='flex-row justify-between' >
+                            <CardTitle className='flex-row justify-between mb-2' >
                                 <Text>Certified Medical</Text>
                             </CardTitle>
                             <CardDescription>
-                                <Text>Confirmed</Text>
+                                <Text>{appointmentStatus()}</Text>
                             </CardDescription>
                         </CardHeader>
                         <CardContent className='justify-center items-center'>
