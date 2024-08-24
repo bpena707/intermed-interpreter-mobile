@@ -75,11 +75,6 @@ export default function Tab() {
                 )
         }
     }
-
-
-
-    console.log(facility)
-    console.log(facility?.address)
     return (
         <SafeAreaView style={{ flex:1, marginBottom: 0 }}>
             <Stack.Screen

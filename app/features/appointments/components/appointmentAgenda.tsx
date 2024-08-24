@@ -9,6 +9,8 @@ import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import { format, parse } from 'date-fns';
 import {Link, router} from "expo-router";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
+import {bgBlue} from "colorette";
+import {hairlineWidth} from "nativewind";
 
 const AgendaComponent = () => {
     const { data: appointment, isLoading, isError } = useGetAppointments();
@@ -40,15 +42,38 @@ const AgendaComponent = () => {
         const parsedEndTime = parse(timeStringEndTime, "HH:mm:ss", new Date());
         const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
+        const appointmentType = () => {
+            switch (appointment.appointmentType) {
+                case 'Follow-Up':
+                    return 'rgba(70, 130, 180, 0.5)'
+                case 'Initial':
+                    return 'rgba(255, 159, 127, 0.5)'
+                case 'IME/AME':
+                    return 'rgba(128, 128, 0, 0.5)'
+                case 'Second-Opinion':
+                    return 'rgba(128, 0, 0, 0.5)'
+                case 'QME':
+                    return 'rgba(255, 215, 0, 0.5)'
+                case 'Conference':
+                    return 'rgba(128, 0, 128, 0.5)'
+                case 'IEP':
+                    return 'rgba(255, 105, 180, 0.5)'
+                case 'Other':
+                    return 'rgba(112, 128, 144, 0.5)'
+
+            }
+
+        }
+
 
 
         return(
             <Link
                 href={`/appointment/${appointment.id}`}
-                style={[styles.item, { height: appointment.height }]}
+                style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
                 asChild>
                 <TouchableOpacity
-                    className='flex-row justify-between items-center'
+                    className='flex-row justify-between items-center '
 
                 >
                     <View className='justify-center gap-y-1'>
