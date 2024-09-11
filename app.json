@@ -30,12 +30,13 @@
     },
     "plugins": [
       "expo-router",
-     [
-       "@rnmapbox/maps",
-      {
-        "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiYnBlbmE3MDciLCJhIjoiY2x6eGpzMWx4MHU4ZzJycTN1bnZ6ajdrcSJ9.LZ5AeW2xo7EXhN_3iEz44A"
-      }
-     ]
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiYnBlbmE3MDciLCJhIjoiY2x6eGpzMWx4MHU4ZzJycTN1bnZ6ajdrcSJ9.LZ5AeW2xo7EXhN_3iEz44A"
+        }
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

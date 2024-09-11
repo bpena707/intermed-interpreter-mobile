@@ -7,7 +7,7 @@ const TabLayout = () => {
     return (
         <Tabs screenOptions={{ tabBarActiveTintColor: Colors.primary }}>
             <Tabs.Screen
-                name="index"
+                name="home"
                 options={{
                     title: 'Appointments',
                     tabBarIcon: ({ color, size }) => <Ionicons name="today" size={size} color={color} />,
