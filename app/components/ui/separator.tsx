@@ -1,8 +1,17 @@
-import { View} from "react-native";
+import { View, Text} from "react-native";
 
+interface SeparatorProps {
+    message?: string
+}
 
-export default function Separator() {
+export default function Separator({ message }: SeparatorProps) {
     return (
-        <View className='border-b-black border-b-0.5 self-stretch w-full' />
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
+            <View>
+                <Text style={{width: 50, textAlign: 'center'}}>{message}</Text>
+            </View>
+            <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
+        </View>
     );
 }

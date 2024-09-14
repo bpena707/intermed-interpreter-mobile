@@ -2,6 +2,11 @@ import { SignedIn, SignedOut, useUser, useSignIn } from '@clerk/clerk-expo'
 import {Link, useRouter} from 'expo-router'
 import {Button, SafeAreaView, Text, TextInput, View} from 'react-native'
 import React, {useState} from "react";
+import {Input} from "@/app/components/ui/Input";
+import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
+import CustomButton from "@/app/components/ui/CustomButton";
+import Separator from "@/app/components/ui/separator";
+import {AntDesign} from "@expo/vector-icons";
 
 export default function Page() {
     const { user } = useUser()
@@ -36,29 +41,43 @@ export default function Page() {
     }, [isLoaded, emailAddress, password])
 
     return (
-        <SafeAreaView>
+        <SafeAreaView className={'flex flex-1'}>
             <SignedIn>
                 <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
             </SignedIn>
             <SignedOut>
-                <Text>Hello There </Text>
-                <TextInput
-                    autoCapitalize="none"
-                    value={emailAddress}
-                    placeholder="Email..."
-                    onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-                />
-                <TextInput
-                    value={password}
-                    placeholder="Password..."
-                    secureTextEntry={true}
-                    onChangeText={(password) => setPassword(password)}
-                />
-                <Button title="Sign In" onPress={onSignInPress} />
-
-                <Link href="/sign-up">
-                    <Text>Sign Up</Text>
-                </Link>
+                <View className={'items-center mt-10'}>
+                    <Text className='text-3xl mb-5'>Welcome Back! </Text>
+                    <View className=' flex flex-col'>
+                        <View className=' gap-2 mb-5 '>
+                            <Input
+                                inputMode={'email'}
+                                autoCapitalize="none"
+                                value={emailAddress}
+                                placeholder="Email..."
+                                onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+                            />
+                            <Input
+                                value={password}
+                                placeholder="Password..."
+                                secureTextEntry={true}
+                                onChangeText={(password) => setPassword(password)}
+                            />
+                        </View>
+                        <View className='flex flex-col items-center mb-5 '>
+                            <CustomButton className='w-32 ' title="Sign In" onPress={onSignInPress} />
+                        </View>
+                        <View className='mb-5'>
+                            <Separator message={'or'}/>
+                        </View>
+                        <View className={'flex flex-col '}>
+                            <CustomButton title={'Sign in with Google'} bgVariant={'outline'} textVariant={"primary"}  />
+                        </View>
+                    </View>
+                    <Link href="/sign-up">
+                        <Text>Sign Up</Text>
+                    </Link>
+                </View>
             </SignedOut>
         </SafeAreaView>
     )

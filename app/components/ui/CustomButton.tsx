@@ -12,12 +12,14 @@ const getBgVariantStyle = (variant: ButtonProps["bgVariant"]) => {
         case "outline":
             return "bg-transparent border-neutral-300 border-[0.5px]";
         default:
-            return "bg-[#0284c7]";
+            return "bg-[#24a0ed]";
     }
 }
 
 const getTextVariantStyle = (variant: ButtonProps["textVariant"]) => {
     switch (variant) {
+        case "primary" :
+            return "text-black"
         case "secondary":
             return "text-gray-100";
         case "danger":
