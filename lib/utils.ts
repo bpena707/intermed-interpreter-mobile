@@ -26,6 +26,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
             id: appointment.id,
             name: appointment.patient,
             height: 100,
+            status: "",
             day: dateKey,
             startTime: appointment.startTime,
             endTime: appointment.endTime,
@@ -39,7 +40,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
             patientFirstName: appointment.patientFirstName,
             patientLastName: appointment.patientLastName,
             patientId: appointment.patientId,
-            notes: appointment.notes,
+            notes: appointment.notes
         });
     });
 

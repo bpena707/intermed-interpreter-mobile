@@ -167,8 +167,7 @@ export default function Tab() {
                     </Card>
                 </View>
                 <View className={'mx-5 mt-5 flex-col'}>
-                    <CustomButton title={"Confirm"} bgVariant={'primary'} textVariant={'primary'} className='mb-4'  />
-                    <CustomButton title={"Return"} bgVariant={'danger'} textVariant={'primary'}  />
+
                 </View>
 
             </ScrollView>

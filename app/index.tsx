@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, useUser, useSignIn } from '@clerk/clerk-expo'
+import {SignedIn, SignedOut, useUser, useSignIn, useOAuth} from '@clerk/clerk-expo'
 import {Link, useRouter} from 'expo-router'
 import {Button, SafeAreaView, Text, TextInput, View} from 'react-native'
 import React, {useState} from "react";
@@ -7,6 +7,11 @@ import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
 import CustomButton from "@/app/components/ui/CustomButton";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
+
+enum Strategy {
+    Google = 'oauth_google',
+    Apple = 'oauth_apple'
+}
 
 export default function Page() {
     const { user } = useUser()
@@ -40,6 +45,14 @@ export default function Page() {
         }
     }, [isLoaded, emailAddress, password])
 
+    const { startOAuthFlow: appleAuth } = useOAuth({ strategy: "oauth_apple" })
+    const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" })
+
+    const onSelectAuth = async (strategy: Strategy) => {
+
+    }
+
+
     return (
         <SafeAreaView className={'flex flex-1'}>
             <SignedIn>
@@ -65,13 +78,19 @@ export default function Page() {
                             />
                         </View>
                         <View className='flex flex-col items-center mb-5 '>
-                            <CustomButton className='w-32 ' title="Sign In" onPress={onSignInPress} />
+
                         </View>
                         <View className='mb-5'>
                             <Separator message={'or'}/>
                         </View>
                         <View className={'flex flex-col '}>
-                            <CustomButton title={'Sign in with Google'} bgVariant={'outline'} textVariant={"primary"}  />
+                            <CustomButton className='flex flex-row '>
+                                <AntDesign name="google" size={24} color="black" />
+                                <Text className='text-lg text-black font-semibold ml-2'>
+                                    Google
+                                </Text>
+                            </CustomButton>
+
                         </View>
                     </View>
                     <Link href="/sign-up">

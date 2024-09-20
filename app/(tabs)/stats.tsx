@@ -14,11 +14,9 @@ export default function Tab() {
     return (
         <View className={'items-center justify-center'}>
 
-                <CustomButton title={"Confirm"}    />
-            <CustomButton title={"Button"} bgVariant={'danger'} textVariant={'danger'}   />
-            <CustomButton title={"Button"} bgVariant={'secondary'} textVariant={'secondary'}   />
-            <CustomButton title={"Confirm"} bgVariant={'outline'}    />
-            <CustomButton title={"Confirm"} bgVariant={'success'} textVariant={'success'}   />
+                <CustomButton variant='destructive'>
+                    Button
+                </CustomButton>
 
             <Card>
                 <CardHeader>
