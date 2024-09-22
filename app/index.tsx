@@ -52,14 +52,13 @@ export default function Page() {
 
     }
 
-
     return (
-        <SafeAreaView className={'flex flex-1'}>
+        <SafeAreaView className={'bg-white flex flex-1 '}>
             <SignedIn>
                 <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
             </SignedIn>
             <SignedOut>
-                <View className={'items-center mt-10'}>
+                <View className={' items-center mt-10'}>
                     <Text className='text-3xl mb-5'>Welcome Back! </Text>
                     <View className=' flex flex-col'>
                         <View className=' gap-2 mb-5 '>
@@ -75,27 +74,42 @@ export default function Page() {
                                 placeholder="Password..."
                                 secureTextEntry={true}
                                 onChangeText={(password) => setPassword(password)}
+                                className='mb-5'
                             />
+                            <CustomButton>
+                                <Text className='text-lg text-white font-bold ml-4 tracking-wide'>
+                                    Submit
+                                </Text>
+                            </CustomButton>
                         </View>
                         <View className='flex flex-col items-center mb-5 '>
 
                         </View>
-                        <View className='mb-5'>
+                        <View className='mb-10'>
                             <Separator message={'or'}/>
                         </View>
-                        <View className={'flex flex-col '}>
-                            <CustomButton className='flex flex-row '>
+                        <View className={'flex flex-col gap-y-2'}>
+                            <CustomButton variant='outline' className='flex flex-row '>
                                 <AntDesign name="google" size={24} color="black" />
-                                <Text className='text-lg text-black font-semibold ml-2'>
+                                <Text className='text-lg text-black font-bold ml-4 tracking-wide'>
                                     Google
+                                </Text>
+                            </CustomButton>
+                            <CustomButton variant='outline' className='flex flex-row '>
+                                <AntDesign name="apple1" size={24} color="black" />
+                                <Text className='text-lg text-black font-bold tracking-wide ml-4'>
+                                    Apple
                                 </Text>
                             </CustomButton>
 
                         </View>
                     </View>
-                    <Link href="/sign-up">
-                        <Text>Sign Up</Text>
-                    </Link>
+                    <View className='mt-10'>
+                        <Link href="/sign-up">
+                            <Text className='text-blue-600'>Dont have an account yet? Sign Up</Text>
+                        </Link>
+                    </View>
+
                 </View>
             </SignedOut>
         </SafeAreaView>

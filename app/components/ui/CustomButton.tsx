@@ -35,12 +35,13 @@ import {cn} from "@/lib/utils";
 
 
 const buttonVariant = cva(
-    'w-full h-14 rounded-full p-4 flex flex row justify-center items-center ',
+    'w-full h-14 rounded-2xl p-2 flex flex row justify-center items-center border ',
     {
         variants: {
             variant: {
-                default: 'bg-sky-600',
-                destructive: 'bg-red-800'
+                default: 'bg-black',
+                destructive: 'bg-red-800',
+                outline: 'bg-transparent'
             }
         },
         defaultVariants: {
