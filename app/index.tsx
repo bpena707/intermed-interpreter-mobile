@@ -1,5 +1,5 @@
-import {SignedIn, SignedOut, useUser, useSignIn, useOAuth} from '@clerk/clerk-expo'
-import {Link, useRouter} from 'expo-router'
+import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp} from '@clerk/clerk-expo'
+import {Link, useLocalSearchParams, useRouter} from 'expo-router'
 import {Button, SafeAreaView, Text, TextInput, View} from 'react-native'
 import React, {useState} from "react";
 import {Input} from "@/app/components/ui/Input";
@@ -8,55 +8,77 @@ import CustomButton from "@/app/components/ui/CustomButton";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
 
-enum Strategy {
-    Google = 'oauth_google',
-    Apple = 'oauth_apple'
-}
+// enum Strategy {
+//     Google = 'oauth_google',
+//     Apple = 'oauth_apple'
+// }
 
 export default function Page() {
-    const { user } = useUser()
-    const {signIn, setActive, isLoaded} = useSignIn()
-    const router = useRouter()
-
+    const { type } = useLocalSearchParams<{ type: string }>()
+    const [loading, setLoading] = useState(false)
     const [emailAddress, setEmailAddress] = useState('')
     const [password, setPassword] = useState('')
+    const {signIn, setActive, isLoaded} = useSignIn()
+    const {signUp, isLoaded: signUpLoaded, setActive: signupSetActive} = useSignUp()
 
-    const onSignInPress = React.useCallback(async () => {
-        if (!isLoaded) {
-            return
-        }
+    const onSignUpPress = async () => {
+        if (!signUpLoaded) return
 
-        try {
-            const signInAttempt = await signIn.create({
-                identifier: emailAddress,
-                password,
-            })
+        setLoading(true)
 
-            if (signInAttempt.status === 'complete') {
-                await setActive({ session: signInAttempt.createdSessionId })
-                router.replace('/')
-            } else {
-                // See https://clerk.com/docs/custom-flows/error-handling
-                // for more info on error handling
-                console.error(JSON.stringify(signInAttempt, null, 2))
-            }
-        } catch (err: any) {
-            console.error(JSON.stringify(err, null, 2))
-        }
-    }, [isLoaded, emailAddress, password])
-
-    const { startOAuthFlow: appleAuth } = useOAuth({ strategy: "oauth_apple" })
-    const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" })
-
-    const onSelectAuth = async (strategy: Strategy) => {
 
     }
 
+    // const onSignInPress = React.useCallback(async () => {
+    //     if (!isLoaded) {
+    //         return
+    //     }
+    //
+    //     try {
+    //         const signInAttempt = await signIn.create({
+    //             identifier: emailAddress,
+    //             password,
+    //         })
+    //
+    //         if (signInAttempt.status === 'complete') {
+    //             await setActive({ session: signInAttempt.createdSessionId })
+    //             router.replace('/')
+    //         } else {
+    //             // See https://clerk.com/docs/custom-flows/error-handling
+    //             // for more info on error handling
+    //             console.error(JSON.stringify(signInAttempt, null, 2))
+    //         }
+    //     } catch (err: any) {
+    //         console.error(JSON.stringify(err, null, 2))
+    //     }
+    // }, [isLoaded, emailAddress, password])
+
+    // const { startOAuthFlow: appleAuth } = useOAuth({ strategy: "oauth_apple" })
+    // const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" })
+    //
+    // const onSelectAuth = async (strategy: Strategy) => {
+    //     const selectedAuth = {
+    //         [Strategy.Google]: googleAuth,
+    //         [Strategy.Apple]: appleAuth,
+    //     }[strategy];
+    //
+    //     try {
+    //         const { createdSessionId, setActive } = await selectedAuth();
+    //
+    //         //if we get the createdSessionId the user is authenticated and set the active session using the id
+    //         if (createdSessionId) {
+    //             await setActive!({session: createdSessionId});
+    //             router.back();
+    //         }
+    //     } catch (err) {
+    //         console.error('Authorization Error', err);
+    //     }
+    // };
+
+
+
     return (
         <SafeAreaView className={'bg-white flex flex-1 '}>
-            <SignedIn>
-                <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-            </SignedIn>
             <SignedOut>
                 <View className={' items-center mt-10'}>
                     <Text className='text-3xl mb-5'>Welcome Back! </Text>
@@ -89,13 +111,13 @@ export default function Page() {
                             <Separator message={'or'}/>
                         </View>
                         <View className={'flex flex-col gap-y-2'}>
-                            <CustomButton variant='outline' className='flex flex-row '>
+                            <CustomButton variant='outline' className='flex flex-row ' >
                                 <AntDesign name="google" size={24} color="black" />
-                                <Text className='text-lg text-black font-bold ml-4 tracking-wide'>
+                                <Text className='text-lg text-black font-bold ml-4 tracking-wide' >
                                     Google
                                 </Text>
                             </CustomButton>
-                            <CustomButton variant='outline' className='flex flex-row '>
+                            <CustomButton variant='outline' className='flex flex-row ' >
                                 <AntDesign name="apple1" size={24} color="black" />
                                 <Text className='text-lg text-black font-bold tracking-wide ml-4'>
                                     Apple
