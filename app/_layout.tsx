@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import {isLoaded, useFonts} from 'expo-font';
-import {Stack, useRouter, useSegments} from 'expo-router';
+import {Navigator, Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -11,34 +11,9 @@ import * as SecureStore from 'expo-secure-store'
 
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ClerkProvider, useAuth} from "@clerk/clerk-expo";
+import { Slot } from "expo-router";
 
 const client = new QueryClient()
-
-const tokenCache = {
-    async getToken(key: string) {
-        try {
-            const item = await SecureStore.getItemAsync(key)
-            if (item) {
-                console.log(`${key} was used 🔐 \n`)
-            } else {
-                console.log('No values stored under key: ' + key)
-            }
-            return item
-        } catch (error) {
-            console.error('SecureStore get item error: ', error)
-            await SecureStore.deleteItemAsync(key)
-            return null
-        }
-    },
-    async saveToken(key: string, value: string) {
-        try {
-            return SecureStore.setItemAsync(key, value)
-        } catch (err) {
-            return
-        }
-    },
-}
-
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 if (!publishableKey) {
@@ -47,14 +22,21 @@ if (!publishableKey) {
     )
 }
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+const tokenCache = {
+    async getToken(key: string) {
+        try {
+            return SecureStore.getItemAsync(key);
+        } catch (err) {
+            return null;
+        }
+    },
+    async saveToken(key: string, value: string) {
+        try {
+            return SecureStore.setItemAsync(key, value);
+        } catch (err) {
+            return;
+        }
+    },
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -84,17 +66,16 @@ const InitialLayout = () => {
   useEffect(() =>{
       if (!isLoaded) return
       const inAuthGroup = segments[0] === '(tabs)'
-      console.log('')
       //if the user is signed in and outside of the auth area which in this case is the tabs group
       if (isSignedIn && !inAuthGroup){
-          router.push('/(tabs)/home')
-      } else if (!isSignedIn && inAuthGroup) {
+          router.replace('/(tabs)/home')
+      } else if (!isSignedIn) {
           router.replace('/')
       }
   },[isSignedIn])
 
   if (!loaded || isLoaded) {
-    return <ActivityIndicator/>;
+    return <Slot />;
   }
 
     return (
@@ -102,6 +83,7 @@ const InitialLayout = () => {
             <Stack.Screen
                 name='index'
                 options={{ headerShown: false }}
+
             />
             <Stack.Screen
                 name="(tabs)"

@@ -82,7 +82,7 @@ export default function SignUpScreen() {
                                     onChangeText={(password) => setPassword(password)}
                                     className='mb-5'
                                 />
-                                <CustomButton>
+                                <CustomButton onPress={onSignUpPress}>
                                     <Text className='text-lg text-white font-bold ml-4 tracking-wide'>
                                         Submit
                                     </Text>
