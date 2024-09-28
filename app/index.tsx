@@ -106,7 +106,7 @@ export default function Page() {
                             onChangeText={(password) => setPassword(password)}
                             className='mb-5'
                         />
-                        <CustomButton onPress={onSignInPress}>
+                        <CustomButton onPress={() => onSignInPress()}>
                             <Text className='text-lg text-white font-bold ml-4 tracking-wide'>
                                 Submit
                             </Text>

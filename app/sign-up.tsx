@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {TextInput, Button, View, SafeAreaView, Text} from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
-import {Link, useRouter} from 'expo-router'
+import {Link, Stack, useRouter} from 'expo-router'
 import {Input} from "@/app/components/ui/Input";
 import CustomButton from "@/app/components/ui/CustomButton";
 import Separator from "@/app/components/ui/separator";
@@ -61,7 +61,9 @@ export default function SignUpScreen() {
     }
 
     return (
-        <SafeAreaView>
+
+        <SafeAreaView className='flex flex-1'>
+
             {!pendingVerification && (
                 <>
                     <View className={' items-center mt-10'}>
@@ -107,8 +109,12 @@ export default function SignUpScreen() {
                                         Apple
                                     </Text>
                                 </CustomButton>
-
                             </View>
+                        </View>
+                        <View className='mt-10'>
+                            <Link href="/">
+                                <Text className='text-blue-600'>Already have an account? Sign In</Text>
+                            </Link>
                         </View>
                     </View>
                 </>

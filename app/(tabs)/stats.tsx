@@ -15,7 +15,7 @@ export default function Tab() {
         <View className={'items-center justify-center'}>
 
                 <CustomButton variant='destructive'>
-                    Button
+                    <Text>Custom Button</Text>
                 </CustomButton>
 
             <Card>

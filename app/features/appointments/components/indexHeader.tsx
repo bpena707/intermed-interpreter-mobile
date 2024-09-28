@@ -3,12 +3,22 @@ import {Link, Stack} from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import CustomButton from "@/app/components/ui/CustomButton";
+import {useClerk} from "@clerk/clerk-expo";
 
 const IndexHeader = () => {
+    const { signOut } = useClerk()
+
     return (
         <SafeAreaView style={{flex:1, backgroundColor: '#fff'}}>
                 <View style={styles.container}>
                     <View style={styles.actionRow}>
+                        <CustomButton className='h-10 w-10 mr-1 bg-[#f0f0f0] border-[#f0f0f0] rounded-full' onPress={() => signOut({redirectUrl: '/'})} >
+                            <View >
+                                <FontAwesome name="sign-out" size={20} color="black" className='border-none' />
+                            </View>
+
+                        </CustomButton>
                         {/*asChild allows link to be used around touchable opacity */}
                         <Link href={'/(modals)/searchModal'} asChild>
                             <TouchableOpacity style={styles.searchButton}>
@@ -39,7 +49,7 @@ const styles = StyleSheet.create({
     actionRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 24,
+        paddingHorizontal: 4,
         paddingBottom:16,
         alignItems: 'center',
     },
