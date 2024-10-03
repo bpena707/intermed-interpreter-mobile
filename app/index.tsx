@@ -87,9 +87,9 @@ export default function Page() {
     // };
 
     return (
-        <SafeAreaView className={'bg-white flex flex-1 '}>
+        <SafeAreaView className={'bg-slate-200 flex flex-1 '}>
             <View className={' items-center mt-10'}>
-                <Text className='text-3xl mb-5'>Welcome Back! </Text>
+                <Text className='text-3xl mb-5 font-semibold'>Welcome Back! </Text>
                 <View className=' flex flex-col'>
                     <View className=' gap-2 mb-5 '>
                         <Input

@@ -49,7 +49,8 @@ export default function SignUpScreen() {
 
             if (completeSignUp.status === 'complete') {
                 await setActive({ session: completeSignUp.createdSessionId })
-                router.replace('/')
+                router.replace('/onboarding')
+                console.log(router)
             } else {
                 console.error(JSON.stringify(completeSignUp, null, 2))
             }

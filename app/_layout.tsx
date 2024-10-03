@@ -10,7 +10,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as SecureStore from 'expo-secure-store'
 
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ClerkProvider, useAuth} from "@clerk/clerk-expo";
+import {ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
 
 const client = new QueryClient()
@@ -49,8 +49,10 @@ const InitialLayout = () => {
   });
 
   const router = useRouter()
-    const {isLoaded, isSignedIn} = useAuth()
+    const {isLoaded, isSignedIn, userId} = useAuth()
+    const { user } = useUser()
     const segments = useSegments()
+
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -66,8 +68,11 @@ const InitialLayout = () => {
   useEffect(() =>{
       if (!isLoaded) return
       const inAuthGroup = segments[0] === '(tabs)'
+      const onboardingComplete = user?.publicMetadata?.onboardingComplete
       //if the user is signed in and outside of the auth area which in this case is the tabs group
-      if (isSignedIn && !inAuthGroup){
+      if (!onboardingComplete && isSignedIn){
+          router.replace('/onboarding')
+      } else if (isSignedIn && !inAuthGroup){
           router.replace('/(tabs)/home')
       } else if (!isSignedIn) {
           router.replace('/')
@@ -84,6 +89,10 @@ const InitialLayout = () => {
                 name='index'
                 options={{ headerShown: false }}
 
+            />
+            <Stack.Screen
+                name='onboarding'
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="(tabs)"
