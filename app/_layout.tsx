@@ -113,7 +113,7 @@ const InitialLayout = () => {
                     headerTitle: 'Appointment Actions',
                     presentation: 'transparentModal',
                     animation: 'fade_from_bottom',
-                    headerLeft: () =>(
+                    headerLeft: () => (
                         <TouchableOpacity onPress={() => router.back()}>
                             <Ionicons name={'close-outline'} size={24} color={'black'} />
                         </TouchableOpacity>
