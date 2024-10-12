@@ -107,7 +107,7 @@ export default function Page() {
                             className='mb-5'
                         />
                         <CustomButton onPress={() => onSignInPress()}>
-                            <Text className='text-lg text-white font-bold ml-4 tracking-wide'>
+                            <Text className='text-lg text-white font-extrabold ml-4 tracking-wide'>
                                 Submit
                             </Text>
                         </CustomButton>

@@ -13,7 +13,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
         return (
             <TextInput
                 inputMode={inputMode}
-                className={`h-12 w-[300px] items-center rounded-xl border border-gray-300 bg-white px-3 py-3 text-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-2 ${className}`}
+                className={`h-12 w-[300px] items-center rounded-xl border border-gray-300 bg-white px-3 py-1 pt-0 text-lg transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-2 ${className}`}
                 ref={ref}
                 {...props}
             />

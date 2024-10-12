@@ -63,12 +63,12 @@ export default function SignUpScreen() {
 
     return (
 
-        <SafeAreaView className='flex flex-1'>
+        <SafeAreaView className='flex flex-1 bg-slate-200'>
 
             {!pendingVerification && (
                 <>
                     <View className={' items-center mt-10'}>
-                        <Text className='text-3xl mb-5'>Sign Up </Text>
+                        <Text className='text-3xl mb-5 font-semibold'>Sign Up </Text>
                         <View className=' flex flex-col'>
                             <View className=' gap-2 mb-5 '>
                                 <Input
@@ -86,7 +86,7 @@ export default function SignUpScreen() {
                                     className='mb-5'
                                 />
                                 <CustomButton onPress={onSignUpPress}>
-                                    <Text className='text-lg text-white font-bold ml-4 tracking-wide'>
+                                    <Text className='text-lg text-white font-extrabold ml-4 tracking-wide'>
                                         Submit
                                     </Text>
                                 </CustomButton>
