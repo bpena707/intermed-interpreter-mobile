@@ -6,6 +6,8 @@ import {AntDesign} from "@expo/vector-icons";
 import {Input} from "@/app/components/ui/Input";
 import LottieView from "lottie-react-native";
 import ClerkPhoneVerification from "@/app/clerk-phone-verification";
+import GooglePlaces from "@/app/googlePlaces";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 const onboardingSteps = [
     {
@@ -33,33 +35,60 @@ const onboardingSteps = [
 
     },
     {
+        image: (
+            <LottieView style={{ width:400, height:400, marginBottom:40, marginLeft: 40 }} source={require('../assets/lottie/location.json')} autoPlay loop />
+        ),
         title: 'Tell us about where you are located and how far you are willing to travel.',
         description: 'Choose the locations you are willing to travel to for appointments. This will help us match you with the right opportunities.',
-        inputTitle: 'Location',
-        input: {
-            placeholder: 'Zipcode',
-        },
-
+        googleInputTitle: 'Location',
+        googleInput: (
+            <GooglePlaces />
+        )
     },
     {
+        image: (
+            <LottieView style={{ width:300, height:300, marginBottom:40, marginLeft: 40 }} source={require('../assets/lottie/experience.json')} autoPlay loop />
+        ),
         title: 'Help us understand your interpreting experience.',
-        description: 'Include certifications, languages spoken and specializations ',
+        description: 'Are you Certified? Our team will evaluate your credentials at the end.',
+        credentialsInputTitle: 'Credentials',
+        credentialsCheckbox: (
+            <View className='flex flex-col items-center gap-x-2'>
+                <BouncyCheckbox
+                    size={25}
+                    fillColor="blue"
+                    unFillColor="#FFFFFF"
+                    text="NBCMI"
+                    iconStyle={{ borderColor: "blue" }}
+                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                    onPress={(isChecked: boolean) => { console.log(isChecked) }}
+                />
+                <BouncyCheckbox
+                    size={25}
+                    fillColor="blue"
+                    unFillColor="#FFFFFF"
+                    text="CCHI"
+                    iconStyle={{ borderColor: "blue" }}
+                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                    onPress={(isChecked: boolean) => { console.log(isChecked) }}
+                />
+                <BouncyCheckbox
+                    size={25}
+                    fillColor="blue"
+                    unFillColor="#FFFFFF"
+                    text="Specialized"
+                    iconStyle={{ borderColor: "blue" }}
+                    textStyle={{ fontFamily: "JosefinSans-Regular" }}
+                    onPress={(isChecked: boolean) => { console.log(isChecked) }}
+                />
+            </View>
+        )
 
     },
     {
-        title: 'What dates and times are you available?',
-        description: 'Let us know when you are available for appointments',
-
-    },
-    {
-        title: 'Do you have any preferences for appointments?',
-        description: 'Are you open to on-site appointments, remote appointments, or both?',
-    },
-    {
-        title: 'Add relevant certifications and documents',
-        description: 'Upload your certifications and documents to help us verify your qualifications',
-    },
-    {
+        image: (
+            <LottieView style={{ width:400, height:400, marginBottom:40, marginLeft: 40 }} source={require('../assets/lottie/coin.json')} autoPlay loop />
+        ),
         title: 'Your all set!',
         description: 'You are all set to start receiving appointments. You can always update your information in the app settings',
     }
@@ -69,6 +98,7 @@ export default function OnBoardingScreen () {
 
     const [screenIndex, setScreenIndex] = useState(0)
     const data = onboardingSteps[screenIndex]
+
 
     const onContinue = () => {
         const lastScreenIndex = screenIndex === onboardingSteps.length - 1
@@ -86,7 +116,7 @@ export default function OnBoardingScreen () {
     }
 
     return (
-        <SafeAreaView className='flex flex-1 '>
+        <SafeAreaView className='flex flex-1 bg-slate-400'>
             {screenIndex > 0 && (
                 <TouchableOpacity onPress={onBack} className='absolute top-16 left-4 z-10'>
                     <AntDesign name="left" size={24} color="blue" />
@@ -108,7 +138,22 @@ export default function OnBoardingScreen () {
                         <ClerkPhoneVerification onContinue={onContinue} />
                     )}
                 </View>
-                
+                <View className='flex justify-start gap-y-1'>
+                    <Text className='text-lg'>{data.googleInputTitle}</Text>
+                    {data.googleInput && (
+                        <View className='mb-10'>
+                                <GooglePlaces />
+                        </View>
+                    )}
+                </View>
+                <View>
+                    {data.credentialsInputTitle && (
+                        <View className='flex justify-start gap-y-1'>
+
+                            {data.credentialsCheckbox}
+                        </View>
+                        )}
+                </View>
             </View>
             <View className='flex flex-row justify-between items-center p-4 space-x-4 w-full '>
                 <CustomButton onPress={onContinue}>

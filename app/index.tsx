@@ -7,6 +7,8 @@ import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
 import CustomButton from "@/app/components/ui/CustomButton";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
+import 'react-native-get-random-values';
+
 
 // enum Strategy {
 //     Google = 'oauth_google',
