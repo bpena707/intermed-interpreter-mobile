@@ -53,6 +53,9 @@ const InitialLayout = () => {
     const { user } = useUser()
     const segments = useSegments()
 
+    //check if the user has completed the onbaording process
+    const onboardingComplete = user?.unsafeMetadata?.onboardingComplete
+
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -65,19 +68,19 @@ const InitialLayout = () => {
     }
   }, [loaded]);
 
+  //useEffect to check if the user is signed in and if the onboarding process is complete and route accordingly
   useEffect(() =>{
       if (!isLoaded) return
       const inAuthGroup = segments[0] === '(tabs)'
-      const onboardingComplete = user?.publicMetadata?.onboardingComplete
       //if the user is signed in and outside of the auth area which in this case is the tabs group
-      if (!onboardingComplete && isSignedIn){
-          router.replace('/onboarding')
-      } else if (isSignedIn && !inAuthGroup){
+      if (isSignedIn && !inAuthGroup && onboardingComplete){
           router.replace('/(tabs)/home')
+      } else if (!onboardingComplete && isSignedIn) {
+          router.replace('/onboarding')
       } else if (!isSignedIn) {
           router.replace('/')
       }
-  },[isSignedIn])
+  },[isSignedIn, onboardingComplete, isLoaded])
 
   if (!loaded || isLoaded) {
     return <Slot />;

@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Appointment } from '@/types/apiTypes';
+import {useAuth} from "@clerk/clerk-expo";
 
 export const useGetIndividualAppointment = (id?: string) => {
+    const { getToken } = useAuth()
 
     //define the query
     const query = useQuery<Appointment>({
@@ -10,7 +12,14 @@ export const useGetIndividualAppointment = (id?: string) => {
         queryKey: ['appointment', {id}],
         //queryFn is function that query will use to request data as promise which resloves data or a throws error if it fails
         queryFn: async () => {
-            const response = await fetch (`http://localhost:3000/api/appointments/${id}`)
+            const response = await fetch (
+                `http://localhost:3000/api/appointments/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${await getToken()}`
+                    }
+                }
+                )
 
             if (!response.ok) {
                 throw new Error('Failed to fetch appointment')

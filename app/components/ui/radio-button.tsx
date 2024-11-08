@@ -20,3 +20,5 @@ const RadioButton = ({ label, selectedValue, onChange, value }: RadioButtonProps
         </TouchableOpacity>
     )
 }
+
+export default RadioButton
