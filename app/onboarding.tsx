@@ -9,6 +9,7 @@ import {Input} from "@/app/components/ui/Input";
 import CustomButton from "@/app/components/ui/CustomButton";
 import Toast from "react-native-toast-message";
 
+
 //schema to validate onboarding form
 const onBoardingSchema = z.object({
     firstName: z.string(),
