@@ -17,21 +17,30 @@ export const useCreateInterpreter = () => {
     const { getToken, userId } = useAuth()
     const { user } = useUser()
 
-    
-
     const mutation = useMutation({
-        mutationFn: async (data: OnBoardingType) => {
+        mutationFn: async (data: Omit<OnBoardingType, 'clerkUserId'>) => {
+
+            if (!userId) {
+                throw new Error('UserId is required to create interpreter')
+            }
+
+            const payload = {
+                ...data,
+                onboardingCompleted: true,
+            }
+
             const response = await axios.post(
-                'http://10.0.0.148:3000/api/interpreters',
-                {...data, onboardingCompleted: true},
+                'http://localhost:3000/api/interpreters', //10.0.0.148
+                payload,
                 {
                     headers: {
                         Authorization: `Bearer ${await getToken()}`
-                    }
+                    },
+                    timeout: 5000
                 }
             )
 
-            if (response.status != 200) {
+            if (response.status != 201 && response.status != 200) {
                 throw new Error('Failed to create interpreter')
             }
             await user?.update(({

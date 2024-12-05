@@ -10,12 +10,14 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as SecureStore from 'expo-secure-store'
 
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
+import {ClerkLoaded, ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
+import Toast from "react-native-toast-message";
 
 const client = new QueryClient()
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
+
 if (!publishableKey) {
     throw new Error(
         'Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env',
@@ -143,9 +145,12 @@ const InitialLayout = () => {
 const RootLayoutNav = () => {
     return(
         <ClerkProvider publishableKey={publishableKey!} tokenCache={tokenCache}>
-            <QueryClientProvider client={client}>
-                <InitialLayout />
-            </QueryClientProvider>
+            <ClerkLoaded>
+                <QueryClientProvider client={client}>
+                    <InitialLayout />
+                    <Toast />
+                </QueryClientProvider>
+            </ClerkLoaded>
         </ClerkProvider>
     )
 }

@@ -8,6 +8,7 @@ import CustomButton from "@/app/components/ui/CustomButton";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
 import 'react-native-get-random-values';
+import Toast from "react-native-toast-message";
 
 
 // enum Strategy {
@@ -141,6 +142,7 @@ export default function Page() {
                     </Link>
                 </View>
             </View>
+
         </SafeAreaView>
     )
 }
