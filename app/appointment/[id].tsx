@@ -1,5 +1,15 @@
-import {View, Text, StyleSheet, SafeAreaView, Button, ActivityIndicator, ScrollView, RefreshControl} from 'react-native';
-import {Link, Stack, useLocalSearchParams} from "expo-router";
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    Button,
+    ActivityIndicator,
+    ScrollView,
+    RefreshControl,
+    TouchableOpacity
+} from 'react-native';
+import {Link, router, Stack, useLocalSearchParams, useRouter} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
@@ -13,6 +23,7 @@ import { Facility } from "@/types/apiTypes";
 import {format, parse} from "date-fns";
 import {formatPhoneNumber} from "@/lib/utils";
 import {NavigationContainer} from "@react-navigation/native";
+import {BackButton} from "@/app/components/ui/back-button";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -77,7 +88,7 @@ export default function Tab() {
     }
     return (
         <SafeAreaView className={'flex-1 mb-0'}>
-            {/*style={{flex: 1,  marginBottom: 0 }}*/}
+            <BackButton />
             <ScrollView
                 //TODO: Work on the pull to refresh function
                 // refreshControl={
@@ -150,14 +161,23 @@ export default function Tab() {
                                     <Text>Duration: {formattedStartTime} - {formattedEndTime}</Text>
                                 </View>
                             ) : (
-                                <Text>Patient not found</Text>
+                                <Text>Facility not found</Text>
                             )}
                         </CardContent>
                     </Card>
                 </View>
-                <View className={'mx-5 mt-5 flex-col'}>
-
+                <View className={'mx-5 mt-5 '}>
+                    <CustomButton>
+                        <Text className='text-white text-2xl font-semibold'>Confirm</Text>
+                    </CustomButton>
                 </View>
+                <View className={'mx-5 mt-5 '}>
+                    <CustomButton>
+                        <Text className='text-white text-2xl font-semibold'>Confirm</Text>
+                    </CustomButton>
+                </View>
+
+
 
             </ScrollView>
         </SafeAreaView>

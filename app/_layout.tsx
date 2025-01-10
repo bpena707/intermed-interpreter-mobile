@@ -105,6 +105,13 @@ const InitialLayout = () => {
                 }}
             />
             <Stack.Screen
+                name="appointmentAgenda"
+                options={{
+                    headerShown: false
+                }}
+            >
+            </Stack.Screen>
+            <Stack.Screen
                 name="appointment/[id]"
                 options={{
                     title: '',

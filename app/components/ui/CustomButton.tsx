@@ -35,7 +35,7 @@ import {cn} from "@/lib/utils";
 
 
 const buttonVariant = cva(
-    'w-full h-14 rounded-2xl p-2 flex flex-row justify-center items-center border ',
+    'w-full h-14 rounded-2xl p-2 flex flex-row justify-center items-center border',
     {
         variants: {
             variant: {
