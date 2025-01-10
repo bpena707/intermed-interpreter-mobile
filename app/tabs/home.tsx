@@ -16,9 +16,7 @@ export default function Tab() {
                     header: () => <IndexHeader />
                 }}
             />
-
             <AgendaComponent />
-
         </View>
 
     );

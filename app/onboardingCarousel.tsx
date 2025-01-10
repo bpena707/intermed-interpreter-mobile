@@ -107,7 +107,7 @@
 //     const onContinue = () => {
 //         const lastScreenIndex = screenIndex === onboardingSteps.length - 1
 //         if (lastScreenIndex) {
-//             router.replace('/(tabs)/home')
+//             router.replace('/tabs/home')
 //         } else {
 //             setScreenIndex(screenIndex + 1)
 //         }
@@ -122,7 +122,7 @@
 //     const handleSubmit = (values: OnBoardingValues) => {
 //         createMutation.mutate(values, {
 //             onSuccess: () => {
-//                 router.replace('/(tabs)/home')
+//                 router.replace('/tabs/home')
 //             }
 //         })
 //     }

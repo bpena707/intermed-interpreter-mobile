@@ -12,10 +12,9 @@ import {useCallback, useState} from "react";
 import { Facility } from "@/types/apiTypes";
 import {format, parse} from "date-fns";
 import {formatPhoneNumber} from "@/lib/utils";
+import {NavigationContainer} from "@react-navigation/native";
 
 export default function Tab() {
-
-
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
     // then extract data from the appointment object or if it is empty its null object
     const { id } = useLocalSearchParams<{id: string}>()
@@ -40,8 +39,9 @@ export default function Tab() {
     // },[])
 
     const timeStringStartTime = appointment?.startTime;
+    console.log("Start Time:", timeStringStartTime);
     const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
-    const formattedStartTime = format(parsedStartTime, "hh:mm a");
+    const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
 
     const timeStringEndTime = appointment?.endTime;
     const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
@@ -76,21 +76,10 @@ export default function Tab() {
         }
     }
     return (
-        <SafeAreaView style={{ flex:1, marginBottom: 0 }}>
-            <Stack.Screen
-                options={{
-                    headerTitle: '',
-                    headerStyle: {
-                        backgroundColor: '#fff',
-                    },
-                    headerBackTitle: 'Back',
-                    headerShadowVisible: false,
-
-                }}
-            />
-
+        <SafeAreaView className={'flex-1 mb-0'}>
+            {/*style={{flex: 1,  marginBottom: 0 }}*/}
             <ScrollView
-                className={'flex-1'}
+                //TODO: Work on the pull to refresh function
                 // refreshControl={
                 //     <RefreshControl
                 //         refreshing={refreshing}
@@ -172,20 +161,16 @@ export default function Tab() {
 
             </ScrollView>
         </SafeAreaView>
-
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+
     headerText :{
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'left',
         marginBottom    : 20
-
     },
     infoContainer: {
         alignItems: "flex-start",

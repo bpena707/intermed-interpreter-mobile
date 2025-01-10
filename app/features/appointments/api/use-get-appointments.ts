@@ -11,24 +11,29 @@ export const useGetAppointments = () => {
     //define the query
     const query = useQuery<Appointment[]>({
         //queryKey is the name of the data stored in cache to be reused later again instead or parsing data all over again
-        queryKey: ['appointments'],
+        queryKey: ['appointments', userId],
         //queryFn is function that query will use to request data as promise which resloves data or a throws error if it fails
         queryFn: async () => {
             if (!userId) {
-                throw new Error('UserId is required to create interpreter')
+                throw new Error('UserId is required to fetch appointments')
             }
 
             const token = await getToken()
+            if (!token) {
+                throw new Error('Token is required to fetch appointments')
+            }
+            console.log('Token:', token);
 
             const response = await fetch ('http://localhost:3000/api/appointments', {
-                headers: {
                     method: 'GET',
-                    Authorization: `Bearer ${token}`
-                }
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
             })
 
             if (!response.ok) {
-                throw new Error('Failed to fetch appointments')
+                const errorMessage = await response.text();
+                throw new Error(`Failed to fetch appointments: ${errorMessage}`);
             }
 
             //destructure the data object from the response

@@ -73,10 +73,10 @@ const InitialLayout = () => {
   //useEffect to check if the user is signed in and if the onboarding process is complete and route accordingly
   useEffect(() =>{
       if (!isLoaded) return
-      const inAuthGroup = segments[0] === '(tabs)'
+      const inAuthGroup = segments[0] === 'tabs'
       //if the user is signed in and outside of the auth area which in this case is the tabs group
       if (isSignedIn && !inAuthGroup && onboardingComplete){
-          router.replace('/(tabs)/home')
+          router.replace('/tabs/home')
       } else if (!onboardingComplete && isSignedIn) {
           router.replace('/onboarding')
       } else if (!isSignedIn) {
@@ -93,22 +93,28 @@ const InitialLayout = () => {
             <Stack.Screen
                 name='index'
                 options={{ headerShown: false }}
-
             />
             <Stack.Screen
                 name='onboarding'
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="(tabs)"
+                name="tabs"
                 options={{
-                    headerShown: false,
+                    headerShown: true,
                 }}
             />
             <Stack.Screen
                 name="appointment/[id]"
                 options={{
+                    title: '',
                     headerTitle: 'Appointment',
+                    headerShown: true,
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => router.back()}>
+                            <Ionicons name={'close-outline'} size={24} color={'black'} />
+                        </TouchableOpacity>
+                    )
                 }}
 
             />
