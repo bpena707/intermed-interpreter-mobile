@@ -86,6 +86,36 @@ export default function Tab() {
                 )
         }
     }
+
+    function appointmentStatusChange() {
+
+    }
+
+    const buttonStatus = () => {
+        switch (appointment?.status){
+            case 'Pending':
+                return (
+                    <CustomButton >
+                        <Text className='text-white text-2xl font-semibold'>Confirm</Text>
+                    </CustomButton>
+                )
+            case 'Confirmed':
+            return(
+                <View>
+                    <CustomButton>
+                        <Text>Close</Text>
+                    </CustomButton>
+                    <CustomButton variant='destructive'>
+                        <Text>Return</Text>
+                    </CustomButton>
+                </View>
+
+                )
+
+        }
+    }
+
+
     return (
         <SafeAreaView className={'flex-1 mb-0'}>
             <BackButton />
@@ -167,23 +197,12 @@ export default function Tab() {
                     </Card>
                 </View>
                 <View className={'mx-5 mt-5 '}>
-                    <CustomButton>
-                        <Text className='text-white text-2xl font-semibold'>Confirm</Text>
-                    </CustomButton>
+                    {buttonStatus()}
                 </View>
-                <View className={'mx-5 mt-5 '}>
-                    <CustomButton>
-                        <Text className='text-white text-2xl font-semibold'>Confirm</Text>
-                    </CustomButton>
-                </View>
-
-
-
             </ScrollView>
         </SafeAreaView>
     );
 }
-
 const styles = StyleSheet.create({
 
     headerText :{

@@ -5,14 +5,8 @@ import {Stack} from "expo-router";
 
 export default function Tab() {
     return (
-        <View style={styles.container}>
-            <Stack.Screen
-                options={{
-                    header: () => <IndexHeader />
-                }}
-            />
-                <AgendaComponent />
-
+        <View>
+            <Text> Profile </Text>
         </View>
 
     );
