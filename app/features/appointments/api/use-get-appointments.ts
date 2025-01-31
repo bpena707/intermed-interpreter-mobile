@@ -2,10 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Appointment } from '@/types/apiTypes';
 import {useAuth, useUser} from "@clerk/clerk-expo";
 
-
-
 export const useGetAppointments = () => {
-
     const { getToken, userId } = useAuth()
     const { user } = useUser()
     //define the query

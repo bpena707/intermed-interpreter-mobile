@@ -8,9 +8,6 @@ import {formatDataForAgenda} from "@/lib/utils";
 import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import { format, parse } from 'date-fns';
 import {Link, router} from "expo-router";
-import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
-import {bgBlue} from "colorette";
-import {hairlineWidth} from "nativewind";
 
 const AgendaComponent = () => {
     const { data: appointment, isLoading, isError } = useGetAppointments();
@@ -65,16 +62,15 @@ const AgendaComponent = () => {
 
         }
 
-
-
         return(
-            <Link
-                href={`/appointment/${appointment.id}`}
-                style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
-                asChild>
+            // <Link
+            //     href={`/appointment/${appointment.id}`}
+            //     style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
+            //     asChild>
                 <TouchableOpacity
+                    style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
                     className='flex-row justify-between items-center '
-
+                    onPress={() => router.push(`/appointment/${appointment.id}`)}
                 >
                     <View className='justify-center gap-y-1'>
                         <Text className='capitalize' >{appointment.patient} {appointment.patientLastName}</Text>
@@ -86,7 +82,7 @@ const AgendaComponent = () => {
                         <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />
                     </View>
                 </TouchableOpacity>
-            </Link>
+            // </Link>
         )
     }
 

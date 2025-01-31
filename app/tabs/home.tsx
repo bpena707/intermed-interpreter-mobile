@@ -4,8 +4,6 @@ import IndexHeader from "@/app/features/appointments/components/indexHeader";
 import {Stack, useLocalSearchParams} from "expo-router";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 
-
-
 export default function Tab() {
 
 

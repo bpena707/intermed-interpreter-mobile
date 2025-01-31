@@ -2,10 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import {Patient} from "@/types/apiTypes";
 import {useAuth} from "@clerk/clerk-expo";
 
-
 export const useGetIndividualPatient = (id?: string) => {
     const { getToken, userId } = useAuth()
-
     //define the query
     const query = useQuery<Patient>({
 
@@ -32,4 +30,5 @@ export const useGetIndividualPatient = (id?: string) => {
         }
     })
     return query
+
 }

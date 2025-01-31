@@ -3,7 +3,6 @@ import {
     Text,
     StyleSheet,
     SafeAreaView,
-    Button,
     ActivityIndicator,
     ScrollView,
     RefreshControl,
@@ -18,26 +17,28 @@ import {FontAwesome6} from "@expo/vector-icons";
 import CustomButton from "@/app/components/ui/CustomButton";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {useCallback, useState} from "react";
-import { Facility } from "@/types/apiTypes";
 import {format, parse} from "date-fns";
 import {formatPhoneNumber} from "@/lib/utils";
-import {NavigationContainer} from "@react-navigation/native";
 import {BackButton} from "@/app/components/ui/back-button";
+import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
+import {z} from "zod";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
     // then extract data from the appointment object or if it is empty its null object
-    const { id } = useLocalSearchParams<{id: string}>()
+    const { id } = useLocalSearchParams<{id?: string}>()
+    console.log("Local Appointment ID:", id)
+
     // const appointmentQuery = useGetIndividualAppointment(id)
     // const appointment = appointmentQuery.data || []
     //
     // const facilityQuery = useGetIndividualFacility(appointment.facilityId)
     // const facility = facilityQuery.data || []
 
-    const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id)
+    const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id ?? '');
     const { data: facility , isLoading: isFacilityLoading, error: facilityError } = useGetIndividualFacility(appointment?.facilityId);
     const {data: patient, isLoading: isPatientLoading, error: patientError} = useGetIndividualPatient(appointment?.patientId)
+    const editMutation = useEditAppointment(id ?? '')
 
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
@@ -58,7 +59,7 @@ export default function Tab() {
     const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
     const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
-    const appointmentStatus = () =>{
+    const appointmentStatus = () => {
         switch (appointment?.status) {
             case 'Confirmed':
                 return (
@@ -87,34 +88,35 @@ export default function Tab() {
         }
     }
 
-    function appointmentStatusChange() {
+   const handleUpdateStatus = (newStatus: string) => {
+         editMutation.mutate({
+             ...appointment,
+           status: newStatus,
+         });
+   }
 
-    }
-
-    const buttonStatus = () => {
-        switch (appointment?.status){
+    const renderUpdateButton = () => {
+        switch (appointment?.status) {
             case 'Pending':
                 return (
-                    <CustomButton >
+                    <CustomButton variant='confirm' onPress={() => handleUpdateStatus('Confirmed')}>
                         <Text className='text-white text-2xl font-semibold'>Confirm</Text>
                     </CustomButton>
                 )
             case 'Confirmed':
-            return(
-                <View>
-                    <CustomButton>
-                        <Text>Close</Text>
-                    </CustomButton>
-                    <CustomButton variant='destructive'>
-                        <Text>Return</Text>
-                    </CustomButton>
-                </View>
-
+                return (
+                    <View>
+                        <CustomButton>
+                            <Text>Close</Text>
+                        </CustomButton>
+                        <CustomButton variant='destructive'>
+                            <Text>Return</Text>
+                        </CustomButton>
+                    </View>
                 )
-
         }
     }
-
+    console.log("Rendered appointment data:", appointment);
 
     return (
         <SafeAreaView className={'flex-1 mb-0'}>
@@ -183,11 +185,14 @@ export default function Tab() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
+
                             {appointment && facility ? (
                                 <View>
                                     <Text className='capitalize'>Facility: {facility.name} | Specialty: {facility.facilityType}</Text>
                                     <Text className='capitalize'>Facility Contact: {formatPhoneNumber(facility.phoneNumber)}</Text>
                                     <Text className='capitalize'>Appointment Type: {appointment.appointmentType}</Text>
+
+                                    <Text>ID: {appointment.id}</Text>
                                     <Text>Duration: {formattedStartTime} - {formattedEndTime}</Text>
                                 </View>
                             ) : (
@@ -197,7 +202,7 @@ export default function Tab() {
                     </Card>
                 </View>
                 <View className={'mx-5 mt-5 '}>
-                    {buttonStatus()}
+                    {renderUpdateButton()}
                 </View>
             </ScrollView>
         </SafeAreaView>
