@@ -105,12 +105,12 @@ export default function Tab() {
                 )
             case 'Confirmed':
                 return (
-                    <View>
+                    <View className='gap-y-2'>
                         <CustomButton>
-                            <Text>Close</Text>
+                            <Text className='text-white text-2xl font-semibold'>Close</Text>
                         </CustomButton>
                         <CustomButton variant='destructive'>
-                            <Text>Return</Text>
+                            <Text className='text-white text-2xl font-semibold'>Return</Text>
                         </CustomButton>
                     </View>
                 )
@@ -201,7 +201,7 @@ export default function Tab() {
                         </CardContent>
                     </Card>
                 </View>
-                <View className={'mx-5 mt-5 '}>
+                <View className={'mx-5 mt-1'}>
                     {renderUpdateButton()}
                 </View>
             </ScrollView>
