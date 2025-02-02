@@ -5,10 +5,7 @@ import {Navigator, Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import {ActivityIndicator, TouchableOpacity} from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import * as SecureStore from 'expo-secure-store'
-
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ClerkLoaded, ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import { Slot } from "expo-router";
@@ -109,46 +106,34 @@ const InitialLayout = () => {
                 options={{
                     headerShown: false
                 }}
-            >
-            </Stack.Screen>
+            />
             <Stack.Screen
                 name="appointment/[id]"
                 options={{
                     title: '',
                     headerTitle: 'Appointment',
                     headerShown: true,
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name={'close-outline'} size={24} color={'black'} />
-                        </TouchableOpacity>
-                    )
+                    // headerLeft: () => (
+                    //     <TouchableOpacity onPress={() => router.back()}>
+                    //         <Ionicons name={'close-outline'} size={24} color={'black'} />
+                    //     </TouchableOpacity>
+                    // )
                 }}
 
             />
             <Stack.Screen
-                name="(modals)/appointmentActions"
+                name="(modals)/appointmentCloseModal"
                 options={{
-                    headerTitle: 'Appointment Actions',
+                    headerShown: false,
                     presentation: 'transparentModal',
-                    animation: 'fade_from_bottom',
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name={'close-outline'} size={24} color={'black'} />
-                        </TouchableOpacity>
-                    )
+
                 }}
             />
             <Stack.Screen
                 name="(modals)/searchModal"
                 options={{
-                    headerTitle: 'Appointment Actions',
                     presentation: 'transparentModal',
-                    animation: 'fade_from_bottom',
-                    headerLeft: () =>(
-                        <TouchableOpacity onPress={() => router.back()}>
-                            <Ionicons name={'close-outline'} size={24} color={'black'} />
-                        </TouchableOpacity>
-                    )
+                    animation: 'fade',
                 }}
             />
         </Stack>

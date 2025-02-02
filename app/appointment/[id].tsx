@@ -6,7 +6,7 @@ import {
     ActivityIndicator,
     ScrollView,
     RefreshControl,
-    TouchableOpacity
+    TouchableOpacity, Pressable, Modal
 } from 'react-native';
 import {Link, router, Stack, useLocalSearchParams, useRouter} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
@@ -22,6 +22,7 @@ import {formatPhoneNumber} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
 import {z} from "zod";
+import {useState} from "react";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -40,6 +41,8 @@ export default function Tab() {
     const {data: patient, isLoading: isPatientLoading, error: patientError} = useGetIndividualPatient(appointment?.patientId)
     const editMutation = useEditAppointment(id ?? '')
 
+    //controls the state of the modal visibility set to false by default
+    const [modalVisible, setModalVisible] = useState(false);
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
@@ -88,6 +91,11 @@ export default function Tab() {
         }
     }
 
+    //toggles modal visibility
+    const toggleModalOpen = () => {
+        setModalVisible(true);
+    }
+
    const handleUpdateStatus = (newStatus: string) => {
          editMutation.mutate({
              ...appointment,
@@ -106,7 +114,7 @@ export default function Tab() {
             case 'Confirmed':
                 return (
                     <View className='gap-y-2'>
-                        <CustomButton>
+                        <CustomButton onPress={toggleModalOpen} >
                             <Text className='text-white text-2xl font-semibold'>Close</Text>
                         </CustomButton>
                         <CustomButton variant='destructive'>
@@ -130,6 +138,25 @@ export default function Tab() {
                 //     />
                 // }
             >
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => {
+                        // Alert.alert('Modal has been closed.');
+                        setModalVisible(!modalVisible);
+                    }}>
+                    <View >
+                        <View >
+                            <Text >Hello World!</Text>
+                            <Pressable
+
+                                onPress={() => setModalVisible(!modalVisible)}>
+                                <Text >Hide Modal</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
                 <View>
                     <Card className={'rounded-t-none'}>
                         <CardHeader className='pt-0 '>
@@ -202,6 +229,7 @@ export default function Tab() {
                     </Card>
                 </View>
                 <View className={'mx-5 mt-1'}>
+
                     {renderUpdateButton()}
                 </View>
             </ScrollView>
