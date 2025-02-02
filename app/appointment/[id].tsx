@@ -23,6 +23,7 @@ import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
 import {z} from "zod";
 import {useState} from "react";
+import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -128,6 +129,11 @@ export default function Tab() {
 
     return (
         <SafeAreaView className={'flex-1 mb-0'}>
+            <AppointmentCloseModal
+                id={id ?? ''}
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+            />
             <BackButton />
             <ScrollView
                 //TODO: Work on the pull to refresh function
@@ -138,25 +144,7 @@ export default function Tab() {
                 //     />
                 // }
             >
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                        // Alert.alert('Modal has been closed.');
-                        setModalVisible(!modalVisible);
-                    }}>
-                    <View >
-                        <View >
-                            <Text >Hello World!</Text>
-                            <Pressable
 
-                                onPress={() => setModalVisible(!modalVisible)}>
-                                <Text >Hide Modal</Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                </Modal>
                 <View>
                     <Card className={'rounded-t-none'}>
                         <CardHeader className='pt-0 '>
