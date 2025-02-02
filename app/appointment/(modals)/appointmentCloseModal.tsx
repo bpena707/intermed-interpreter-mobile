@@ -24,11 +24,12 @@ const AppointmentCloseModal = ({
     return (
         <Modal
             animationType="slide"
-            transparent={true}
+            presentationStyle={'pageSheet'}
+            transparent={false}
             visible={visible}
             onRequestClose={onClose}>
-            <View className='flex-1 items-center justify-center' >
-                <View  >
+            <View className='flex-1 items-center justify-center ' >
+                <View className='w-72 p-20 bg-[#606070] border rounded-2xl'  >
                     <Text >Hello World!</Text>
                     <CustomButton variant={'destructive'} onPress={onClose}>
                         <Text>Close</Text>
