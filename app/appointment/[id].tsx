@@ -104,6 +104,12 @@ export default function Tab() {
          });
    }
 
+   const handleCloseSubmit = () => {
+         // Handle the form submission here
+         // You can access the form data from the `data` parameter
+         console.log("Form submitted with data:");
+   }
+
     const renderUpdateButton = () => {
         switch (appointment?.status) {
             case 'Pending':
@@ -133,6 +139,16 @@ export default function Tab() {
                 id={id ?? ''}
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
+                onSubmit={handleCloseSubmit}
+                appointmentId={appointment?.id ?? ''}
+                patientId={appointment?.patientId ?? ''}
+                appointmentData={{
+                    endTime: appointment?.endTime,
+                    notes: appointment?.notes ?? '',
+                    date: appointment?.date
+                }}
+
+
             />
             <BackButton />
             <ScrollView
