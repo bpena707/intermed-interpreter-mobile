@@ -141,14 +141,15 @@ export default function Tab() {
                 onClose={() => setModalVisible(false)}
                 onSubmit={handleCloseSubmit}
                 appointmentId={appointment?.id ?? ''}
-                patientId={appointment?.patientId ?? ''}
                 appointmentData={{
                     endTime: appointment?.endTime,
+                    startTime: appointment?.startTime,
                     notes: appointment?.notes ?? '',
-                    date: appointment?.date
+                    date: appointment?.date,
+                    patientName: `${patient?.firstName} ${patient?.lastName}`,
+                    facilityName: facility?.name,
+                    facilityAddress: facility?.address,
                 }}
-
-
             />
             <BackButton />
             <ScrollView
@@ -233,7 +234,6 @@ export default function Tab() {
                     </Card>
                 </View>
                 <View className={'mx-5 mt-1'}>
-
                     {renderUpdateButton()}
                 </View>
             </ScrollView>

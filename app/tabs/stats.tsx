@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet, Switch} from 'react-native';
 import CustomButton from "@/app/components/ui/CustomButton";
 import { Card,
     CardHeader,
@@ -8,6 +8,9 @@ import { Card,
     CardFooter
 } from "@/app/components/ui/card";
 import Separator from "@/app/components/ui/separator";
+import {Input} from "@/app/components/ui/Input";
+import {CustomSwitch} from "@/app/components/ui/switch";
+import {TextArea} from "@/app/components/ui/text-area";
 
 
 export default function Tab() {
@@ -36,6 +39,16 @@ export default function Tab() {
             </Card>
 
             <Separator/>
+
+            <Input>
+
+            </Input>
+
+            <CustomSwitch value={true} onValueChange={() => {}} />
+
+            <TextArea />
+
+
 
 
 
