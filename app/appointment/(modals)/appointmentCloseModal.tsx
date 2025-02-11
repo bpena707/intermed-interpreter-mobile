@@ -1,18 +1,14 @@
-import {View, Text, StyleSheet, SafeAreaView, Platform, Pressable, Modal} from 'react-native';
-import {Link, router, useLocalSearchParams} from "expo-router";
-import {StatusBar} from "expo-status-bar";
-import {Card, CardContent, CardDescription, CardTitle} from "@/app/components/ui/card";
-import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
-import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
-import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
-import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
+import {Modal, Text, View} from 'react-native';
+import {Card, CardContent, CardDescription, CardFooter, CardTitle} from "@/app/components/ui/card";
 import CustomButton from "@/app/components/ui/CustomButton";
-import {z} from "zod";
-import { useForm, Controller } from "react-hook-form"
+import {date, z} from "zod";
+import {Controller, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/app/components/ui/Input";
 import {TextArea} from "@/app/components/ui/text-area";
 import {CustomSwitch} from "@/app/components/ui/switch";
+import {format, parse} from "date-fns";
+
 
 type Props = {
     id: string;
@@ -20,9 +16,11 @@ type Props = {
     onClose: () => void;
     onSubmit: (data: CloseAppointmentFormData) => void;
     appointmentId: string;
-
     appointmentData: {
         endTime?: string;
+        projectedEndTime?: string;
+        duration?: number;
+        projectedDuration?: string;
         notes?: string;
         date?: string;
         patientName?: string;
@@ -50,7 +48,6 @@ const AppointmentCloseModal = ({
     appointmentData,
     appointmentId
 }: Props) => {
-
     const {
         control,
         handleSubmit,
@@ -69,6 +66,14 @@ const AppointmentCloseModal = ({
         onClose()
     }
 
+    const timeStringStartTime = appointmentData.startTime;
+    const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
+    const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
+
+    const timeStringEndTime = appointmentData?.endTime;
+    const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
+    const formattedEndTime = format(parsedEndTime, "hh:mm a");
+
     return (
         <Modal
             animationType="slide"
@@ -86,22 +91,34 @@ const AppointmentCloseModal = ({
                         <Text className='text-xl font-bold text-center'>Appointment Details</Text>
                     </CardTitle>
                     <CardContent>
-                        <Text className='font-bold text-lg'>
+                        <Text className='font-bold  text-sm'>
+                            Date:
+                            <Text className='font-normal'> {appointmentData?.date
+                                ? format(appointmentData.date, 'cccccc, PPP')
+                                : 'N/A'
+                            }</Text>
+                        </Text>
+                        <Text className='font-bold text-sm'>
                             Patient:
                            <Text className='font-normal'> {appointmentData.patientName}</Text>
                         </Text>
-                        <Text className='font-bold text-lg'>
+                        <Text className='font-bold text-sm'>
                             Facility:
                             <Text className='font-normal'> {appointmentData.facilityName}</Text>
                         </Text>
-                        <Text className='font-bold  text-lg'>
-                            Date:
-                            <Text className='font-normal'> {appointmentData.date}</Text>
+                        <Text className='font-bold text-sm'>
+                            Projected Duration:
+                            <Text className='font-normal'> {appointmentData.projectedDuration}</Text>
                         </Text>
-                        <Text className='font-bold text-lg'>
+                        <Text className='font-bold text-sm'>
                             Start Time:
-                            <Text className='font-normal'> {appointmentData.startTime}</Text>
+                            <Text className='font-normal'> {formattedStartTime}</Text>
                         </Text>
+                        <Text className='font-bold text-sm'>
+                            Projected End Time:
+                            <Text className='font-normal'> {appointmentData.projectedEndTime}</Text>
+                        </Text>
+
                         <View className='flex flex-col gap-y-3'>
                             <View className='flex flex-col'>
                                 <Text className='font-bold text-lg'>End Time</Text>
@@ -155,14 +172,12 @@ const AppointmentCloseModal = ({
                             </View>
                         </View>
                     </CardContent>
+                    <CardFooter >
+                        <CustomButton variant={'default'} onPress={onClose}>
+                            <Text className='text-white text-2xl font-semibold'>Submit</Text>
+                        </CustomButton>
+                    </CardFooter>
                 </Card>
-                <View className='flex items-end'>
-                    <CustomButton variant={'default'} onPress={onClose}>
-                        <Text className='text-white text-2xl font-semibold'>Submit</Text>
-                    </CustomButton>
-                </View>
-
-                {/*</View>*/}
             </View>
         </Modal>
     );

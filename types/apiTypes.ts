@@ -27,6 +27,9 @@ export interface Appointment {
     notes: string | null;
     startTime: string;
     endTime: string;
+    projectedEndTime: string;
+    duration: number;
+    projectedDuration: string;
     appointmentType: string;
     status: string;
     facility: string;

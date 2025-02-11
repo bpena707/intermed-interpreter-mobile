@@ -1,19 +1,9 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    SafeAreaView,
-    ActivityIndicator,
-    ScrollView,
-    RefreshControl,
-    TouchableOpacity, Pressable, Modal
-} from 'react-native';
-import {Link, router, Stack, useLocalSearchParams, useRouter} from "expo-router";
+import {ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
 import Map from "@/app/components/map";
-import {FontAwesome6} from "@expo/vector-icons";
 import CustomButton from "@/app/components/ui/CustomButton";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -21,7 +11,6 @@ import {format, parse} from "date-fns";
 import {formatPhoneNumber} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
-import {z} from "zod";
 import {useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 
@@ -55,7 +44,6 @@ export default function Tab() {
     // },[])
 
     const timeStringStartTime = appointment?.startTime;
-    console.log("Start Time:", timeStringStartTime);
     const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
     const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
 
@@ -143,6 +131,9 @@ export default function Tab() {
                 appointmentId={appointment?.id ?? ''}
                 appointmentData={{
                     endTime: appointment?.endTime,
+                    projectedEndTime: appointment?.projectedEndTime,
+                    duration: appointment?.duration,
+                    projectedDuration: appointment?.projectedDuration,
                     startTime: appointment?.startTime,
                     notes: appointment?.notes ?? '',
                     date: appointment?.date,
