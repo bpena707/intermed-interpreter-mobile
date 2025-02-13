@@ -165,7 +165,7 @@ export default function Tab() {
                         </CardHeader>
                         <CardContent className='justify-center items-center'>
                             <View style={{ height: 200, width: '100%' }}>
-                                <Map />
+                                {/*<Map />*/}
                             </View>
                         </CardContent>
                         <CardFooter>

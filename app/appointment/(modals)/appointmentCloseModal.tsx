@@ -1,4 +1,4 @@
-import {Modal, Text, View} from 'react-native';
+import {Modal, Pressable, Text, View} from 'react-native';
 import {Card, CardContent, CardDescription, CardFooter, CardTitle} from "@/app/components/ui/card";
 import CustomButton from "@/app/components/ui/CustomButton";
 import {date, z} from "zod";
@@ -8,6 +8,8 @@ import {Input} from "@/app/components/ui/Input";
 import {TextArea} from "@/app/components/ui/text-area";
 import {CustomSwitch} from "@/app/components/ui/switch";
 import {format, parse} from "date-fns";
+import TimePicker from "@/app/components/ui/time-picker";
+import {AntDesign} from "@expo/vector-icons";
 
 
 type Props = {
@@ -70,7 +72,7 @@ const AppointmentCloseModal = ({
     const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
     const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
 
-    const timeStringEndTime = appointmentData?.endTime;
+    const timeStringEndTime = appointmentData?.projectedEndTime;
     const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
     const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
@@ -80,8 +82,16 @@ const AppointmentCloseModal = ({
             presentationStyle={'pageSheet'}
             transparent={false}
             visible={visible}
-            onRequestClose={onClose}>
+            onRequestClose={onClose}
+
+        >
             <View className='flex-1 p-5 ' >
+                <View className='flex flex-row '>
+                    <Pressable onPress={onClose} className='top-0' >
+                        <AntDesign name="closecircleo" size={20} color="gray" />
+                    </Pressable>
+                    <View className='w-40 h-1.5 top-0 rounded-2xl bg-gray-300 mb-3 ml-20'></View>
+                </View>
                 {/*<View className='p-20 bg-[#606070] border rounded-2xl'  >*/}
                 <View className='items-center'>
                     <Text className='text-3xl font-extrabold mb-5'>Close Appointment</Text>
@@ -116,7 +126,7 @@ const AppointmentCloseModal = ({
                         </Text>
                         <Text className='font-bold text-sm'>
                             Projected End Time:
-                            <Text className='font-normal'> {appointmentData.projectedEndTime}</Text>
+                            <Text className='font-normal'> {formattedEndTime}</Text>
                         </Text>
 
                         <View className='flex flex-col gap-y-3'>
@@ -126,11 +136,16 @@ const AppointmentCloseModal = ({
                                     name='endTime'
                                     control={control}
                                     render={({field: {onChange, value}}) => (
-                                        <Input
-                                            onChangeText={onChange}
+                                        // <Input
+                                        //     onChangeText={onChange}
+                                        //     value={value}
+                                        //     selectTextOnFocus
+                                        // ></Input>
+                                        <TimePicker
                                             value={value}
-                                            selectTextOnFocus
-                                        ></Input>
+                                            onChange={onChange}
+                                        />
+
                                     )}
                                 />
                             </View>
