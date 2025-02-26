@@ -28,7 +28,6 @@ export interface Appointment {
     startTime: string;
     endTime: string;
     projectedEndTime: string;
-    duration: number;
     projectedDuration: string;
     appointmentType: string;
     status: string;

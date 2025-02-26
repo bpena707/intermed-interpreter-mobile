@@ -51,11 +51,12 @@ export type UpdateAppointmentType = {
     endTime?: string; // Format: 'HH:MM:SS' or null
     notes?: string | null;
     appointmentType?: string | null;
+    projectedDuration?: string | null;
     status?: string | null; // e.g., 'Pending', 'Confirmed', etc.
     patientId?: string | null;
     facilityId?: string | null;
     interpreterId?: string | null;
-    duration?: number;
+
 };
 
 // Define the expected response type
@@ -65,12 +66,12 @@ export type AppointmentResponseType = {
     startTime: string;
     endTime: string | null;
     notes: string | null;
+    projectedDuration: string | null;
     appointmentType: string | null;
     status: string | null;
     patientId: string | null;
     facilityId: string | null;
     interpreterId: string | null;
-    duration: number;
 };
 
 const handleError = (error: AxiosError) => {

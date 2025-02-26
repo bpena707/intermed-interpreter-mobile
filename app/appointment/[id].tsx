@@ -117,12 +117,18 @@ export default function Tab() {
                         </CustomButton>
                     </View>
                 )
+            case 'Closed':
+                return (
+                    <View>
+                        <Text>Appointment is closed</Text>
+                    </View>
+                )
         }
     }
     console.log("Rendered appointment data:", appointment);
 
     return (
-        <SafeAreaView className={'flex-1 mb-0'}>
+        <SafeAreaView className={'flex-1 mb-0 bg-gray-200'}>
             <AppointmentCloseModal
                 id={id ?? ''}
                 visible={modalVisible}
@@ -132,7 +138,6 @@ export default function Tab() {
                 appointmentData={{
                     endTime: appointment?.endTime,
                     projectedEndTime: appointment?.projectedEndTime,
-                    duration: appointment?.duration,
                     projectedDuration: appointment?.projectedDuration,
                     startTime: appointment?.startTime,
                     notes: appointment?.notes ?? '',
@@ -144,6 +149,7 @@ export default function Tab() {
             />
             <BackButton />
             <ScrollView
+                className={''}
                 //TODO: Work on the pull to refresh function
                 // refreshControl={
                 //     <RefreshControl
@@ -153,9 +159,9 @@ export default function Tab() {
                 // }
             >
 
-                <View>
-                    <Card className={'rounded-t-none'}>
-                        <CardHeader className='pt-0 '>
+                <View className=' '>
+                    <Card className={'rounded-none rounded-t-lg'}>
+                        <CardHeader className='pl-1'>
                             <CardTitle className='flex-row justify-between mb-2' >
                                 <Text>Certified Medical</Text>
                             </CardTitle>
@@ -163,9 +169,9 @@ export default function Tab() {
                                 <Text>{appointmentStatus()}</Text>
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className='justify-center items-center'>
-                            <View style={{ height: 200, width: '100%' }}>
-                                {/*<Map />*/}
+                        <CardContent className='justify-center items-center pl-0 pr-0'>
+                            <View className={'h-52 w-full'}>
+                                <Map />
                             </View>
                         </CardContent>
                         <CardFooter>
@@ -180,8 +186,8 @@ export default function Tab() {
                         </CardFooter>
                     </Card>
                 </View>
-                <View className='mt-2'>
-                    <Card>
+                <View className='mt-1'>
+                    <Card className={'rounded-none'}>
                         <CardHeader >
                             <CardTitle>
                                 <Text>Patient</Text>
@@ -200,8 +206,8 @@ export default function Tab() {
                         </CardContent>
                     </Card>
                 </View>
-                <View className='mt-2'>
-                    <Card>
+                <View className='mt-1'>
+                    <Card className={'rounded-none'}>
                         <CardHeader >
                             <CardTitle>
                                 <Text>Appointment Details</Text>
@@ -214,8 +220,6 @@ export default function Tab() {
                                     <Text className='capitalize'>Facility: {facility.name} | Specialty: {facility.facilityType}</Text>
                                     <Text className='capitalize'>Facility Contact: {formatPhoneNumber(facility.phoneNumber)}</Text>
                                     <Text className='capitalize'>Appointment Type: {appointment.appointmentType}</Text>
-
-                                    <Text>ID: {appointment.id}</Text>
                                     <Text>Duration: {formattedStartTime} - {formattedEndTime}</Text>
                                 </View>
                             ) : (
@@ -224,7 +228,7 @@ export default function Tab() {
                         </CardContent>
                     </Card>
                 </View>
-                <View className={'mx-5 mt-1'}>
+                <View className={'mx-5 mt-3'}>
                     {renderUpdateButton()}
                 </View>
             </ScrollView>

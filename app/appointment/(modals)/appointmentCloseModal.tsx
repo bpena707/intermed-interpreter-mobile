@@ -1,5 +1,5 @@
 import {Modal, Pressable, Text, View} from 'react-native';
-import {Card, CardContent, CardDescription, CardFooter, CardTitle} from "@/app/components/ui/card";
+import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import CustomButton from "@/app/components/ui/CustomButton";
 import {date, z} from "zod";
 import {Controller, useForm} from "react-hook-form"
@@ -9,7 +9,8 @@ import {TextArea} from "@/app/components/ui/text-area";
 import {CustomSwitch} from "@/app/components/ui/switch";
 import {format, parse} from "date-fns";
 import TimePicker from "@/app/components/ui/time-picker";
-import {AntDesign} from "@expo/vector-icons";
+import {AntDesign, MaterialCommunityIcons} from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 
 type Props = {
@@ -21,7 +22,6 @@ type Props = {
     appointmentData: {
         endTime?: string;
         projectedEndTime?: string;
-        duration?: number;
         projectedDuration?: string;
         notes?: string;
         date?: string;
@@ -72,9 +72,9 @@ const AppointmentCloseModal = ({
     const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
     const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
 
-    const timeStringEndTime = appointmentData?.projectedEndTime;
-    const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
-    const formattedEndTime = format(parsedEndTime, "hh:mm a");
+    // const timeStringEndTime = appointmentData?.projectedEndTime;
+    // const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
+    // const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
     return (
         <Modal
@@ -83,23 +83,24 @@ const AppointmentCloseModal = ({
             transparent={false}
             visible={visible}
             onRequestClose={onClose}
-
         >
-            <View className='flex-1 p-5 ' >
-                <View className='flex flex-row '>
-                    <Pressable onPress={onClose} className='top-0' >
-                        <AntDesign name="closecircleo" size={20} color="gray" />
+            <View className='flex-1 '>
+                <View className='flex flex-row bg-gray-200 w-full h-12'>
+                    <View className={'flex-1 items-center justify-center'}>
+                        <Text className='text-black text-lg font-semibold text-center justify-center'>Close Appointment</Text>
+                    </View>
+                    <Pressable onPress={onClose} className='justify-center items-center right-2' >
+                        <Ionicons name="close-circle" size={26} color="white" />
                     </Pressable>
-                    <View className='w-40 h-1.5 top-0 rounded-2xl bg-gray-300 mb-3 ml-20'></View>
                 </View>
                 {/*<View className='p-20 bg-[#606070] border rounded-2xl'  >*/}
-                <View className='items-center'>
-                    <Text className='text-3xl font-extrabold mb-5'>Close Appointment</Text>
-                </View>
+
                 <Card>
-                    <CardTitle className='mb-2'>
-                        <Text className='text-xl font-bold text-center'>Appointment Details</Text>
-                    </CardTitle>
+                    <CardHeader>
+                        <CardTitle>
+                            <Text className='text-xl font-bold'>Appointment Details</Text>
+                        </CardTitle>
+                    </CardHeader>
                     <CardContent>
                         <Text className='font-bold  text-sm'>
                             Date:
@@ -126,23 +127,16 @@ const AppointmentCloseModal = ({
                         </Text>
                         <Text className='font-bold text-sm'>
                             Projected End Time:
-                            <Text className='font-normal'> {formattedEndTime}</Text>
+                            <Text className='font-normal'> {appointmentData.projectedEndTime}</Text>
                         </Text>
-
                         <View className='flex flex-col gap-y-3'>
                             <View className='flex flex-col'>
                                 <Text className='font-bold text-lg'>End Time</Text>
                                 <Controller
                                     name='endTime'
                                     control={control}
-                                    render={({field: {onChange, value}}) => (
-                                        // <Input
-                                        //     onChangeText={onChange}
-                                        //     value={value}
-                                        //     selectTextOnFocus
-                                        // ></Input>
+                                    render={({field: {onChange}}) => (
                                         <TimePicker
-                                            value={value}
                                             onChange={onChange}
                                         />
 
@@ -188,7 +182,7 @@ const AppointmentCloseModal = ({
                         </View>
                     </CardContent>
                     <CardFooter >
-                        <CustomButton variant={'default'} onPress={onClose}>
+                        <CustomButton variant={'default'} onPress={handleSubmit(handleFormSubmit)}>
                             <Text className='text-white text-2xl font-semibold'>Submit</Text>
                         </CustomButton>
                     </CardFooter>

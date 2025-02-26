@@ -4,15 +4,14 @@ import CustomButton from "@/app/components/ui/CustomButton";
 import DateTimePicker from "react-native-modal-datetime-picker";
 
 interface TimePickerProps {
-    value: string;
     onChange: (time: Date) => void;
 }
 
 const TimePicker = ({
-    value,
     onChange,
 }: TimePickerProps) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [timeLabel, setTimeLabel] = useState('Select a time');
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -24,6 +23,9 @@ const TimePicker = ({
 
     const handleConfirm = (selectedTime: Date) => {
         onChange(selectedTime)
+        setTimeLabel(selectedTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}))
+        hideDatePicker()
+        console.log('A time has been picked: ', selectedTime);
     }
 
     return (
@@ -33,7 +35,7 @@ const TimePicker = ({
                 onPress={showDatePicker}
             >
                 <Text className='text-white text-2xl font-semibold'>
-                    Select a time
+                    {timeLabel}
                 </Text>
                 <DateTimePicker
                     isVisible={isDatePickerVisible}
