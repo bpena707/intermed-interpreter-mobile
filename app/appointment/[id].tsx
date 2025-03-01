@@ -34,6 +34,7 @@ export default function Tab() {
 
     //controls the state of the modal visibility set to false by default
     const [modalVisible, setModalVisible] = useState(false);
+    const [followUpModalVisible, setFollowUpModalVisible] = useState(false);
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
@@ -97,11 +98,14 @@ export default function Tab() {
         console.log("Form submitted with data:", data);
         editMutation.mutate({
             ...appointment,         // keep other appointment fields
-            endTime: data.endTime as string,   // update with the new end time from the form casted as string for zod useEditAppointment hook 
+            endTime: data.endTime as string,   // update with the new end time from the form casted as string for zod useEditAppointment hook
             notes: data.notes,       // update notes
             status: data.status,     // should be "Closed"
             // optionally, if you need followUp flag, include it as well:
         });
+        if (data.followUp) {
+
+        }
     };
 
 
