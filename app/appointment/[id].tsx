@@ -14,6 +14,7 @@ import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appoi
 import {useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
+import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -34,7 +35,8 @@ export default function Tab() {
 
     //controls the state of the modal visibility set to false by default
     const [modalVisible, setModalVisible] = useState(false);
-    const [followUpModalVisible, setFollowUpModalVisible] = useState(false);
+    //TODO: Change back Follow up modal visibility to false
+    const [followUpModalVisible, setFollowUpModalVisible] = useState(true);
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
@@ -104,10 +106,9 @@ export default function Tab() {
             // optionally, if you need followUp flag, include it as well:
         });
         if (data.followUp) {
-
+            setFollowUpModalVisible(true);
         }
     };
-
 
     const renderUpdateButton = () => {
         switch (appointment?.status) {
@@ -156,6 +157,24 @@ export default function Tab() {
                     patientName: `${patient?.firstName} ${patient?.lastName}`,
                     facilityName: facility?.name,
                     facilityAddress: facility?.address,
+                }}
+            />
+            <FollowUpModal
+                id={id ?? ''}
+                visible={followUpModalVisible}
+                onClose={() => setFollowUpModalVisible(false)}
+                onSubmit={() => console.log("Follow up submitted")}
+                appointmentId={appointment?.id ?? ''}
+                appointmentData={{
+                    projectedEndTime: appointment?.projectedEndTime,
+                    projectedDuration: appointment?.projectedDuration,
+                    notes: appointment?.notes,
+                    date: appointment?.date,
+                    patientName: `${patient?.firstName} ${patient?.lastName}`,
+                    facilityName: facility?.name,
+                    facilityAddress: facility?.address,
+                    startTime: appointment?.startTime,
+                    endTime: appointment?.endTime,
                 }}
             />
             <BackButton />
