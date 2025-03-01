@@ -34,21 +34,28 @@ type Props = {
 
 //zod schema for only for editable fields
 const closeAppointmentSchema = z.object({
-    endTime: z.string().min(1, {message: 'End time is required'}),
+    endTime: z.preprocess((arg) => {
+        if (arg instanceof Date) return arg;
+        if (typeof arg === "string") return new Date(arg);
+        return arg;
+    }, z.date()).transform((date: Date) => {
+        const hh = String(date.getHours()).padStart(2, "0");
+        const mm = String(date.getMinutes()).padStart(2, "0");
+        const ss = String(date.getSeconds()).padStart(2, "0");
+        return `${hh}:${mm}:${ss}`;
+    }),
     notes: z.string().optional(),
     followUp: z.boolean(),
     status: z.literal('Closed') //literal is fixed value closed to change appointment status to close
 })
 
-type CloseAppointmentFormData = z.input<typeof closeAppointmentSchema>
+export type CloseAppointmentFormData = z.input<typeof closeAppointmentSchema>
 
 const AppointmentCloseModal = ({
-    id,
     visible,
     onClose,
     onSubmit,
     appointmentData,
-    appointmentId
 }: Props) => {
     const {
         control,

@@ -1,5 +1,5 @@
 import {ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {useLocalSearchParams} from "expo-router";
+import {router, useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
@@ -13,6 +13,7 @@ import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
 import {useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
+import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -92,11 +93,17 @@ export default function Tab() {
          });
    }
 
-   const handleCloseSubmit = () => {
-         // Handle the form submission here
-         // You can access the form data from the `data` parameter
-         console.log("Form submitted with data:");
-   }
+    const handleCloseSubmit = (data: CloseAppointmentFormData) => {
+        console.log("Form submitted with data:", data);
+        editMutation.mutate({
+            ...appointment,         // keep other appointment fields
+            endTime: data.endTime as string,   // update with the new end time from the form casted as string for zod useEditAppointment hook 
+            notes: data.notes,       // update notes
+            status: data.status,     // should be "Closed"
+            // optionally, if you need followUp flag, include it as well:
+        });
+    };
+
 
     const renderUpdateButton = () => {
         switch (appointment?.status) {

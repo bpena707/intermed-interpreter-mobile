@@ -3,6 +3,7 @@ import axios, {AxiosError} from "axios";
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import Toast from "react-native-toast-message";
 import {param} from "ts-interface-checker";
+import {router} from "expo-router";
 
 //types are added to define the type of object that will be requested and returned
 // type AppointmentResponseType = {
@@ -129,7 +130,6 @@ export const useEditAppointment = (id: string) => {
                             Authorization: `Bearer ${await getToken()}`,
                             'Content-Type': 'application/json',
                         },
-
                     }
                 )
                 return await response.data
@@ -147,7 +147,6 @@ export const useEditAppointment = (id: string) => {
                 }
                 throw error;
             }
-
             },
 
         onSuccess: () => {
