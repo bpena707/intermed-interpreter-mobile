@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet, Switch} from 'react-native';
-import CustomButton from "@/app/components/ui/CustomButton";
+import CustomButton from "@/app/components/ui/custom-button";
 import { Card,
     CardHeader,
     CardTitle,
@@ -8,7 +8,7 @@ import { Card,
     CardFooter
 } from "@/app/components/ui/card";
 import Separator from "@/app/components/ui/separator";
-import {Input} from "@/app/components/ui/Input";
+import {Input} from "@/app/components/ui/input";
 import {CustomSwitch} from "@/app/components/ui/switch";
 import {TextArea} from "@/app/components/ui/text-area";
 

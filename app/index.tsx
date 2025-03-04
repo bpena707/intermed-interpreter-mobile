@@ -2,9 +2,9 @@ import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp} from '@cle
 import {Link, router, useLocalSearchParams, useRouter} from 'expo-router'
 import {Button, SafeAreaView, Text, TextInput, View} from 'react-native'
 import React, {useState} from "react";
-import {Input} from "@/app/components/ui/Input";
+import {Input} from "@/app/components/ui/input";
 import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
-import CustomButton from "@/app/components/ui/CustomButton";
+import CustomButton from "@/app/components/ui/custom-button";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
 import 'react-native-get-random-values';

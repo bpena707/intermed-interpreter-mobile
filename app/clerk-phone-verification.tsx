@@ -1,9 +1,9 @@
 import { useUser } from "@clerk/clerk-expo";
 import {useState} from "react";
-import CustomButton from "@/app/components/ui/CustomButton";
+import CustomButton from "@/app/components/ui/custom-button";
 import {Text, TextInput, View} from "react-native";
 import * as React from "react";
-import {Input} from "@/app/components/ui/Input";
+import {Input} from "@/app/components/ui/input";
 
 interface ClerkPhoneVerificationProps {
     onContinue: () => void

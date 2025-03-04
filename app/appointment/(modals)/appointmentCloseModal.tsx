@@ -1,10 +1,10 @@
-import {Modal, Pressable, Text, View} from 'react-native';
+import {Modal, Pressable, SafeAreaView, Text, View} from 'react-native';
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
-import CustomButton from "@/app/components/ui/CustomButton";
+import CustomButton from "@/app/components/ui/custom-button";
 import {date, z} from "zod";
 import {Controller, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/app/components/ui/Input";
+import {Input} from "@/app/components/ui/input";
 import {TextArea} from "@/app/components/ui/text-area";
 import {CustomSwitch} from "@/app/components/ui/switch";
 import {format, parse} from "date-fns";
@@ -91,7 +91,7 @@ const AppointmentCloseModal = ({
             visible={visible}
             onRequestClose={onClose}
         >
-            <View className='flex-1 '>
+            <SafeAreaView className='flex-1 '>
                 <View className='flex flex-row bg-gray-200 w-full h-12'>
                     <View className={'flex-1 items-center justify-center'}>
                         <Text className='text-black text-lg font-semibold text-center justify-center'>Close Appointment</Text>
@@ -188,13 +188,13 @@ const AppointmentCloseModal = ({
                             </View>
                         </View>
                     </CardContent>
-                    <CardFooter >
-                        <CustomButton variant={'default'} onPress={handleSubmit(handleFormSubmit)}>
-                            <Text className='text-white text-2xl font-semibold'>Submit</Text>
-                        </CustomButton>
-                    </CardFooter>
                 </Card>
-            </View>
+                <View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
+                    <CustomButton variant={'default'} onPress={handleSubmit(handleFormSubmit)}>
+                        <Text className='text-white text-2xl font-semibold'>Submit</Text>
+                    </CustomButton>
+                </View>
+            </SafeAreaView>
         </Modal>
     );
 }

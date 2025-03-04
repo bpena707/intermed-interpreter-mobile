@@ -5,8 +5,8 @@ import * as z from "zod"
 import {useCreateInterpreter} from "@/app/features/profile/api/use-create-interpreter";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/app/components/ui/Input";
-import CustomButton from "@/app/components/ui/CustomButton";
+import {Input} from "@/app/components/ui/input";
+import CustomButton from "@/app/components/ui/custom-button";
 import Toast from "react-native-toast-message";
 
 

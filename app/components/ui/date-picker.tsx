@@ -3,15 +3,15 @@ import {Text, View} from "react-native";
 import CustomButton from "@/app/components/ui/custom-button";
 import DateTimePicker from "react-native-modal-datetime-picker";
 
-interface TimePickerProps {
-    onChange: (time: Date) => void;
+interface DatePickerProps {
+    onChange: (date: Date) => void;
 }
 
-const TimePicker = ({
-    onChange,
-}: TimePickerProps) => {
+const DatePicker = ({
+onChange,
+}: DatePickerProps) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [timeLabel, setTimeLabel] = useState('Select a time');
+    const [dateLabel, setDateLabel] = useState('Select a date');
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -21,26 +21,26 @@ const TimePicker = ({
         setDatePickerVisibility(false);
     }
 
-    const handleConfirm = (selectedTime: Date) => {
-        onChange(selectedTime)
-        setTimeLabel(selectedTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}))
+    const handleConfirm = (selectedDate: Date) => {
+        onChange(selectedDate)
+        setDateLabel(selectedDate.toLocaleString([], {dateStyle: 'short'}))
         hideDatePicker()
-        console.log('A time has been picked: ', selectedTime);
+        console.log('A date has been picked: ', selectedDate);
     }
 
     return (
         <View>
             <CustomButton
+                className={'h-12 rounded-lg'}
                 variant='dark'
                 onPress={showDatePicker}
-                className={'h-12 rounded-lg'}
             >
                 <Text className='text-white text-2xl font-semibold'>
-                    {timeLabel}
+                    {dateLabel}
                 </Text>
                 <DateTimePicker
                     isVisible={isDatePickerVisible}
-                    mode={"time"}
+                    mode={"date"}
                     onConfirm={handleConfirm}
                     onCancel={hideDatePicker}
                 />
@@ -50,4 +50,4 @@ const TimePicker = ({
     )
 }
 
-export default TimePicker
+export default DatePicker

@@ -3,7 +3,7 @@ import {Link, Stack} from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import CustomButton from "@/app/components/ui/CustomButton";
+import CustomButton from "@/app/components/ui/custom-button";
 import {useClerk} from "@clerk/clerk-expo";
 
 const IndexHeader = () => {

@@ -2,8 +2,8 @@ import * as React from 'react'
 import {TextInput, Button, View, SafeAreaView, Text} from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import {Link, Stack, useRouter} from 'expo-router'
-import {Input} from "@/app/components/ui/Input";
-import CustomButton from "@/app/components/ui/CustomButton";
+import {Input} from "@/app/components/ui/input";
+import CustomButton from "@/app/components/ui/custom-button";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
 

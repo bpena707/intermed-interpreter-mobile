@@ -4,7 +4,7 @@ import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-g
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
 import Map from "@/app/components/map";
-import CustomButton from "@/app/components/ui/CustomButton";
+import CustomButton from "@/app/components/ui/custom-button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {format, parse} from "date-fns";
@@ -36,7 +36,7 @@ export default function Tab() {
     //controls the state of the modal visibility set to false by default
     const [modalVisible, setModalVisible] = useState(false);
     //TODO: Change back Follow up modal visibility to false
-    const [followUpModalVisible, setFollowUpModalVisible] = useState(true);
+    const [followUpModalVisible, setFollowUpModalVisible] = useState(false);
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
@@ -120,7 +120,7 @@ export default function Tab() {
                 )
             case 'Confirmed':
                 return (
-                    <View className='gap-y-2'>
+                    <View className='flex flex-col gap-y-2'>
                         <CustomButton onPress={toggleModalOpen} >
                             <Text className='text-white text-2xl font-semibold'>Close</Text>
                         </CustomButton>
@@ -250,6 +250,7 @@ export default function Tab() {
                                     <Text className='capitalize'>Facility: {facility.name} | Specialty: {facility.facilityType}</Text>
                                     <Text className='capitalize'>Facility Contact: {formatPhoneNumber(facility.phoneNumber)}</Text>
                                     <Text className='capitalize'>Appointment Type: {appointment.appointmentType}</Text>
+                                    <Text>Projected Duration: {appointment.projectedDuration}</Text>
                                     <Text>Duration: {formattedStartTime} - {formattedEndTime}</Text>
                                 </View>
                             ) : (
@@ -258,10 +259,10 @@ export default function Tab() {
                         </CardContent>
                     </Card>
                 </View>
-                <View className={'mx-5 mt-3'}>
-                    {renderUpdateButton()}
-                </View>
             </ScrollView>
+            <View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
+                {renderUpdateButton()}
+            </View>
         </SafeAreaView>
     );
 }
