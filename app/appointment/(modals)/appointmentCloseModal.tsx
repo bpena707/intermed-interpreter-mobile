@@ -103,93 +103,109 @@ const AppointmentCloseModal = ({
                 {/*<View className='p-20 bg-[#606070] border rounded-2xl'  >*/}
 
                 <Card>
-                    <CardHeader>
+                    <CardHeader className={'flex items-center justify-center'}>
                         <CardTitle>
-                            <Text className='text-xl font-bold'>Appointment Details</Text>
+                            <Text className='text-xl font-bold'>Appointment Information</Text>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Text className='font-bold  text-sm'>
-                            Date:
-                            <Text className='font-normal'> {appointmentData?.date
-                                ? format(appointmentData.date, 'cccccc, PPP')
-                                : 'N/A'
-                            }</Text>
-                        </Text>
-                        <Text className='font-bold text-sm'>
-                            Patient:
-                           <Text className='font-normal'> {appointmentData.patientName}</Text>
-                        </Text>
-                        <Text className='font-bold text-sm'>
-                            Facility:
-                            <Text className='font-normal'> {appointmentData.facilityName}</Text>
-                        </Text>
-                        <Text className='font-bold text-sm'>
-                            Projected Duration:
-                            <Text className='font-normal'> {appointmentData.projectedDuration}</Text>
-                        </Text>
-                        <Text className='font-bold text-sm'>
-                            Start Time:
-                            <Text className='font-normal'> {formattedStartTime}</Text>
-                        </Text>
-                        <Text className='font-bold text-sm'>
-                            Projected End Time:
-                            <Text className='font-normal'> {appointmentData.projectedEndTime}</Text>
-                        </Text>
-                        <View className='flex flex-col gap-y-3'>
-                            <View className='flex flex-col'>
-                                <Text className='font-bold text-lg'>End Time</Text>
-                                <Controller
-                                    name='endTime'
-                                    control={control}
-                                    render={({field: {onChange}}) => (
-                                        <TimePicker
-                                            onChange={onChange}
-                                        />
+                        <Card className={'bg-gray-200'}>
+                            <CardHeader className='flex items-center justify-center'>
+                                <Text className='text-lg font-bold'>Today's Appointment Details</Text>
+                            </CardHeader>
+                            <CardContent>
+                                <Text className='font-bold  text-sm'>
+                                    Date:
+                                    <Text className='font-normal'> {appointmentData?.date
+                                        ? format(appointmentData.date, 'cccccc, PPP')
+                                        : 'N/A'
+                                    }</Text>
+                                </Text>
+                                <Text className='font-bold text-sm'>
+                                    Patient:
+                                    <Text className='font-normal'> {appointmentData.patientName}</Text>
+                                </Text>
+                                <Text className='font-bold text-sm'>
+                                    Facility:
+                                    <Text className='font-normal'> {appointmentData.facilityName}</Text>
+                                </Text>
+                                <Text className='font-bold text-sm'>
+                                    Projected Duration:
+                                    <Text className='font-normal'> {appointmentData.projectedDuration}</Text>
+                                </Text>
+                                <Text className='font-bold text-sm'>
+                                    Start Time:
+                                    <Text className='font-normal'> {formattedStartTime}</Text>
+                                </Text>
+                                <Text className='font-bold text-sm'>
+                                    Projected End Time:
+                                    <Text className='font-normal'> {appointmentData.projectedEndTime}</Text>
+                                </Text>
+                            </CardContent>
+                        </Card>
+                        <Card className='bg-gray-200 mt-3'>
+                            <CardHeader className={'items-center justify-center'}>
+                                <CardTitle >
+                                    <Text className='text-lg font-bold '>Input Closing Details</Text>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                            <View className='flex flex-col gap-y-3'>
+                                <View className='flex flex-col'>
+                                    <Text className='font-bold text-lg'>End Time</Text>
+                                    <Controller
+                                        name='endTime'
+                                        control={control}
+                                        render={({field: {onChange}}) => (
+                                            <TimePicker
+                                                onChange={onChange}
+                                            />
 
-                                    )}
-                                />
+                                        )}
+                                    />
+                                </View>
+                                <View className='flex flex-col'>
+                                    <Text className='font-bold text-lg'>Notes</Text>
+                                    <Controller
+                                        name='notes'
+                                        control={control}
+                                        render={({field: {onChange, value}}) => (
+                                            <TextArea
+                                                onChangeText={onChange}
+                                                value={value}
+                                                selectTextOnFocus
+                                            />
+                                        )}
+                                    />
+                                </View>
+                                <View className='flex flex-row'>
+                                    <Card className='border border-gray-300 w-full p-2 h-28'>
+                                        <CardTitle>
+                                            <Text className='text-lg font-semibold'>Turn on for follow up</Text>
+                                        </CardTitle>
+                                        <CardDescription >
+                                            <Text>You will be directed to another screen to input data</Text>
+                                        </CardDescription>
+                                        <CardContent className='flex items-end'>
+                                            <Controller
+                                                name='followUp'
+                                                control={control}
+                                                render={({field: {onChange, value}}) => (
+                                                    <CustomSwitch
+                                                        value={value}
+                                                        onValueChange={onChange}
+                                                    />
+                                                )}
+                                            />
+                                        </CardContent>
+                                    </Card>
+                                </View>
                             </View>
-                            <View className='flex flex-col'>
-                                <Text className='font-bold text-lg'>Notes</Text>
-                                <Controller
-                                    name='notes'
-                                    control={control}
-                                    render={({field: {onChange, value}}) => (
-                                        <TextArea
-                                            onChangeText={onChange}
-                                            value={value}
-                                            selectTextOnFocus
-                                        />
-                                    )}
-                                />
-                            </View>
-                            <View className='flex flex-row'>
-                                <Card className='border border-gray-300 w-full p-2'>
-                                    <CardTitle>
-                                        <Text className='text-lg font-semibold'>Turn on for follow up</Text>
-                                    </CardTitle>
-                                    <CardDescription >
-                                        <Text>You will be directed to another screen to input data</Text>
-                                    </CardDescription>
-                                    <CardContent className='flex items-end'>
-                                        <Controller
-                                            name='followUp'
-                                            control={control}
-                                            render={({field: {onChange, value}}) => (
-                                                <CustomSwitch
-                                                    value={value}
-                                                    onValueChange={onChange}
-                                                />
-                                            )}
-                                        />
-                                    </CardContent>
-                                </Card>
-                            </View>
-                        </View>
+                            </CardContent>
+                        </Card>
                     </CardContent>
                 </Card>
-                <View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
+                <View className='absolute bottom-0 left-0 right-0 h-24 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
                     <CustomButton variant={'default'} onPress={handleSubmit(handleFormSubmit)}>
                         <Text className='text-white text-2xl font-semibold'>Submit</Text>
                     </CustomButton>
