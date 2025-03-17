@@ -146,7 +146,7 @@ const AppointmentCloseModal = ({
                         <Card className='bg-gray-200 mt-3'>
                             <CardHeader className={'items-center justify-center'}>
                                 <CardTitle >
-                                    <Text className='text-lg font-bold '>Input Closing Details</Text>
+                                    <Text className='text-lg font-bold '>Closing Details</Text>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>

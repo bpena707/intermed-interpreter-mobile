@@ -126,7 +126,7 @@ const FollowUpModal = ({
                                 </Text>
                             </CardContent>
                         </Card>
-                        <Card className={'bg-gray-200 mt-3'}>
+                        <Card className={'bg-gray-200 mt-3 z-50'}>
                             <CardHeader className={'flex items-center justify-center'}>
                                 <Text className='text-lg font-bold'>Follow Up Details</Text>
                             </CardHeader>

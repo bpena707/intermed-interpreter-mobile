@@ -101,6 +101,9 @@ export default function Tab() {
     const toggleModalOpen = () => {
         setModalVisible(true);
     }
+    const toggleFollwUpModalOpen = () => {
+        setFollowUpModalVisible(true);
+    }
 
    const handleUpdateStatus = (newStatus: string) => {
          editMutation.mutate({
@@ -127,7 +130,7 @@ export default function Tab() {
         switch (appointment?.status) {
             case 'Pending':
                 return (
-                    <CustomButton variant='confirm' onPress={() => handleUpdateStatus('Confirmed')}>
+                    <CustomButton className='mt-8' variant='confirm' onPress={() => handleUpdateStatus('Confirmed')}>
                         <Text className='text-white text-2xl font-semibold'>Confirm</Text>
                     </CustomButton>
                 )
@@ -144,8 +147,11 @@ export default function Tab() {
                 )
             case 'Closed':
                 return (
-                    <View>
-                        <Text>Appointment is closed</Text>
+                    <View className={'flex flex-col gap-y-2 justify-center items-center'}>
+                        <Text className={'text-lg font-bold'}>Appointment is closed</Text>
+                        <CustomButton variant='default' onPress={toggleModalOpen}>
+                            <Text className='text-white text-2xl font-semibold'>Follow Up</Text>
+                        </CustomButton>
                     </View>
                 )
         }
@@ -275,7 +281,6 @@ export default function Tab() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-
                             {appointment && facility ? (
                                 <View>
                                     <Text className='capitalize'>Facility: {facility.name} | Specialty: {facility.facilityType}</Text>
@@ -289,11 +294,14 @@ export default function Tab() {
                             )}
                         </CardContent>
                     </Card>
+                    <View className={'mx-5 mt-3'}>
+                        {renderUpdateButton()}
+                    </View>
                 </View>
             </ScrollView>
-            <View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
-                {renderUpdateButton()}
-            </View>
+            {/*<View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>*/}
+            {/*    */}
+            {/*</View>*/}
         </SafeAreaView>
     );
 }
