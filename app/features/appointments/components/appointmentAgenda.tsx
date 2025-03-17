@@ -76,7 +76,6 @@ const AgendaComponent = () => {
                         <Text className='capitalize' >{appointment.patient} {appointment.patientLastName}</Text>
                         <Text>{formattedStartTime}-{formattedEndTime}</Text>
                         <Text className='capitalize'>{appointment.facility}</Text>
-                        <Text>{appointment.facilityAddress} {appointment.facilityCity} {appointment.facilityState}</Text>
                     </View>
                     <View>
                         <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />

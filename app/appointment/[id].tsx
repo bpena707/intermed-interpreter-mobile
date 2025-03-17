@@ -1,20 +1,30 @@
-import {ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+    ActivityIndicator, Linking,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import {router, useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
-import Map from "@/app/components/map";
+
 import CustomButton from "@/app/components/ui/custom-button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {format, parse} from "date-fns";
-import {formatPhoneNumber} from "@/lib/utils";
+import {formatPhoneNumber, trimAddress} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
 import {useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
 import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
+import Map from "@/app/components/map";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -54,6 +64,9 @@ export default function Tab() {
     const timeStringEndTime = appointment?.endTime;
     const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
     const formattedEndTime = format(parsedEndTime, "hh:mm a");
+
+    const latitute = typeof facility?.latitude === 'number' ? facility?.latitude  : parseFloat(facility?.latitude!)
+    const longitude = typeof facility?.longitude === 'number' ? facility?.longitude : parseFloat(facility?.longitude!)
 
     const appointmentStatus = () => {
         switch (appointment?.status) {
@@ -139,6 +152,23 @@ export default function Tab() {
     }
     console.log("Rendered appointment data:", appointment);
 
+    //function that opens the users native maps app and navigates to the facility address
+    const openNavigation = (latitude: number, longitude: number ) => {
+        const url = Platform.select({
+            ios: `maps://app?daddr=${latitude},${longitude}`,
+            android: `google.navigation:q=${latitude},${longitude}`
+        })
+        if (url) {
+            Linking.canOpenURL(url).then(supported => {
+                if (supported) {
+                    Linking.openURL(url)
+                } else {
+                    console.log("Cannot open url")
+                }
+            })
+        }
+    }
+
     return (
         <SafeAreaView className={'flex-1 mb-0 bg-gray-200'}>
             <AppointmentCloseModal
@@ -188,7 +218,6 @@ export default function Tab() {
                 //     />
                 // }
             >
-
                 <View className=' '>
                     <Card className={'rounded-none rounded-t-lg'}>
                         <CardHeader className='pl-1'>
@@ -199,17 +228,19 @@ export default function Tab() {
                                 <Text>{appointmentStatus()}</Text>
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className='justify-center items-center pl-0 pr-0'>
-                            <View className={'h-52 w-full'}>
-                                <Map />
-                            </View>
-                        </CardContent>
+                        <Map
+                            latitude={latitute}
+                            longitude={longitude}
+                        />
                         <CardFooter>
                             {facility ? (
-                                <View className={'flex flex-row items-center justify-start'}>
-                                    <Ionicons name="location-outline" size={20} color="#f43f5e" />
-                                    <Text >{facility.address} {facility.city}, {facility.state} {facility.zipCode}</Text>
-                                </View>
+                                <TouchableOpacity onPress={() => openNavigation(latitute,longitude)} >
+                                    <View className={'flex flex-row items-center justify-start mt-3'}>
+                                        <Ionicons name="location-outline" size={20} color="#f43f5e" />
+                                        <Text className='underline text-blue-600' >{trimAddress(facility.address)}</Text>
+                                    </View>
+                                </TouchableOpacity>
+
                             ) : (
                                 <Text>Facility not found</Text>
                             )}

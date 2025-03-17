@@ -1,11 +1,41 @@
 import {View, Text} from "react-native";
-import Mapbox, {MapView} from "@rnmapbox/maps";
+import MapView, {Marker, Region} from "react-native-maps";
 
-const accessToken = 'pk.eyJ1IjoiYnBlbmE3MDciLCJhIjoiY2x6eGptYzlyMDgzcTJrcTQzMnk2OHhzaSJ9.V-Qok7ful3HvRhb2pCzm0A'
-Mapbox.setAccessToken(accessToken);
+interface MapProps {
+    latitude: number;
+    longitude: number;
+    longitudeDelta?: number;
+    latitudeDelta?: number;
+    markerText?: string;
+    height?: string | number;
+}
 
-export default function Map(){
+export default function Map({
+    latitude,
+    longitude,
+    longitudeDelta = 0.0421,
+    latitudeDelta = 0.0922,
+    markerText = 'Location',
+    height
+} : MapProps) {
+    const region: Region = {
+        latitude,
+        longitude,
+        latitudeDelta,
+        longitudeDelta
+    }
+
     return (
-        <MapView style={{ flex:1  }} />
+        <View className=''>
+            <MapView
+                style={{ width: '100%', height: 200 }}
+                region={region}
+                cameraZoomRange={{ minCenterCoordinateDistance: 600, maxCenterCoordinateDistance: 600 }}
+                >
+                <Marker
+                    coordinate={{latitude, longitude}}
+                />
+            </MapView>
+        </View>
     );
 }

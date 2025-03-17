@@ -46,10 +46,8 @@ export interface Facility {
     id: string;
     name: string;
     address: string;
-    city: string;
-    state: string;
-    county: string;
-    zipCode: string;
+    longitude: number;
+    latitude: number;
     email: string;
     phoneNumber: string;
     facilityType: string;
