@@ -6,7 +6,7 @@ import {useGetAppointments} from "@/app/features/appointments/api/use-get-appoin
 import Colors from "@/constants/Colors";
 import {formatDataForAgenda} from "@/lib/utils";
 import {AntDesign, FontAwesome6} from "@expo/vector-icons";
-import { format, parse } from 'date-fns';
+import {addHours, format, parse} from 'date-fns';
 import {Link, router} from "expo-router";
 
 const AgendaComponent = () => {
@@ -30,14 +30,14 @@ const AgendaComponent = () => {
     }
 
     const renderItem =(appointment: any) => {
-        //the start time and end time are in 24 hour format, so we need to convert them to 12 hour format useing date-fns parser and formatter
-        const timeStringStartTime = appointment.startTime;
-        const parsedStartTime = parse(timeStringStartTime, "HH:mm:ss", new Date());
-        const formattedStartTime = format(parsedStartTime, "hh:mm a");
+        //the start time and end time are in 24-hour format, so we need to convert them to 12-hour format useing date-fns parser and formatter
+        const timeStringStartTime = appointment.startTime
+        const parsedStartTime = parse(timeStringStartTime, "HH:mm:ss", new Date())
+        const formattedStartTime = format(parsedStartTime, "hh:mm a")
 
-        const timeStringEndTime = appointment.endTime;
-        const parsedEndTime = parse(timeStringEndTime, "HH:mm:ss", new Date());
-        const formattedEndTime = format(parsedEndTime, "hh:mm a");
+        const timeStringEndTime = appointment.endTime
+        const parsedEndTime = appointment.endTime ? parse(timeStringEndTime, "HH:mm:ss", new Date()) : addHours(parsedStartTime, 2)
+        const formattedEndTime = format(parsedEndTime, "hh:mm a")
 
         const appointmentType = () => {
             switch (appointment.appointmentType) {
@@ -62,6 +62,53 @@ const AgendaComponent = () => {
 
         }
 
+        const appointmentStatus = () => {
+            switch (appointment?.status) {
+                case 'Interpreter Requested':
+                    return (
+                        <View className='flex-row items-center bg-rose-500/20 rounded-2xl px-2.5'>
+                            <Text className='text-pink-700 font-semibold'>Interpreter Requested</Text>
+                        </View>
+                    )
+                case 'Confirmed':
+                    return (
+                        <View className='flex-row items-center bg-emerald-500/60  rounded-2xl px-2.5'>
+                            <Text className='font-semibold text-emerald-800 '>Confirmed</Text>
+                        </View>
+                    )
+                case "Pending Authorization":
+                    return (
+                        <View className='flex-row items-center bg-violet-500/60 rounded-2xl px-2.5'>
+                            <Text className='font-semibold text-violet-800'>Pending Authorization</Text>
+                        </View>
+                    )
+                case 'Pending Confirmation':
+                    return (
+                        <View className='flex-row items-center bg-yellow-500/60 rounded-2xl px-2.5'>
+                            <Text className='font-semibold text-yellow-800'>Pending Confirmation</Text>
+                        </View>
+                    )
+                case 'Closed':
+                    return (
+                        <View className='flex-row items-center bg-sky-500/60 rounded-2xl px-2.5'>
+                            <Text className='font-semibold text-blue-700 '>Closed</Text>
+                        </View>
+                    )
+                case 'Late CX':
+                    return (
+                        <View className='flex-row items-center bg-red-500/60 rounded-2xl px-2.5'>
+                            <Text className='font-semibold text-red-700'>Late CX</Text>
+                        </View>
+                    )
+                case 'No Show':
+                    return (
+                        <View className='flex-row items-center bg-red-700/70 rounded-2xl px-2.5'>
+                            <Text className='font-semibold text-red-900'>No Show</Text>
+                        </View>
+                    )
+            }
+        }
+
         return(
             // <Link
             //     href={`/appointment/${appointment.id}`}
@@ -76,6 +123,7 @@ const AgendaComponent = () => {
                         <Text className='capitalize' >{appointment.patient} {appointment.patientLastName}</Text>
                         <Text>{formattedStartTime}-{formattedEndTime}</Text>
                         <Text className='capitalize'>{appointment.facility}</Text>
+                        <Text>{appointmentStatus()}</Text>
                     </View>
                     <View>
                         <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />

@@ -146,7 +146,10 @@ const RootLayoutNav = () => {
             <ClerkLoaded>
                 <QueryClientProvider client={client}>
                     <InitialLayout />
-                    <Toast />
+                    <Toast
+                        position={"top"}
+                        topOffset={60}
+                    />
                 </QueryClientProvider>
             </ClerkLoaded>
         </ClerkProvider>

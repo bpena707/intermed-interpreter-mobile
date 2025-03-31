@@ -3,12 +3,11 @@ import {
     Platform,
     SafeAreaView,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View
 } from 'react-native';
-import {router, useLocalSearchParams} from "expo-router";
+import {useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
@@ -16,15 +15,18 @@ import {useGetIndividualPatient} from "@/app/features/patients/use-get-individua
 import CustomButton from "@/app/components/ui/custom-button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {format, parse} from "date-fns";
+import {addHours, format, parse} from "date-fns";
 import {formatPhoneNumber, trimAddress} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
 import {useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
+import {FollowUpFormData} from "@/app/appointment/(modals)/followUpModal";
 import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
 import Map from "@/app/components/map";
+import {useCreateFollowupRequest} from "@/app/features/followup-requests/api/use-create-followuprequest";
+import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
 
 export default function Tab() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -38,14 +40,15 @@ export default function Tab() {
     // const facilityQuery = useGetIndividualFacility(appointment.facilityId)
     // const facility = facilityQuery.data || []
 
+    //expose the appointment data, loading state and error state from tanstack query hook
     const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id ?? '');
     const { data: facility , isLoading: isFacilityLoading, error: facilityError } = useGetIndividualFacility(appointment?.facilityId);
     const {data: patient, isLoading: isPatientLoading, error: patientError} = useGetIndividualPatient(appointment?.patientId)
     const editMutation = useEditAppointment(id ?? '')
+    const createAppointmentMutation = useCreateAppointment()
 
-    //controls the state of the modal visibility set to false by default
+    //controls the state of the close and follow-up modals visibility set to false by default
     const [modalVisible, setModalVisible] = useState(false);
-    //TODO: Change back Follow up modal visibility to false
     const [followUpModalVisible, setFollowUpModalVisible] = useState(false);
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
@@ -57,41 +60,62 @@ export default function Tab() {
     //
     // },[])
 
+    //parse the time string from the appointment object and format it to readable time
     const timeStringStartTime = appointment?.startTime;
     const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
     const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
 
     const timeStringEndTime = appointment?.endTime;
-    const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
+    const parsedEndTime = appointment?.endTime ? parse(timeStringEndTime || '', "HH:mm:ss", new Date()) : addHours(parsedStartTime, 2)
     const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
+    //pulls the latitude and longitude from the facility and converts it to a number if it's not already a number
     const latitute = typeof facility?.latitude === 'number' ? facility?.latitude  : parseFloat(facility?.latitude!)
     const longitude = typeof facility?.longitude === 'number' ? facility?.longitude : parseFloat(facility?.longitude!)
 
+    //this function handles the badge color and text based on the appointment status.
     const appointmentStatus = () => {
         switch (appointment?.status) {
-            case 'Confirmed':
+            case 'Interpreter Requested':
                 return (
-                    <View className='flex-row items-center bg-[#10b981] rounded-2xl px-2.5 py-1'>
-                        <Text className='font-semibold'>Confirmed</Text>
+                    <View className='flex-row items-center bg-rose-500/20 rounded-2xl px-2.5 py-1'>
+                        <Text className='text-pink-700 font-semibold'>Interpreter Requested</Text>
                     </View>
                 )
-            case 'Pending':
+            case 'Confirmed':
                 return (
-                    <View className='flex-row items-center bg-[#fde047] rounded-2xl px-2.5 py-1'>
-                        <Text className='font-semibold'>Pending</Text>
+                    <View className='flex-row items-center bg-emerald-500/60 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold text text-emerald-800'>Confirmed</Text>
+                    </View>
+                )
+            case 'Pending Authorization':
+                return (
+                    <View className='flex-row items-center bg-violet-500/60 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold text-violet-800'>Pending Authorization</Text>
+                    </View>
+                )
+            case 'Pending Confirmation':
+                return (
+                    <View className='flex-row items-center bg-yellow-500/60 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold text-yellow-700'>Pending Confirmation</Text>
                     </View>
                 )
             case 'Closed':
                 return (
-                    <View className='flex-row items-center bg-[#0ea5e9] rounded-2xl px-2.5 py-1'>
-                        <Text className='font-semibold'>Closed</Text>
+                    <View className='flex-row items-center bg-blue-500/60 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold text-blue-800'>Closed</Text>
                     </View>
                 )
-            case 'Cancelled':
+            case 'Late CX':
                 return (
-                    <View className='flex-row items-center bg-red-500 rounded-2xl px-2.5 py-1'>
-                        <Text className='font-semibold'>Cancelled</Text>
+                    <View className='flex-row items-center bg-red-700/70 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold text-red-950'>Late CX</Text>
+                    </View>
+                )
+            case 'No Show':
+                return (
+                    <View className='flex-row items-center bg-red-700/70 rounded-2xl px-2.5 py-1'>
+                        <Text className='font-semibold text-red-950'>No Show</Text>
                     </View>
                 )
         }
@@ -101,7 +125,7 @@ export default function Tab() {
     const toggleModalOpen = () => {
         setModalVisible(true);
     }
-    const toggleFollwUpModalOpen = () => {
+    const toggleFollowUpModalOpen = () => {
         setFollowUpModalVisible(true);
     }
 
@@ -112,6 +136,7 @@ export default function Tab() {
          });
    }
 
+   //function that handles the form submission for the close appointment modal. triggers follow up if follow up is checked
     const handleCloseSubmit = (data: CloseAppointmentFormData) => {
         console.log("Form submitted with data:", data);
         editMutation.mutate({
@@ -119,16 +144,33 @@ export default function Tab() {
             endTime: data.endTime as string,   // update with the new end time from the form casted as string for zod useEditAppointment hook
             notes: data.notes,       // update notes
             status: data.status,     // should be "Closed"
-            // optionally, if you need followUp flag, include it as well:
         });
         if (data.followUp) {
             setFollowUpModalVisible(true);
         }
     };
 
+    const handleFollowUpSubmit = (data: FollowUpFormData) => {
+        console.log("Follow up submitted:", data);
+        createAppointmentMutation.mutate({
+            date: data.date,
+            startTime: data.startTime,
+            projectedDuration: data.projectedDuration,
+            notes: data.notes,
+            appointmentType: data.appointmentType,
+            status: 'Interpreter Requested',
+            patientId: appointment?.patientId ?? '',
+            facilityId: data.facilityId || appointment?.facilityId ,
+            interpreterId: appointment?.interpreterId,
+            newFacilityAddress: data.newFacilityAddress
+        })
+    }
+
+
+    //series of buttons that change at the bottom of the appointment details card based on the appointment status
     const renderUpdateButton = () => {
         switch (appointment?.status) {
-            case 'Pending':
+            case 'Pending Confirmation':
                 return (
                     <CustomButton className='mt-8' variant='confirm' onPress={() => handleUpdateStatus('Confirmed')}>
                         <Text className='text-white text-2xl font-semibold'>Confirm</Text>
@@ -137,10 +179,10 @@ export default function Tab() {
             case 'Confirmed':
                 return (
                     <View className='flex flex-col gap-y-2'>
-                        <CustomButton onPress={toggleModalOpen} >
+                        <CustomButton className='h-12' onPress={toggleModalOpen} >
                             <Text className='text-white text-2xl font-semibold'>Close</Text>
                         </CustomButton>
-                        <CustomButton variant='destructive'>
+                        <CustomButton className='h-12' variant='destructive'>
                             <Text className='text-white text-2xl font-semibold'>Return</Text>
                         </CustomButton>
                     </View>
@@ -149,7 +191,7 @@ export default function Tab() {
                 return (
                     <View className={'flex flex-col gap-y-2 justify-center items-center'}>
                         <Text className={'text-lg font-bold'}>Appointment is closed</Text>
-                        <CustomButton variant='default' onPress={toggleModalOpen}>
+                        <CustomButton variant='default' onPress={toggleFollowUpModalOpen}>
                             <Text className='text-white text-2xl font-semibold'>Follow Up</Text>
                         </CustomButton>
                     </View>
@@ -169,7 +211,7 @@ export default function Tab() {
                 if (supported) {
                     Linking.openURL(url)
                 } else {
-                    console.log("Cannot open url")
+                    console.log("Cannot open map url")
                 }
             })
         }
@@ -199,7 +241,7 @@ export default function Tab() {
                 id={id ?? ''}
                 visible={followUpModalVisible}
                 onClose={() => setFollowUpModalVisible(false)}
-                onSubmit={() => console.log("Follow up submitted")}
+                onSubmit={handleFollowUpSubmit}
                 appointmentId={appointment?.id ?? ''}
                 appointmentData={{
                     projectedEndTime: appointment?.projectedEndTime,
@@ -299,24 +341,7 @@ export default function Tab() {
                     </View>
                 </View>
             </ScrollView>
-            {/*<View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>*/}
-            {/*    */}
-            {/*</View>*/}
         </SafeAreaView>
     );
 }
-const styles = StyleSheet.create({
 
-    headerText :{
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'left',
-        marginBottom    : 20
-    },
-    infoContainer: {
-        alignItems: "flex-start",
-        marginLeft: 20
-
-    }
-
-});

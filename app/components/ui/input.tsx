@@ -1,3 +1,5 @@
+/*this component only controls how the rendered input is styled but not the values or onChange. components using this prop will implement it themselves*/
+
 import * as React from "react"
 import {TextInput, TextInputProps} from 'react-native'
 

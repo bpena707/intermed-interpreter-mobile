@@ -1,23 +1,26 @@
-import {Modal, Pressable, SafeAreaView, ScrollView, Text, View} from "react-native";
+import {ActivityIndicator, Modal, Pressable, SafeAreaView, ScrollView, Text, View} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/app/components/ui/card";
 import {format} from "date-fns";
 import DatePicker from "@/app/components/ui/date-picker";
 import TimePicker from "@/app/components/ui/time-picker";
 import {Input} from "@/app/components/ui/input";
-import {z} from "zod";
+import {date, z} from "zod";
 import DropDownPicker from "react-native-dropdown-picker";
 import DropDownSelect from "@/app/components/ui/dropdown-picker";
-import {useState} from "react";
-import {Controller} from "react-hook-form";
+import {useEffect, useRef, useState} from "react";
+import {useForm, Controller} from "react-hook-form";
 import {CustomSwitch} from "@/app/components/ui/switch";
 import CustomButton from "@/app/components/ui/custom-button";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
+import {useGetFacilities} from "@/app/features/facilities/api/use-get-facilities";
 
 interface FollowUpModalProps {
     id: string;
     visible: boolean;
     onClose: () => void;
-    onSubmit: () => void;
+    onSubmit: (data: FollowUpFormData) => void;
     appointmentId: string;
     appointmentData: {
         projectedEndTime?: string;
@@ -48,10 +51,14 @@ const followUpSchema = z.object({
         const ss = String(date.getSeconds()).padStart(2, "0");
         return `${hh}:${mm}:${ss}`;
     })),
-    projectedDuration: z.string().regex(intervalRegex, {message: 'Invalid duration format, e.g., 1h30m'}),
+    projectedDuration: z.string().regex(intervalRegex, {message: 'Invalid duration format, e.g., 1h30m'}).optional(),
     appointmentType: z.string(),
-    availability: z.boolean(),
+    notes: z.string().optional(),
+    facilityId: z.string().optional(),
+    newFacilityAddress: z.string().optional(),
 })
+
+export type FollowUpFormData = z.infer<typeof followUpSchema>;
 
 const FollowUpModal = ({
     id,
@@ -61,7 +68,45 @@ const FollowUpModal = ({
     visible,
     onClose,
 }: FollowUpModalProps) => {
-    const [selectedValue, setSelectedValue] = useState<string | null>(null);
+    const {
+        control,
+        handleSubmit,
+    } = useForm({
+        resolver: zodResolver(followUpSchema),
+        defaultValues: {
+            date: appointmentData?.date ? new Date(appointmentData.date) : new Date(),
+            startTime: appointmentData.startTime || '',
+            projectedDuration: '',
+            appointmentType: '',
+            notes: '',
+            facilityId: '',
+            newFacilityAddress: '',
+        }
+    })
+
+    const {data: facilities, isLoading, isError} = useGetFacilities()
+
+    const listOfFacilities = facilities?.map((item) => ({
+        label: item.name,
+        value: item.id
+    })) || []
+
+    if (isLoading) {
+        return <ActivityIndicator />
+    }
+
+    if(isError) {
+        return <Text>Error fetching facilities</Text>
+    }
+
+    const handleFormSubmit = (data: FollowUpFormData) => {
+        onSubmit(data)
+        onClose()
+        console.log(data)
+    }
+
+
+    // const [selectedValue, setSelectedValue] = useState<string | null>(null);
     const appointmentOptions = [
         {label: "Follow Up", value: "Follow-Up"},
         {label: "Initial", value: "Initial"},
@@ -72,6 +117,7 @@ const FollowUpModal = ({
         {label: "Conference", value: "Conference"},
         {label: "Other", value: "Other"},
     ];
+
 
     return(
         <Modal
@@ -126,72 +172,124 @@ const FollowUpModal = ({
                                 </Text>
                             </CardContent>
                         </Card>
-                        <Card className={'bg-gray-200 mt-3 z-50'}>
+                        <Card className={'bg-gray-200 mt-3'}>
                             <CardHeader className={'flex items-center justify-center'}>
                                 <Text className='text-lg font-bold'>Follow Up Details</Text>
                             </CardHeader>
                             <CardContent className={'flex flex-col'}>
                                 <View className={'flex flex-col gap-y-3'}>
-                                    <View className={''}>
+                                    <View>
                                         <Text className='font-bold text-sm pl-1.5'>
                                             Future Date:
                                         </Text>
-                                        <View>
-                                            <DatePicker onChange={() => console.log('date')}/>
-                                        </View>
+                                        <Controller
+                                            name={'date'}
+                                            control={control}
+                                            render={({field: {onChange}}) => (
+                                                <DatePicker onChange={onChange} />
+                                                )
+                                        }
+                                        />
                                     </View>
                                     <View>
                                         <Text className='font-bold text-sm pl-1.5'>
                                             Start Time:
                                         </Text>
-                                        <View>
-                                            <TimePicker onChange={() => console.log('time')}/>
-                                        </View>
+                                        <Controller
+                                            name={'startTime'}
+                                            control={control}
+                                            render={({field: {onChange}}) => (
+                                                <TimePicker onChange={onChange} />
+                                            )}
+                                        />
                                     </View>
                                     <View>
                                         <Text className='font-bold text-sm pl-1.5'>
                                             Projected Duration:
                                         </Text>
-                                        <View>
-                                            <Input placeholder='1h30m'></Input>
-                                        </View>
+                                        <Controller
+                                            name={'projectedDuration'}
+                                            control={control}
+                                            render={({field: {onChange, value}}) => (
+                                                <Input
+                                                    value={value}
+                                                    onChange={onChange}
+                                                    placeholder='1h30m'
+                                                    onChangeText={(text) => onChange(text)}
+                                                />
+                                            )}
+                                        />
                                     </View>
                                     <View>
                                         <Text className='font-bold text-sm pl-1.5'>
                                             Appointment Type:
                                         </Text>
-                                        <View>
-                                            <DropDownSelect
-                                                items={appointmentOptions}
-                                                onChange={setSelectedValue}
-                                            />
-                                        </View>
+                                        <Controller
+                                            name={'appointmentType'}
+                                            control={control}
+                                            render={({field: {onChange, value}}) => (
+                                                <DropDownSelect
+                                                    items={appointmentOptions}
+                                                    value={value}
+                                                    onChange={(newValue: string | null) => {
+                                                        onChange(newValue ?? '')
+                                                    }}
+                                                />
+                                            )}
+                                        />
                                     </View>
                                 </View>
                             </CardContent>
                         </Card>
                         <Card className={'bg-gray-200 mt-3'}>
-                            <CardHeader className={'flex items-center justify-center'}>
-                                <Text className='text-lg font-bold'>Location</Text>
-                            </CardHeader>
-                            <CardContent className={'flex flex-col'}>
-                                <Card className='border border-gray-300 w-full p-2'>
-                                    <CardTitle>
-                                        <Text className='text-lg font-semibold'>Different location</Text>
-
-                                    </CardTitle>
-                                    <CardContent className='flex items-end'>
-
-                                    </CardContent>
-                                </Card>
-
-                            </CardContent>
-                        </Card>
+                                <CardHeader className={'flex items-center justify-center'}>
+                                    <Text className='text-lg font-bold'>Location</Text>
+                                </CardHeader>
+                                <CardContent className={'flex flex-col'}>
+                                    <View className={'flex flex-col gap-y-3'}>
+                                        <View>
+                                            <Text className='font-bold text-sm pl-1.5'>
+                                                Select Facility from List:
+                                            </Text>
+                                                <Controller
+                                                    name={'facilityId'}
+                                                    control={control}
+                                                    render={({field: {onChange, value}}) => (
+                                                        <DropDownSelect
+                                                            items={listOfFacilities}
+                                                            value={value}
+                                                            onChange={(newValue: string | null) => {
+                                                                onChange(newValue ?? '')
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                        </View>
+                                        <View>
+                                            <Text className='font-bold text-sm pl-1.5'>
+                                                If facility is not listed, please provide the full facility address and we will add it to the system:
+                                            </Text>
+                                            <Controller
+                                                name={'newFacilityAddress'}
+                                                control={control}
+                                                render={({field: {onChange, value}}) => (
+                                                    <Input
+                                                        value={value}
+                                                        onChange={onChange}
+                                                        onChangeText={(text) => onChange(text)}
+                                                        placeholder='123 Main St, Anytown, CA 91234'
+                                                    />
+                                                )}
+                                            />
+                                        </View>
+                                    </View>
+                                </CardContent>
+                            </Card>
                     </CardContent>
                 </Card>
             </ScrollView>
                 <View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
-                    <CustomButton variant="default" onPress={onSubmit}>
+                    <CustomButton variant="default" onPress={handleSubmit(handleFormSubmit, (errors) => console.log("Validation Errors:", errors))}>
                         <Text className='text-white text-2xl font-semibold' >Submit</Text>
                     </CustomButton>
                 </View>

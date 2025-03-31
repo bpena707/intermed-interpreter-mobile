@@ -12,7 +12,6 @@ import TimePicker from "@/app/components/ui/time-picker";
 import {AntDesign, MaterialCommunityIcons} from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-
 type Props = {
     id: string;
     visible: boolean;
@@ -100,8 +99,6 @@ const AppointmentCloseModal = ({
                         <Ionicons name="close-circle" size={26} color="white" />
                     </Pressable>
                 </View>
-                {/*<View className='p-20 bg-[#606070] border rounded-2xl'  >*/}
-
                 <Card>
                     <CardHeader className={'flex items-center justify-center'}>
                         <CardTitle>
@@ -160,7 +157,6 @@ const AppointmentCloseModal = ({
                                             <TimePicker
                                                 onChange={onChange}
                                             />
-
                                         )}
                                     />
                                 </View>

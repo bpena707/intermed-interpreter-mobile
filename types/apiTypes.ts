@@ -40,6 +40,7 @@ export interface Appointment {
     patientFirstName: string;
     patientLastName: string;
     patientId: string;
+    interpreterId: string;
 }
 
 export interface Facility {

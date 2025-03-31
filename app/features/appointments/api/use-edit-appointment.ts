@@ -1,49 +1,7 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import axios, {AxiosError} from "axios";
-import {useAuth, useUser} from "@clerk/clerk-expo";
+import {useAuth} from "@clerk/clerk-expo";
 import Toast from "react-native-toast-message";
-import {param} from "ts-interface-checker";
-import {router} from "expo-router";
-
-//types are added to define the type of object that will be requested and returned
-// type AppointmentResponseType = {
-//     patientId: string
-//     interpreterId: string
-//     facilityId: string
-//     date: string
-//     startTime: string
-//     endTime: string
-//     appointmentType: string
-//     notes: string
-//     status: string
-//     duration: number
-// }
-//
-// type AppointmentRequestType = {
-//     patientId?: string | null;
-//     interpreterId?: string | null;
-//     facilityId?: string | null;
-//     date?: string; // Adjust based on your date handling
-//     startTime?: string;
-//     endTime?: string | null;
-//     appointmentType?: string | null;
-//     notes?: string | null;
-//     status?: string | null;
-//     duration?: number;
-// }
-// id: string
-// patientId: string
-// interpreterId: string
-// facilityId: string
-// date: string
-// startTime: string
-// endTime: string
-// notes: string
-// appointmentType: string
-// status: string
-// duration: number
-
-// types.ts
 
 // Define a type for the update data, excluding 'id'
 export type UpdateAppointmentType = {
@@ -160,15 +118,6 @@ export const useEditAppointment = (id: string) => {
         onError: (error: AxiosError)=> {
 
         }
-        // onError: (error) => {
-        //     Toast.show({
-        //         type: 'error',
-        //         text1: 'Failed to update appointment',
-        //         text2: error?.message || 'An error occurred'
-        //     })
-        //     console.error(`Failed to update appointment ${error.stack}`)
-        //
-        // }
     })
     return mutation
 }
