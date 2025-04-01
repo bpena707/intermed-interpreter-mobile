@@ -32,6 +32,7 @@ interface FollowUpModalProps {
         facilityAddress?: string;
         startTime?: string;
         endTime?: string;
+        isCertified?: boolean;
     }
 }
 
@@ -56,6 +57,7 @@ const followUpSchema = z.object({
     notes: z.string().optional(),
     facilityId: z.string().optional(),
     newFacilityAddress: z.string().optional(),
+    isCertified: z.boolean(),
 })
 
 export type FollowUpFormData = z.infer<typeof followUpSchema>;
@@ -81,6 +83,7 @@ const FollowUpModal = ({
             notes: '',
             facilityId: '',
             newFacilityAddress: '',
+            isCertified: appointmentData?.isCertified || false,
         }
     })
 

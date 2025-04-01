@@ -4,6 +4,7 @@ import { AgendaEntry } from "react-native-calendars";
 // properties that are needed for the appointment entry in addition to the properties that are already in the AgendaEntry interface.
 export interface AppointmentEntry extends AgendaEntry {
     id: string;
+    bookingId: string;
     startTime: string;
     endTime: string;
     patient: string;
@@ -16,6 +17,7 @@ export interface AppointmentEntry extends AgendaEntry {
     facilityState: string;
     facilityId: string;
     appointmentType: string;
+    isCertified: boolean;
     status: string;
     notes: string | null;
 }
@@ -23,6 +25,7 @@ export interface AppointmentEntry extends AgendaEntry {
 //this is the raw data that comes in from the API.
 export interface Appointment {
     id: string;
+    bookingId: string;
     date: string;
     notes: string | null;
     startTime: string;
@@ -31,6 +34,7 @@ export interface Appointment {
     projectedDuration: string;
     appointmentType: string;
     status: string;
+    isCertified: boolean;
     facility: string;
     facilityAddress: string;
     facilityCity: string;

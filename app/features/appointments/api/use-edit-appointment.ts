@@ -15,12 +15,13 @@ export type UpdateAppointmentType = {
     patientId?: string | null;
     facilityId?: string | null;
     interpreterId?: string | null;
-
+    isCertified?: boolean | null;
 };
 
 // Define the expected response type
 export type AppointmentResponseType = {
     id: string;
+    bookingId: string;
     date: string;
     startTime: string;
     endTime: string | null;
@@ -31,6 +32,7 @@ export type AppointmentResponseType = {
     patientId: string | null;
     facilityId: string | null;
     interpreterId: string | null;
+    isCertified: boolean | null;
 };
 
 const handleError = (error: AxiosError) => {

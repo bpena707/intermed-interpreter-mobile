@@ -28,6 +28,7 @@ type Props = {
         facilityName?: string;
         facilityAddress?: string;
         startTime?: string;
+        isCertified?: boolean;
     }
 }
 
@@ -45,7 +46,8 @@ const closeAppointmentSchema = z.object({
     }),
     notes: z.string().optional(),
     followUp: z.boolean(),
-    status: z.literal('Closed') //literal is fixed value closed to change appointment status to close
+    status: z.literal('Closed'), //literal is fixed value closed to change appointment status to close
+    isCertified: z.boolean().optional(),
 })
 
 export type CloseAppointmentFormData = z.input<typeof closeAppointmentSchema>

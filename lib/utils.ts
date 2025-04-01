@@ -24,6 +24,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
 
         agendaItemsMap[dateKey].push({
             id: appointment.id,
+            bookingId: appointment.bookingId,
             name: appointment.patient,
             height: 100,
             status: appointment.status,

@@ -25,7 +25,6 @@ import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCl
 import {FollowUpFormData} from "@/app/appointment/(modals)/followUpModal";
 import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
 import Map from "@/app/components/map";
-import {useCreateFollowupRequest} from "@/app/features/followup-requests/api/use-create-followuprequest";
 import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
 
 export default function Tab() {
@@ -162,7 +161,8 @@ export default function Tab() {
             patientId: appointment?.patientId ?? '',
             facilityId: data.facilityId || appointment?.facilityId ,
             interpreterId: appointment?.interpreterId,
-            newFacilityAddress: data.newFacilityAddress
+            newFacilityAddress: data.newFacilityAddress,
+            isCertified: data.isCertified,
         })
     }
 
@@ -217,6 +217,8 @@ export default function Tab() {
         }
     }
 
+    const certificationStatus = appointment?.isCertified ? 'Certified' : 'Qualified'
+
     return (
         <SafeAreaView className={'flex-1 mb-0 bg-gray-200'}>
             <AppointmentCloseModal
@@ -235,6 +237,7 @@ export default function Tab() {
                     patientName: `${patient?.firstName} ${patient?.lastName}`,
                     facilityName: facility?.name,
                     facilityAddress: facility?.address,
+                    isCertified: appointment?.isCertified,
                 }}
             />
             <FollowUpModal
@@ -253,6 +256,7 @@ export default function Tab() {
                     facilityAddress: facility?.address,
                     startTime: appointment?.startTime,
                     endTime: appointment?.endTime,
+                    isCertified: appointment?.isCertified,
                 }}
             />
             <BackButton />
@@ -270,7 +274,7 @@ export default function Tab() {
                     <Card className={'rounded-none rounded-t-lg'}>
                         <CardHeader className='pl-1'>
                             <CardTitle className='flex-row justify-between mb-2' >
-                                <Text>Certified Medical</Text>
+                                <Text >{certificationStatus} / ID# {appointment?.bookingId}</Text>
                             </CardTitle>
                             <CardDescription>
                                 <Text>{appointmentStatus()}</Text>

@@ -109,6 +109,8 @@ const AgendaComponent = () => {
             }
         }
 
+
+
         return(
             // <Link
             //     href={`/appointment/${appointment.id}`}
@@ -120,7 +122,7 @@ const AgendaComponent = () => {
                     onPress={() => router.push(`/appointment/${appointment.id}`)}
                 >
                     <View className='justify-center gap-y-1'>
-                        <Text className='capitalize' >{appointment.patient} {appointment.patientLastName}</Text>
+                        <Text className='capitalize' >{appointment.patient} {appointment.patientLastName} ({appointment.bookingId})</Text>
                         <Text>{formattedStartTime}-{formattedEndTime}</Text>
                         <Text className='capitalize'>{appointment.facility}</Text>
                         <Text>{appointmentStatus()}</Text>

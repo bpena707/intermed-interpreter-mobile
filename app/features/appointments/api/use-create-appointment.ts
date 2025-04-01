@@ -15,6 +15,7 @@ export interface AppointmentRequest  {
     facilityId?: string | null;
     interpreterId?: string | null;
     newFacilityAddress?: string | null;
+    isCertified?: boolean
 
 };
 
@@ -31,6 +32,7 @@ export interface AppointmentResponse  {
     facilityId: string | null;
     interpreterId: string | null;
     newFacilityAddress: string | null;
+    isCertified: boolean
 };
 
 export const useCreateAppointment = () => {
