@@ -1,13 +1,13 @@
 //this file will contain the agenda component from react-native-calendars
 
-import {ActivityIndicator, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator,StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Agenda} from "react-native-calendars";
 import {useGetAppointments} from "@/app/features/appointments/api/use-get-appointments";
 import Colors from "@/constants/Colors";
 import {formatDataForAgenda} from "@/lib/utils";
 import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import {addHours, format, parse} from 'date-fns';
-import {Link, router} from "expo-router";
+import {router} from "expo-router";
 
 const AgendaComponent = () => {
     const { data: appointment, isLoading, isError } = useGetAppointments();
@@ -109,13 +109,7 @@ const AgendaComponent = () => {
             }
         }
 
-
-
         return(
-            // <Link
-            //     href={`/appointment/${appointment.id}`}
-            //     style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
-            //     asChild>
                 <TouchableOpacity
                     style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
                     className='flex-row justify-between items-center '
@@ -131,7 +125,6 @@ const AgendaComponent = () => {
                         <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />
                     </View>
                 </TouchableOpacity>
-            // </Link>
         )
     }
 
@@ -201,8 +194,5 @@ const styles = StyleSheet.create({
         shadowRadius: 1, //IOS
         backgroundColor: '#fff',
         elevation: 2, // Android
-
-
-
     }
 })

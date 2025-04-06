@@ -10,7 +10,7 @@ import {
 import {useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
-import {useGetIndividualPatient} from "@/app/features/patients/use-get-individual-patient";
+import {useGetIndividualPatient} from "@/app/features/patients/api/use-get-individual-patient";
 
 import CustomButton from "@/app/components/ui/custom-button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
@@ -27,17 +27,11 @@ import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
 import Map from "@/app/components/map";
 import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
 
-export default function Tab() {
+export default function AppointmentIDPage() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
     // then extract data from the appointment object or if it is empty its null object
     const { id } = useLocalSearchParams<{id?: string}>()
     console.log("Local Appointment ID:", id)
-
-    // const appointmentQuery = useGetIndividualAppointment(id)
-    // const appointment = appointmentQuery.data || []
-    //
-    // const facilityQuery = useGetIndividualFacility(appointment.facilityId)
-    // const facility = facilityQuery.data || []
 
     //expose the appointment data, loading state and error state from tanstack query hook
     const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id ?? '');
@@ -128,6 +122,7 @@ export default function Tab() {
         setFollowUpModalVisible(true);
     }
 
+    //this function handles the appointment status update button. when user clicks the button, it updates the appointment status to the new status
    const handleUpdateStatus = (newStatus: string) => {
          editMutation.mutate({
              ...appointment,
@@ -270,7 +265,7 @@ export default function Tab() {
                 //     />
                 // }
             >
-                <View className=' '>
+                <View>
                     <Card className={'rounded-none rounded-t-lg'}>
                         <CardHeader className='pl-1'>
                             <CardTitle className='flex-row justify-between mb-2' >

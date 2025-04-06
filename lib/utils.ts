@@ -41,7 +41,8 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
             patientFirstName: appointment.patientFirstName,
             patientLastName: appointment.patientLastName,
             patientId: appointment.patientId,
-            notes: appointment.notes
+            notes: appointment.notes,
+            isCertified: appointment.isCertified,
         });
     });
 

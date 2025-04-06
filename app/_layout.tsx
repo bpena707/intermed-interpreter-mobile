@@ -129,13 +129,6 @@ const InitialLayout = () => {
 
                 }}
             />
-            <Stack.Screen
-                name="(modals)/searchModal"
-                options={{
-                    presentation: 'transparentModal',
-                    animation: 'fade',
-                }}
-            />
         </Stack>
     );
 }

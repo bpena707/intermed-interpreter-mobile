@@ -11,12 +11,11 @@ export interface AppointmentRequest  {
     appointmentType?: string | null;
     projectedDuration?: string | null;
     status?: string | null; // e.g., 'Pending', 'Confirmed', etc.
-    patientId?: string | null;
+    patientId?:  string | null;
     facilityId?: string | null;
     interpreterId?: string | null;
     newFacilityAddress?: string | null;
     isCertified?: boolean
-
 };
 
 // Define the expected response type

@@ -1,12 +1,17 @@
 import {SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Link, Stack} from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import CustomButton from "@/app/components/ui/custom-button";
 import {useClerk} from "@clerk/clerk-expo";
 
-const IndexHeader = () => {
+interface IndexHeaderProps {
+    onSearchPress: () => void; // Function to call when search is pressed
+}
+
+const IndexHeader = ({
+    onSearchPress,
+}: IndexHeaderProps) => {
     const { signOut } = useClerk()
 
     return (
@@ -19,18 +24,14 @@ const IndexHeader = () => {
                             </View>
 
                         </CustomButton>
-                        {/*asChild allows link to be used around touchable opacity */}
-                        <Link href={'/(modals)/searchModal'} asChild>
-                            <TouchableOpacity style={styles.searchButton}>
+                            <TouchableOpacity style={styles.searchButton} onPress={onSearchPress}>
                                 <Ionicons name={'search'} size={20} />
                                 <View>
                                     <Text>
                                         Search patient by name
                                     </Text>
                                 </View>
-
                             </TouchableOpacity>
-                        </Link>
                         <TouchableOpacity style={styles.alertButton} >
                             <FontAwesome name={'bell'} size={20} color={'#000'} />
                         </TouchableOpacity>
