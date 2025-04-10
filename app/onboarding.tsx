@@ -36,7 +36,7 @@ export default function onboardingScreen () {
                     type: 'success',
                     text1: 'Profile created successfully',
                 })
-                router.replace('/(tabs)/home')
+                router.replace('/tabs/home')
             },
             onError: (error) => {
                 Toast.show({

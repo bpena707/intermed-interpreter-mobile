@@ -119,22 +119,22 @@ export default function Page() {
 
                     </View>
                     <View className='mb-10'>
-                        <Separator message={'or'}/>
+                        <Separator />
                     </View>
-                    <View className={'flex flex-col gap-y-2'}>
-                        <CustomButton variant='outline' className='flex flex-row ' >
-                            <AntDesign name="google" size={24} color="black" />
-                            <Text className='text-lg text-black font-bold ml-4 tracking-wide' >
-                                Google
-                            </Text>
-                        </CustomButton>
-                        <CustomButton variant='outline' className='flex flex-row ' >
-                            <AntDesign name="apple1" size={24} color="black" />
-                            <Text className='text-lg text-black font-bold tracking-wide ml-4'>
-                                Apple
-                            </Text>
-                        </CustomButton>
-                    </View>
+                    {/*<View className={'flex flex-col gap-y-2'}>*/}
+                    {/*    <CustomButton variant='outline' className='flex flex-row ' >*/}
+                    {/*        <AntDesign name="google" size={24} color="black" />*/}
+                    {/*        <Text className='text-lg text-black font-bold ml-4 tracking-wide' >*/}
+                    {/*            Google*/}
+                    {/*        </Text>*/}
+                    {/*    </CustomButton>*/}
+                    {/*    <CustomButton variant='outline' className='flex flex-row ' >*/}
+                    {/*        <AntDesign name="apple1" size={24} color="black" />*/}
+                    {/*        <Text className='text-lg text-black font-bold tracking-wide ml-4'>*/}
+                    {/*            Apple*/}
+                    {/*        </Text>*/}
+                    {/*    </CustomButton>*/}
+                    {/*</View>*/}
                 </View>
                 <View className='mt-10'>
                     <Link href="/sign-up">
