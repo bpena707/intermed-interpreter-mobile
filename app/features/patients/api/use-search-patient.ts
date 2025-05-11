@@ -20,6 +20,8 @@ interface PatientsApiResponse {
     data: PatientSearchResult[];
 }
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 /**
  * Custom Tanstack Query hook to search for patients using Axios.
  * @param searchQuery The search term entered by the user.
@@ -43,9 +45,14 @@ export const useSearchPatients = (searchQuery: string) => {
                 throw new Error('Authentication token is required');
             }
 
+            if (!apiUrl) {
+                console.error("apiUrl environment variable is not set!");
+                throw new Error("API configuration error.");
+            }
+
             // TODO: Replace hardcoded localhost with Platform check or env variable for better portability
-            const baseUrl = 'http://localhost:3000';
-            const url = `${baseUrl}/api/patients/search`;
+
+            const url = `${apiUrl}/patients/search`; // Endpoint for searching patients
             console.log(`[useSearchPatients] Axios GET: ${url} Params: q=${searchQuery}`);
             try {
                 const response = await axios.get<PatientsApiResponse>(url, {
@@ -55,7 +62,8 @@ export const useSearchPatients = (searchQuery: string) => {
                     },
                     params: {
                         q: searchQuery
-                    }
+                    },
+                    timeout:5000
                 });
 
                 const patients = response.data?.data || [];
@@ -64,14 +72,28 @@ export const useSearchPatients = (searchQuery: string) => {
 
             } catch (error) {
                 console.error("[useSearchPatients] Axios error:", error);
-                // Axios throws specific errors, try to extract message
                 if (axios.isAxiosError(error)) {
-                    const axiosError = error as AxiosError<any>; // Type assertion
-                    const apiErrorMessage = axiosError.response?.data?.error || axiosError.message;
+                    const axiosError = error as AxiosError<any>; // Keep type assertion if accessing custom fields
+                    // Attempt to get a specific error message from the API response body
+                    const serverErrorData = axiosError.response?.data;
+                    let apiErrorMessage = axiosError.message; // Default to Axios's message
+
+                    if (serverErrorData) {
+                        if (typeof serverErrorData === 'object' && serverErrorData !== null) {
+                            if ((serverErrorData as any).error && typeof (serverErrorData as any).error === 'string') {
+                                apiErrorMessage = (serverErrorData as any).error;
+                            } else if ((serverErrorData as any).message && typeof (serverErrorData as any).message === 'string') {
+                                apiErrorMessage = (serverErrorData as any).message;
+                            }
+                        } else if (typeof serverErrorData === 'string' && serverErrorData.trim() !== '') {
+                            apiErrorMessage = serverErrorData;
+                        }
+                    }
                     throw new Error(apiErrorMessage);
+                } else if (error instanceof Error) { // 4. Ensure type safety for non-Axios errors
+                    throw new Error(`Failed to search patients: ${error.message}`);
                 } else {
-                    // Rethrow other types of errors
-                    throw error;
+                    throw new Error('An unexpected error occurred while searching patients.');
                 }
             }
         },

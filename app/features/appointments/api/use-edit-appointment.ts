@@ -35,6 +35,8 @@ export type AppointmentResponseType = {
     isCertified: boolean | null;
 };
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
+
 const handleError = (error: AxiosError) => {
     if (error.response && error.response.data) {
         // Attempt to extract the error message from the response
@@ -81,15 +83,27 @@ export const useEditAppointment = (id: string) => {
             if (!userId) {
                 throw new Error('UserId is required to create appointment')
             }
+            if (!id){
+                throw new Error('Appointment ID is required to update appointment')
+            }
+
+            if (!apiUrl) {
+                console.error("apiUrl environment variable is not set!");
+                throw new Error("API configuration error.");
+            }
+
+            const url = `${apiUrl}/appointments/${id}`
+
             try {
                 const response  = await axios.patch(
-                    `http://localhost:3000/api/appointments/${id}`,
+                    url,
                     updatedData,
                     {
                         headers: {
                             Authorization: `Bearer ${await getToken()}`,
                             'Content-Type': 'application/json',
                         },
+                        timeout: 5000
                     }
                 )
                 return await response.data
@@ -115,7 +129,7 @@ export const useEditAppointment = (id: string) => {
                 text1: 'Appointment updated successfully',
             })
             queryClient.invalidateQueries({ queryKey: ["appointments"] })
-            queryClient.invalidateQueries({ queryKey: ["appointments", { id }] });
+            queryClient.invalidateQueries({ queryKey: ["appointment", userId,  id,] });
         },
         onError: (error: AxiosError)=> {
 

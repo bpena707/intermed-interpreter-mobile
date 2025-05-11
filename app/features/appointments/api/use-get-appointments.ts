@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Appointment } from '@/types/apiTypes';
 import {useAuth, useUser} from "@clerk/clerk-expo";
+import axios from "axios";
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const useGetAppointments = () => {
     const { getToken, userId } = useAuth()
@@ -21,21 +24,55 @@ export const useGetAppointments = () => {
             }
             console.log('Token:', token);
 
-            const response = await fetch ('http://localhost:3000/api/appointments', {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-            })
-
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(`Failed to fetch appointments: ${errorMessage}`);
+            if (!apiUrl) {
+                console.error("apiUrl environment variable is not set!");
+                throw new Error("API configuration error.");
             }
 
-            //destructure the data object from the response
-            const { data } = await response.json()
-            return data;
+            const url = `${apiUrl}/appointments`;
+            console.log(`Making GET request to: ${url}`)
+
+            try {
+                const response = await axios.get(url,
+                    {
+                        headers:{
+                            Authorization: `Bearer ${token}`,
+                        },
+                        timeout: 5000
+                    })
+
+                if (response.data && Array.isArray(response.data.data)) {
+                    return response.data.data
+                } else if (Array.isArray(response.data)) {
+                    return response.data
+                } else {
+                    console.error("Unexpected response structure:", response.data);
+                    throw new Error('Unexpected response structure from API');
+                }
+            }catch (error) { // <-- error starts as unknown
+                console.error('Failed to fetch appointments:', error);
+
+                if (axios.isAxiosError(error)) {
+                    // If it's an AxiosError, TypeScript knows it has a .message property
+                    // (and potentially .response)
+                    console.error('Axios error details:', error.response?.status, error.response?.data);
+                    const statusText = error.response?.statusText ? ` (${error.response.statusText})` : '';
+                    const serverMessage = typeof error.response?.data === 'string' ? `: ${error.response.data}` : '';
+                    // Using error.message is safe here as a fallback if statusText isn't available
+                    throw new Error(`Failed to fetch appointments: Server responded with status ${error.response?.status}${statusText}${serverMessage || (' - ' + error.message)}`);
+
+                } else if (error instanceof Error) {
+                    // 👇 THIS IS THE KEY CHANGE 👇
+                    // If it's not an AxiosError, BUT it IS a standard Error object,
+                    // THEN it's safe to access .message here.
+                    throw new Error(`Failed to fetch appointments: ${error.message}`);
+
+                } else {
+                    // If it's not an AxiosError AND not an Error instance, handle the truly unknown case.
+                    // You cannot safely access .message here.
+                    throw new Error('An unexpected error occurred while fetching appointments.');
+                }
+            }
         }
     })
     return query

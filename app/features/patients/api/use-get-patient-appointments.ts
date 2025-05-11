@@ -4,9 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from "@clerk/clerk-expo";
 import axios, { AxiosError } from 'axios';
 
-// --- Define Type for Appointment Data ---
-// TODO: Adjust this interface to match the exact fields returned
-// by your GET /admin/appointments endpoint
 export interface PatientAppointment {
     id: string;
     bookingId?: string | null; // Optional if not always used/present
@@ -25,11 +22,11 @@ export interface PatientAppointment {
     facilityId: string; // Facility ID
 }
 
-// Define type for the API response structure (if nested)
-// TODO: Adjust if your API returns the array directly
 interface AppointmentsApiResponse {
     data: PatientAppointment[];
 }
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
 /**
  * Custom hook to fetch appointments for a specific patient ID using Axios.
@@ -57,10 +54,13 @@ export const usePatientAppointments = (patientId: string | undefined | null) => 
                 throw new Error('Authentication token is required');
             }
 
+            if (!apiUrl) {
+                console.error("apiUrl environment variable is not set!");
+                throw new Error("API configuration error.");
+            }
 
             // TODO: Replace hardcoded localhost
-            const baseUrl = 'http://localhost:3000';
-            const url = `${baseUrl}/api/appointments`; // Endpoint for appointments
+            const url = `${apiUrl}/appointments`; // Endpoint for appointments
             console.log(`[usePatientAppointments] Axios GET: <span class="math-inline">\{url\} Params\: patientId\=</span>{patientId}`);
 
             try {
@@ -72,7 +72,8 @@ export const usePatientAppointments = (patientId: string | undefined | null) => 
                     // Pass patientId as a query parameter
                     params: {
                         patientId: patientId
-                    }
+                    },
+                    timeout: 5000
                 });
 
                 const appointments = response.data?.data || [];
@@ -82,11 +83,28 @@ export const usePatientAppointments = (patientId: string | undefined | null) => 
             } catch (error) {
                 console.error("[usePatientAppointments] Axios error:", error);
                 if (axios.isAxiosError(error)) {
-                    const axiosError = error as AxiosError<any>;
-                    const apiErrorMessage = axiosError.response?.data?.error || axiosError.message;
+                    const axiosError = error as AxiosError<any>; // Keep if you access custom fields on error.response.data
+                    // Attempt to get a specific error message from the API response body
+                    // This tries a few common ways an API might structure its error messages
+                    const serverErrorData = axiosError.response?.data;
+                    let apiErrorMessage = axiosError.message; // Default to Axios's message
+
+                    if (serverErrorData) {
+                        if (typeof serverErrorData === 'object' && serverErrorData !== null) {
+                            if ((serverErrorData as any).error && typeof (serverErrorData as any).error === 'string') {
+                                apiErrorMessage = (serverErrorData as any).error;
+                            } else if ((serverErrorData as any).message && typeof (serverErrorData as any).message === 'string') {
+                                apiErrorMessage = (serverErrorData as any).message;
+                            }
+                        } else if (typeof serverErrorData === 'string' && serverErrorData.trim() !== '') {
+                            apiErrorMessage = serverErrorData;
+                        }
+                    }
                     throw new Error(apiErrorMessage);
+                } else if (error instanceof Error) { // 4. Ensure type safety for non-Axios errors
+                    throw new Error(`Failed to fetch patient appointments: ${error.message}`);
                 } else {
-                    throw error;
+                    throw new Error('An unexpected error occurred while fetching patient appointments.');
                 }
             }
         },

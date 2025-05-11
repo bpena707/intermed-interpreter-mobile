@@ -31,14 +31,7 @@ const TabLayout = () => {
                     tabBarLabelStyle: { fontWeight: '600'},
                 }}
             />
-            <Tabs.Screen
-                name="rating"
-                options={{
-                    title: 'Rating',
-                    tabBarIcon: ({ color, size }) => <Ionicons size={size} name="star" color={color} />,
-                    tabBarLabelStyle: { fontWeight: '600'},
-                }}
-            />
+
         </Tabs>
     );
 }

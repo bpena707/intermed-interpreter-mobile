@@ -18,7 +18,8 @@ export interface InterpreterProfile {
 interface InterpreterApiResponse {
     data: InterpreterProfile | null; // API might return { data: null } if not found, though 404 is better
 }
-// -----------------------------------------------
+
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const useGetCurrentInterpreter = () => {
     const { getToken, userId } = useAuth();
@@ -32,14 +33,17 @@ export const useGetCurrentInterpreter = () => {
             console.log('[useGetCurrentInterpreter] Token fetched:', token ? `Yes (length ${token.length})` : 'No/Null');
             if (!token) throw new Error('Authentication token is required');
 
-            const baseUrl = 'http://localhost:3000'; // TODO: Use config
-            const url = `${baseUrl}/api/interpreters/me`;
+            const url = `${apiUrl}/interpreters/me`;
             console.log(`[useGetCurrentInterpreter] Axios GET: ${url}`);
 
             try {
                 // Tell Axios the expected response shape includes the 'data' wrapper
                 const response = await axios.get<InterpreterApiResponse>(url, {
-                    headers: { /* ... auth ... */ }
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/json',
+                    },
+                    timeout: 5000
                 });
 
                 // ---> Correctly extract the nested data <---
@@ -69,7 +73,8 @@ export const useGetCurrentInterpreter = () => {
             }
         },
         enabled: isEnabled,
-        // ... other options ...
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 15,
     });
 
     return query;

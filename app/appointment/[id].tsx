@@ -19,13 +19,14 @@ import {addHours, format, parse} from "date-fns";
 import {formatPhoneNumber, trimAddress} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
 import {FollowUpFormData} from "@/app/appointment/(modals)/followUpModal";
 import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
 import Map from "@/app/components/map";
 import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
+import Toast from "react-native-toast-message";
 
 export default function AppointmentIDPage() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -45,13 +46,6 @@ export default function AppointmentIDPage() {
     const [followUpModalVisible, setFollowUpModalVisible] = useState(false);
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
-
-    // const [refreshing, setRefreshing] = useState(false);
-    // const onRefresh = useCallback(() => {
-    //     setRefreshing(true);
-    //     setTimeout(() => setRefreshing(false), 2000);
-    //
-    // },[])
 
     //parse the time string from the appointment object and format it to readable time
     const timeStringStartTime = appointment?.startTime;
@@ -119,6 +113,7 @@ export default function AppointmentIDPage() {
         setModalVisible(true);
     }
     const toggleFollowUpModalOpen = () => {
+        console.log("--- AppointmentIDPage: toggleFollowUpModalOpen CALLED. Setting to true.");
         setFollowUpModalVisible(true);
     }
 
@@ -132,16 +127,32 @@ export default function AppointmentIDPage() {
 
    //function that handles the form submission for the close appointment modal. triggers follow up if follow up is checked
     const handleCloseSubmit = (data: CloseAppointmentFormData) => {
-        console.log("Form submitted with data:", data);
-        editMutation.mutate({
+        editMutation.mutate(
+            {
             ...appointment,         // keep other appointment fields
             endTime: data.endTime as string,   // update with the new end time from the form casted as string for zod useEditAppointment hook
             notes: data.notes,       // update notes
             status: data.status,     // should be "Closed"
-        });
-        if (data.followUp) {
-            setFollowUpModalVisible(true);
-        }
+            },
+            {
+                onSuccess: () => {
+                    console.log("[editMutation.onSuccess] Appointment closed successfully.");
+                    if (data.followUp) {
+                        setTimeout(() => {
+                            setFollowUpModalVisible(true);
+                        }, 500); // 100ms delay, can be adjusted
+                    }
+                },
+                onError: (error) => {
+                    console.error("Error closing appointment:", error);
+                    // Handle error (e.g., show a toast notification)
+                     Toast.show({
+                        type: 'error',
+                       text1: 'Error closing appointment',
+                       text2: error.message,
+                     });
+                }
+            });
     };
 
     const handleFollowUpSubmit = (data: FollowUpFormData) => {
@@ -161,7 +172,6 @@ export default function AppointmentIDPage() {
         })
     }
 
-
     //series of buttons that change at the bottom of the appointment details card based on the appointment status
     const renderUpdateButton = () => {
         switch (appointment?.status) {
@@ -177,9 +187,9 @@ export default function AppointmentIDPage() {
                         <CustomButton className='h-12' onPress={toggleModalOpen} >
                             <Text className='text-white text-2xl font-semibold'>Close</Text>
                         </CustomButton>
-                        <CustomButton className='h-12' variant='destructive'>
-                            <Text className='text-white text-2xl font-semibold'>Return</Text>
-                        </CustomButton>
+                        {/*<CustomButton className='h-12' variant='destructive'>*/}
+                        {/*    <Text className='text-white text-2xl font-semibold'>Return</Text>*/}
+                        {/*</CustomButton>*/}
                     </View>
                 )
             case 'Closed':

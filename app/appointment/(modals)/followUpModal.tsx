@@ -70,6 +70,7 @@ const FollowUpModal = ({
     visible,
     onClose,
 }: FollowUpModalProps) => {
+    console.log("!!! FollowUpModal: Received 'visible' prop:", visible);
     const {
         control,
         handleSubmit,
@@ -94,13 +95,13 @@ const FollowUpModal = ({
         value: item.id
     })) || []
 
-    if (isLoading) {
-        return <ActivityIndicator />
-    }
-
-    if(isError) {
-        return <Text>Error fetching facilities</Text>
-    }
+    // if (isLoading) {
+    //     return <ActivityIndicator />
+    // }
+    //
+    // if(isError) {
+    //     return <Text>Error fetching facilities</Text>
+    // }
 
     const handleFormSubmit = (data: FollowUpFormData) => {
         onSubmit(data)

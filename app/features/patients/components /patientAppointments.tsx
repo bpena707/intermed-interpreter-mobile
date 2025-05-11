@@ -16,10 +16,6 @@ export default function PatientAppointmentsScreen() {
 
     const {data:patientAppointment, isLoading, isFetching, error} = usePatientAppointments(patientId);
 
-
-
-
-
     //this function estabilishes the layout of the appointment item as cards that render in the flatlist
     const renderAppointmentItem = ({ item }: {item: PatientAppointment}) => {
 

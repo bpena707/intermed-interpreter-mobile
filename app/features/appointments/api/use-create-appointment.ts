@@ -34,6 +34,8 @@ export interface AppointmentResponse  {
     isCertified: boolean
 };
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
+
 export const useCreateAppointment = () => {
     const queryClient = useQueryClient()
     const {getToken, userId} = useAuth()
@@ -48,21 +50,48 @@ export const useCreateAppointment = () => {
               throw new Error('No user found with id ')
           }
 
-          const response  = await axios.post(
-              'http://localhost:3000/api/appointments',
-              json,
-                {
-                    headers: {
-                        Authorization: `Bearer ${await getToken()}`
-                    },
-                    timeout: 5000
-                }
-              )
-          if (response.data.status !== 201 && response.status !== 200) {
-              throw new Error('Failed to create followup request')
+          if (!apiUrl) {
+              console.error("apiUrl environment variable is not set!");
+              throw new Error("API configuration error.");
           }
 
-          return response.data
+          const url = `${apiUrl}/appointments`
+          console.log(`Making POST request to: ${url}`)
+
+          try{
+              const response = await axios.post(url, json,
+                  {
+                        headers: {
+                            Authorization: `Bearer ${await getToken()}`,
+                        },
+                        timeout: 5000
+                  }
+              )
+              return response.data
+          }catch (error) {
+              console.error('Failed to create appointment (axios catch):', error);
+              if (axios.isAxiosError(error)) {
+                  // ... (detailed Axios error message extraction) ...
+                  const serverErrorData = error.response?.data;
+                  let apiErrorMessage = error.message;
+                  if (serverErrorData) {
+                      if (typeof serverErrorData === 'object' && serverErrorData !== null) {
+                          if ((serverErrorData as any).error && typeof (serverErrorData as any).error === 'string') {
+                              apiErrorMessage = (serverErrorData as any).error;
+                          } else if ((serverErrorData as any).message && typeof (serverErrorData as any).message === 'string') {
+                              apiErrorMessage = (serverErrorData as any).message;
+                          }
+                      } else if (typeof serverErrorData === 'string' && serverErrorData.trim() !== '') {
+                          apiErrorMessage = serverErrorData;
+                      }
+                  }
+                  throw new Error(`Failed to create appointment${error.response?.status ? ` (Status ${error.response.status})` : ''}: ${apiErrorMessage}`);
+              } else if (error instanceof Error) {
+                  throw new Error(`Failed to create appointment: ${error.message}`);
+              } else {
+                  throw new Error('An unexpected error occurred while creating the appointment.');
+              }
+          }
       },
       onSuccess: () => {
           Toast.show({

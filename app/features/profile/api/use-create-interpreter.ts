@@ -12,6 +12,8 @@ interface OnBoardingType  {
     // isCertified: boolean,
 }
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL
+
 export const useCreateInterpreter = () => {
     const queryClient = useQueryClient()
     const { getToken, userId } = useAuth()
@@ -24,13 +26,21 @@ export const useCreateInterpreter = () => {
                 throw new Error('UserId is required to create interpreter')
             }
 
+            if (!apiUrl) {
+                console.error("apiUrl environment variable is not set!");
+                throw new Error("API configuration error.");
+            }
+
             const payload = {
                 ...data,
                 onboardingCompleted: true,
             }
 
+            const url = `${apiUrl}/interpreters`
+            console.log(`Making POST request to:, ${url}`)
+
             const response = await axios.post(
-                'http://localhost:3000/api/interpreters', //10.0.0.148
+                url,
                 payload,
                 {
                     headers: {
