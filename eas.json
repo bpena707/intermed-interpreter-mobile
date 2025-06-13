@@ -9,28 +9,32 @@
       "distribution": "internal",
       "env": {
         "APP_VARIANT": "development"
-      }
+      },
+      "channel": "development"
     },
     "ios-simulator": {
       "extends": "development",
       "ios": {
         "simulator": true
-      }
+      },
+      "channel": "ios-simulator"
     },
     "preview": {
       "distribution": "internal",
-        "env": {
-            "APP_VARIANT": "preview",
-          "EXPO_PUBLIC_API_URL": "https://www.pena-med.com/api",
-          "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsucGVuYS1tZWQuY29tJA"
-        }
+      "env": {
+        "APP_VARIANT": "preview",
+        "EXPO_PUBLIC_API_URL": "https://www.pena-med.com/api",
+        "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsucGVuYS1tZWQuY29tJA"
+      },
+      "channel": "preview"
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://www.pena-med.com/api",
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsucGVuYS1tZWQuY29tJA"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {

@@ -41,6 +41,16 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+  updates: {
+    // This URL points to your project's update server on EAS
+    url: "https://u.expo.dev/2b5de7d1-cdce-4b08-be6b-abc30058ddda"
+  },
+  runtimeVersion: {
+    // This policy ties the updates to your app version.
+    // When you change "version" above (e.g., to "1.0.1"), you'll need a new build.
+    // Updates will only apply to builds with the same app version.
+    policy: "appVersion"
+  },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": getUniqueIdentifier()
@@ -66,7 +76,8 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
         }
       ],
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      "expo-updates",
     ],
     "experiments": {
       "typedRoutes": true
