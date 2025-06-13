@@ -1,6 +1,15 @@
 //this file will contain the agenda component from react-native-calendars
 
-import {ActivityIndicator,StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+    ActivityIndicator,
+    Dimensions,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from "react-native";
 import {Agenda} from "react-native-calendars";
 import {useGetAppointments} from "@/app/features/appointments/api/use-get-appointments";
 import Colors from "@/constants/Colors";
@@ -8,12 +17,30 @@ import {formatDataForAgenda} from "@/lib/utils";
 import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import {addHours, format, parse} from 'date-fns';
 import {router} from "expo-router";
+import {useCallback, useMemo, useState} from "react";
+
+const screenHeight = Dimensions.get('window').height;
 
 const AgendaComponent = () => {
-    const { data: appointment, isLoading, isError } = useGetAppointments();
+    const { data: appointment, isLoading, isError, refetch } = useGetAppointments();
     const formattedData: any = formatDataForAgenda(appointment ?? []);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
-    if (isLoading) {
+    const onRefresh = useCallback(async () => {
+        setIsRefreshing(true);
+        try {
+            await refetch(); // Tell React Query to refetch the appointments
+            console.log("Agenda data refreshed.");
+        } catch (error) {
+            console.error("Failed to refresh agenda:", error);
+        } finally {
+            setIsRefreshing(false);
+        }
+    }, [refetch]);
+
+
+
+    if (isLoading && !isRefreshing) {
         return (
             <View style={styles.loader}>
                 <ActivityIndicator size={"large"} color= {Colors.primary} />
@@ -130,10 +157,18 @@ const AgendaComponent = () => {
 
     const renderEmptyDate = () => {
         return (
-            <View style={styles.emptyData}>
+            <ScrollView
+                contentContainerStyle={styles.emptyData}
+                refreshControl={
+                <RefreshControl
+                    refreshing={isRefreshing}
+                    onRefresh={onRefresh}
+                />
+            }
+            >
                 <FontAwesome6 style={{ marginBottom: 20 }} name="calendar-xmark" size={50} color="black" />
                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>No appointments today</Text>
-            </View>
+            </ScrollView>
         )
     }
 
@@ -152,7 +187,14 @@ const AgendaComponent = () => {
                     textMonthFontWeight: 'bold',
                     agendaTodayColor: '#ef4444',
                 }}
-
+                refreshing={isRefreshing}
+                refreshControl={
+                <RefreshControl
+                    refreshing={isRefreshing}
+                    onRefresh={onRefresh}
+                />
+                }
+                contentContainerStyle={{ flexGrow: 1 }}
             />
         </View>
     )
@@ -178,7 +220,7 @@ const styles = StyleSheet.create({
         elevation: 1, // Android
     },
     emptyData: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },

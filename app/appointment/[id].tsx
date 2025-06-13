@@ -1,6 +1,6 @@
 import {
     ActivityIndicator, Linking,
-    Platform,
+    Platform, RefreshControl,
     SafeAreaView,
     ScrollView,
     Text,
@@ -19,7 +19,7 @@ import {addHours, format, parse} from "date-fns";
 import {formatPhoneNumber, trimAddress} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
 import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
 import {FollowUpFormData} from "@/app/appointment/(modals)/followUpModal";
@@ -35,15 +35,32 @@ export default function AppointmentIDPage() {
     console.log("Local Appointment ID:", id)
 
     //expose the appointment data, loading state and error state from tanstack query hook
-    const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError } = useGetIndividualAppointment(id ?? '');
-    const { data: facility , isLoading: isFacilityLoading, error: facilityError } = useGetIndividualFacility(appointment?.facilityId);
-    const {data: patient, isLoading: isPatientLoading, error: patientError} = useGetIndividualPatient(appointment?.patientId)
+    const { data: appointment, isLoading: isAppointmentLoading, error: appointmentError, refetch: refetchAppointment } = useGetIndividualAppointment(id ?? '');
+    const { data: facility , isLoading: isFacilityLoading, error: facilityError, refetch: refetchFacility } = useGetIndividualFacility(appointment?.facilityId);
+    const {data: patient, isLoading: isPatientLoading, error: patientError, refetch:refetchPatient } = useGetIndividualPatient(appointment?.patientId)
     const editMutation = useEditAppointment(id ?? '')
     const createAppointmentMutation = useCreateAppointment()
 
     //controls the state of the close and follow-up modals visibility set to false by default
     const [modalVisible, setModalVisible] = useState(false);
     const [followUpModalVisible, setFollowUpModalVisible] = useState(false);
+    const [ isRefreshing, setIsRefreshing ] = useState(false);
+
+    const onRefresh = useCallback(async() => {
+        setIsRefreshing(true);
+        try {
+            await Promise.all([
+                refetchAppointment(),
+                refetchFacility(),
+                refetchPatient()
+            ])
+        } catch (e) {
+            console.error('failed to refresh appointment data', e)
+            Toast.show({ type: 'error', text1: 'Refresh Failed', text2: 'Could not update data.' })
+        } finally {
+            setIsRefreshing(false);
+        }
+    },[refetchAppointment, refetchPatient, refetchFacility] )
 
     if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
 
@@ -107,6 +124,8 @@ export default function AppointmentIDPage() {
                 )
         }
     }
+
+
 
     //toggles modal visibility
     const toggleModalOpen = () => {
@@ -267,13 +286,13 @@ export default function AppointmentIDPage() {
             <BackButton />
             <ScrollView
                 className={''}
-                //TODO: Work on the pull to refresh function
-                // refreshControl={
-                //     <RefreshControl
-                //         refreshing={refreshing}
-                //         onRefresh={onRefresh}
-                //     />
-                // }
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefreshing}
+                        onRefresh={onRefresh}
+                        tintColor="#6B7280" // Optional: style the spinner color
+                    />
+                }
             >
                 <View>
                     <Card className={'rounded-none rounded-t-lg'}>
