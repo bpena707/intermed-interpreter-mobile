@@ -26,6 +26,7 @@
         "EXPO_PUBLIC_API_URL": "https://www.pena-med.com/api",
         "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsucGVuYS1tZWQuY29tJA"
       },
+      "autoIncrement": true,
       "channel": "preview"
     },
     "production": {

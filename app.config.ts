@@ -45,12 +45,11 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
     // This URL points to your project's update server on EAS
     url: "https://u.expo.dev/2b5de7d1-cdce-4b08-be6b-abc30058ddda"
   },
-  runtimeVersion: {
+  runtimeVersion:
     // This policy ties the updates to your app version.
     // When you change "version" above (e.g., to "1.0.1"), you'll need a new build.
     // Updates will only apply to builds with the same app version.
-    policy: "appVersion"
-  },
+    "1.0.1",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": getUniqueIdentifier()
@@ -90,6 +89,6 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
         "projectId": "2b5de7d1-cdce-4b08-be6b-abc30058ddda"
       }
     },
-    "owner": "bpena707"
-  })
+  "owner": "bpena707"
+})
 
