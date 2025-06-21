@@ -17,28 +17,52 @@ import {formatDataForAgenda} from "@/lib/utils";
 import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import {addHours, format, parse} from 'date-fns';
 import {router} from "expo-router";
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useMemo, useRef, useState} from "react";
 
 const screenHeight = Dimensions.get('window').height;
 
 const AgendaComponent = () => {
-    const { data: appointment, isLoading, isError, refetch } = useGetAppointments();
-    const formattedData: any = formatDataForAgenda(appointment ?? []);
+    const { data: appointment, isLoading, isError, refetchWithClearCache } = useGetAppointments();
+    // const formattedData: any = formatDataForAgenda(appointment ?? []);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const agendaRef = useRef(null);
 
+    // Clean onRefresh without forcing re-mount
     const onRefresh = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            await refetch(); // Tell React Query to refetch the appointments
-            console.log("Agenda data refreshed.");
+            await refetchWithClearCache();
+            console.log("Agenda data refreshed with cache cleared.");
         } catch (error) {
             console.error("Failed to refresh agenda:", error);
         } finally {
             setIsRefreshing(false);
         }
-    }, [refetch]);
+    }, [refetchWithClearCache]);
 
+    // Memoize formatted data with a unique version to force updates
+    const formattedData = useMemo(() => {
+        console.log("Formatting and sorting agenda data...");
+        const formatted = formatDataForAgenda(appointment ?? []);
 
+        // Add a timestamp to each item to ensure uniqueness
+        Object.keys(formatted).forEach(dateKey => {
+            formatted[dateKey] = formatted[dateKey].map(item => ({
+                ...item,
+                _version: Date.now() // This forces the agenda to recognize data changes
+            }));
+        });
+
+        console.log("Formatted data with version:", formatted);
+        return formatted;
+    }, [appointment]);
+
+    const dataKey = useMemo(() => {
+        return JSON.stringify(Object.keys(formattedData).map(dateKey =>
+            formattedData[dateKey].map(item => `${item.id}-${item.startTime}`)
+        ));
+    }, [formattedData]);
 
     if (isLoading && !isRefreshing) {
         return (
@@ -175,10 +199,14 @@ const AgendaComponent = () => {
     return(
         <View style={styles.container}>
             <Agenda
+                key={`agenda-${dataKey}`}
+                ref={agendaRef}
                 items={formattedData}
                 renderItem={renderItem}
                 showOnlySelectedDayItems
                 renderEmptyData={renderEmptyDate}
+                selected={selectedDate}
+                onDayPress={(day) => setSelectedDate(day.dateString)}
                 theme={{
                     selectedDayBackgroundColor: '#ef4444',
                     todayTextColor: '#ef4444',

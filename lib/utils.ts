@@ -2,6 +2,7 @@ import { Appointment } from '@/types/apiTypes';
 import { AppointmentEntry } from '@/types/apiTypes';
 
 import { ClassValue, clsx } from 'clsx'
+import { parseISO } from 'date-fns';
 import { twMerge } from 'tailwind-merge'
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -26,7 +27,7 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
             id: appointment.id,
             bookingId: appointment.bookingId,
             name: appointment.patient,
-            height: 100,
+            height: 110,
             status: appointment.status,
             day: dateKey,
             startTime: appointment.startTime,
@@ -46,6 +47,31 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
         });
     });
 
+    // Sort each day's appointments by start time
+
+    Object.keys(agendaItemsMap).forEach((dateKey) => {
+        agendaItemsMap[dateKey].sort((a, b) => {
+            // Provide a default "late" time if startTime is missing, to avoid errors
+            const timeAStr = a.startTime || '99:99:99';
+            const timeBStr = b.startTime || '99:99:99';
+
+            try {
+                // Create dummy Date objects for comparison
+                const timeA = new Date(`1970-01-01T${timeAStr}`);
+                const timeB = new Date(`1970-01-01T${timeBStr}`);
+
+                const comparisonResult = timeA.getTime() - timeB.getTime();
+
+                // Log the comparison to see exactly what's happening
+                console.log(`Comparing A (bookingId: ${a.bookingId}, time: "${a.startTime}") vs. B (bookingId: ${b.bookingId}, time: "${b.startTime}"). Result: ${comparisonResult}`);
+
+                return comparisonResult;
+            } catch (e) {
+                console.error(`Could not parse startTime for sorting. A: "${a.startTime}", B: "${b.startTime}"`);
+                return 0; // If parsing fails, don't change their order
+            }
+        });
+    });
     return agendaItemsMap;
 };
 

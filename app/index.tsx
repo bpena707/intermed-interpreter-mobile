@@ -1,7 +1,7 @@
-import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp} from '@clerk/clerk-expo'
+import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp, useSSO} from '@clerk/clerk-expo'
 import {Link, router, useLocalSearchParams, useRouter} from 'expo-router'
 import {Button, SafeAreaView, Text, TextInput, View} from 'react-native'
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Input} from "@/app/components/ui/input";
 import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
 import CustomButton from "@/app/components/ui/custom-button";
@@ -9,12 +9,29 @@ import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
 import 'react-native-get-random-values';
 import Toast from "react-native-toast-message";
+import * as WebBrowser from 'expo-web-browser'
+import * as AuthSession from 'expo-auth-session'
 
 
 // enum Strategy {
 //     Google = 'oauth_google',
 //     Apple = 'oauth_apple'
 // }
+
+export const useWarmUpBrowser = () => {
+    useEffect(() => {
+        // Preloads the browser for Android devices to reduce authentication load time
+        // See: https://docs.expo.dev/guides/authentication/#improving-user-experience
+        void WebBrowser.warmUpAsync()
+        return () => {
+            // Cleanup: closes browser when component unmounts
+            void WebBrowser.coolDownAsync()
+        }
+    }, [])
+}
+
+// Handle any pending authentication sessions
+WebBrowser.maybeCompleteAuthSession()
 
 export default function Page() {
     const { type } = useLocalSearchParams<{ type: string }>()
@@ -23,6 +40,64 @@ export default function Page() {
     const [password, setPassword] = useState('')
     const {signIn, setActive, isLoaded} = useSignIn()
     const {signUp, isLoaded: signUpLoaded, setActive: signupSetActive} = useSignUp()
+
+    //methods from clerk to preload browser and use SSO
+    useWarmUpBrowser()
+    const { startSSOFlow } = useSSO()
+
+    const onPressApple = useCallback(async () => {
+        try {
+            // Start the authentication process by calling `startSSOFlow()`
+            const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
+                strategy: 'oauth_apple',
+                // For web, defaults to current path
+                // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
+                // For more info, see https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
+                redirectUrl: AuthSession.makeRedirectUri(),
+            })
+
+            // If sign in was successful, set the active session
+            if (createdSessionId) {
+                setActive!({ session: createdSessionId })
+            } else {
+                // If there is no `createdSessionId`,
+                // there are missing requirements, such as MFA
+                // Use the `signIn` or `signUp` returned from `startSSOFlow`
+                // to handle next steps
+            }
+        } catch (err) {
+            // See https://clerk.com/docs/custom-flows/error-handling
+            // for more info on error handling
+            console.error(JSON.stringify(err, null, 2))
+        }
+    }, [])
+
+    const onPressGoogle = useCallback(async () => {
+        try {
+            // Start the authentication process by calling `startSSOFlow()`
+            const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
+                strategy: 'oauth_google',
+                // For web, defaults to current path
+                // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
+                // For more info, see https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
+                redirectUrl: AuthSession.makeRedirectUri(),
+            })
+
+            // If sign in was successful, set the active session
+            if (createdSessionId) {
+                setActive!({ session: createdSessionId })
+            } else {
+                // If there is no `createdSessionId`,
+                // there are missing requirements, such as MFA
+                // Use the `signIn` or `signUp` returned from `startSSOFlow`
+                // to handle next steps
+            }
+        } catch (err) {
+            // See https://clerk.com/docs/custom-flows/error-handling
+            // for more info on error handling
+            console.error(JSON.stringify(err, null, 2))
+        }
+    }, [])
 
     const onSignUpPress = async () => {
         if (!signUpLoaded) return
@@ -116,25 +191,24 @@ export default function Page() {
                         </CustomButton>
                     </View>
                     <View className='flex flex-col items-center mb-5 '>
-
                     </View>
                     <View className='mb-10'>
-                        <Separator />
+                        <Separator message={'Or'} />
                     </View>
-                    {/*<View className={'flex flex-col gap-y-2'}>*/}
-                    {/*    <CustomButton variant='outline' className='flex flex-row ' >*/}
-                    {/*        <AntDesign name="google" size={24} color="black" />*/}
-                    {/*        <Text className='text-lg text-black font-bold ml-4 tracking-wide' >*/}
-                    {/*            Google*/}
-                    {/*        </Text>*/}
-                    {/*    </CustomButton>*/}
-                    {/*    <CustomButton variant='outline' className='flex flex-row ' >*/}
-                    {/*        <AntDesign name="apple1" size={24} color="black" />*/}
-                    {/*        <Text className='text-lg text-black font-bold tracking-wide ml-4'>*/}
-                    {/*            Apple*/}
-                    {/*        </Text>*/}
-                    {/*    </CustomButton>*/}
-                    {/*</View>*/}
+                    <View className={'flex flex-col gap-y-4'}>
+                        <CustomButton variant='outline' className='flex flex-row ' onPress={onPressGoogle} >
+                            <AntDesign name="google" size={24} color="black" />
+                            <Text className='text-lg text-black font-bold ml-4 tracking-wide' >
+                                Google
+                            </Text>
+                        </CustomButton>
+                        <CustomButton variant='outline' className='flex flex-row' onPress={onPressApple} >
+                            <AntDesign name="apple1" size={24} color="black" />
+                            <Text className='text-lg text-black font-bold tracking-wide ml-4' >
+                                Apple
+                            </Text>
+                        </CustomButton>
+                    </View>
                 </View>
                 <View className='mt-10'>
                     <Link href="/sign-up">

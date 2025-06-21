@@ -27,6 +27,7 @@ import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
 import Map from "@/app/components/map";
 import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
 import Toast from "react-native-toast-message";
+import {fromZonedTime} from "date-fns-tz";
 
 export default function AppointmentIDPage() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -175,20 +176,42 @@ export default function AppointmentIDPage() {
     };
 
     const handleFollowUpSubmit = (data: FollowUpFormData) => {
-        console.log("Follow up submitted:", data);
+        console.log("Follow up form data received in page:", data);
+
+        // 1. Combine the date part from the DatePicker and the time part from the TimePicker
+        // into a single Date object representing the user's intended LOCAL date and time.
+        const localDateTime = new Date(
+            data.date.getFullYear(),
+            data.date.getMonth(),
+            data.date.getDate(),
+            data.startTime.getHours(),
+            data.startTime.getMinutes(),
+            data.startTime.getSeconds()
+        );
+
+        // 2. Get the device's actual timezone name (e.g., "America/Los_Angeles").
+        // This uses the robust Intl API.
+        const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        // 3. Convert the user's local date and time into the correct UTC equivalent.
+        // This is the correct point-in-time value to send to your backend.
+        const utcDate = fromZonedTime(localDateTime, deviceTimeZone);
         createAppointmentMutation.mutate({
-            date: data.date,
-            startTime: data.startTime,
+            ...data,
+            date: utcDate, // A full Date object representing the correct instant in UTC
+            startTime: format(localDateTime, 'HH:mm:ss'), // A formatted "HH:mm:ss" string
+
+            // Pass other data from the form
             projectedDuration: data.projectedDuration,
             notes: data.notes,
             appointmentType: data.appointmentType,
-            status: 'Interpreter Requested',
+            status: 'Interpreter Requested', // Set default status for new follow-up
             patientId: appointment?.patientId ?? '',
-            facilityId: data.facilityId || appointment?.facilityId ,
+            facilityId: data.facilityId || appointment?.facilityId,
             interpreterId: appointment?.interpreterId,
             newFacilityAddress: data.newFacilityAddress,
             isCertified: data.isCertified,
-        })
+        });
     }
 
     //series of buttons that change at the bottom of the appointment details card based on the appointment status

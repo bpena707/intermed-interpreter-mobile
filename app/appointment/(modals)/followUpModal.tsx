@@ -15,6 +15,7 @@ import CustomButton from "@/app/components/ui/custom-button";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetFacilities} from "@/app/features/facilities/api/use-get-facilities";
+import { fromZonedTime } from 'date-fns-tz';
 
 interface FollowUpModalProps {
     id: string;
@@ -39,19 +40,10 @@ interface FollowUpModalProps {
 const intervalRegex = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/i;
 
 const followUpSchema = z.object({
-    date: z.coerce.date(),
+    date: z.date({ required_error: "Date is required" }),
     // Process startTime: if it's a Date, keep it; if it's a string, convert it;
     // then transform it to a formatted string "HH:mm:ss"
-    startTime: z.preprocess((arg) => {
-        if (arg instanceof Date) return arg;
-        if (typeof arg === "string") return new Date(arg);
-        return arg;
-    }, z.date().transform((date: Date) => {
-        const hh = String(date.getHours()).padStart(2, "0");
-        const mm = String(date.getMinutes()).padStart(2, "0");
-        const ss = String(date.getSeconds()).padStart(2, "0");
-        return `${hh}:${mm}:${ss}`;
-    })),
+    startTime: z.date({ required_error: "A start time is required." }),
     projectedDuration: z.string().regex(intervalRegex, {message: 'Invalid duration format, e.g., 1h30m'}).optional(),
     appointmentType: z.string(),
     notes: z.string().optional(),
@@ -78,7 +70,7 @@ const FollowUpModal = ({
         resolver: zodResolver(followUpSchema),
         defaultValues: {
             date: appointmentData?.date ? new Date(appointmentData.date) : new Date(),
-            startTime: appointmentData.startTime || '',
+            startTime: new Date(),
             projectedDuration: '',
             appointmentType: '',
             notes: '',
@@ -106,9 +98,8 @@ const FollowUpModal = ({
     const handleFormSubmit = (data: FollowUpFormData) => {
         onSubmit(data)
         onClose()
-        console.log(data)
+        console.log("Submitting payload:", data)
     }
-
 
     // const [selectedValue, setSelectedValue] = useState<string | null>(null);
     const appointmentOptions = [
@@ -121,7 +112,6 @@ const FollowUpModal = ({
         {label: "Conference", value: "Conference"},
         {label: "Other", value: "Other"},
     ];
-
 
     return(
         <Modal

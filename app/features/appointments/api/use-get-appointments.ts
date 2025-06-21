@@ -1,13 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import { Appointment } from '@/types/apiTypes';
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import axios from "axios";
+import {useCallback} from "react";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const useGetAppointments = () => {
     const { getToken, userId } = useAuth()
     const { user } = useUser()
+    const queryClient = useQueryClient()
     //define the query
     const query = useQuery<Appointment[]>({
         //queryKey is the name of the data stored in cache to be reused later again instead or parsing data all over again
@@ -62,18 +64,32 @@ export const useGetAppointments = () => {
                     throw new Error(`Failed to fetch appointments: Server responded with status ${error.response?.status}${statusText}${serverMessage || (' - ' + error.message)}`);
 
                 } else if (error instanceof Error) {
-                    // 👇 THIS IS THE KEY CHANGE 👇
-                    // If it's not an AxiosError, BUT it IS a standard Error object,
-                    // THEN it's safe to access .message here.
                     throw new Error(`Failed to fetch appointments: ${error.message}`);
-
                 } else {
                     // If it's not an AxiosError AND not an Error instance, handle the truly unknown case.
                     // You cannot safely access .message here.
                     throw new Error('An unexpected error occurred while fetching appointments.');
                 }
             }
-        }
+        },
+        staleTime: 30000, // 30 seconds stale time for data
+        refetchOnWindowFocus: true // Refetch data when app is back into focus
     })
-    return query
+
+    const refetchWithClearCache = useCallback(async () => {
+        console.log('Clearing appointments cache and refetching...');
+
+        // Step 1: Invalidate the cache
+        await queryClient.invalidateQueries({
+            queryKey: ['appointments', userId]
+        });
+
+        // Step 2: Force a fresh fetch
+        return query.refetch();
+    }, [queryClient, userId, query.refetch]);
+
+    return {
+        ...query,
+        refetchWithClearCache // Expose the enhanced refetch function
+    }
 }
