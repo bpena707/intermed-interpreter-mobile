@@ -1,6 +1,6 @@
 import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp, useSSO} from '@clerk/clerk-expo'
 import {Link, router, useLocalSearchParams, useRouter} from 'expo-router'
-import {Button, SafeAreaView, Text, TextInput, View} from 'react-native'
+import {ActivityIndicator, Button, SafeAreaView, Text, TextInput, View} from 'react-native'
 import React, {useCallback, useEffect, useState} from "react";
 import {Input} from "@/app/components/ui/input";
 import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
@@ -11,12 +11,6 @@ import 'react-native-get-random-values';
 import Toast from "react-native-toast-message";
 import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
-
-
-// enum Strategy {
-//     Google = 'oauth_google',
-//     Apple = 'oauth_apple'
-// }
 
 export const useWarmUpBrowser = () => {
     useEffect(() => {
@@ -45,35 +39,9 @@ export default function Page() {
     useWarmUpBrowser()
     const { startSSOFlow } = useSSO()
 
-    const onPressApple = useCallback(async () => {
-        try {
-            // Start the authentication process by calling `startSSOFlow()`
-            const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
-                strategy: 'oauth_apple',
-                // For web, defaults to current path
-                // For native, you must pass a scheme, like AuthSession.makeRedirectUri({ scheme, path })
-                // For more info, see https://docs.expo.dev/versions/latest/sdk/auth-session/#authsessionmakeredirecturioptions
-                redirectUrl: AuthSession.makeRedirectUri(),
-            })
-
-            // If sign in was successful, set the active session
-            if (createdSessionId) {
-                setActive!({ session: createdSessionId })
-            } else {
-                // If there is no `createdSessionId`,
-                // there are missing requirements, such as MFA
-                // Use the `signIn` or `signUp` returned from `startSSOFlow`
-                // to handle next steps
-            }
-        } catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
-            console.error(JSON.stringify(err, null, 2))
-        }
-    }, [])
-
     const onPressGoogle = useCallback(async () => {
         try {
+            setLoading(true)
             // Start the authentication process by calling `startSSOFlow()`
             const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
                 strategy: 'oauth_google',
@@ -93,35 +61,22 @@ export default function Page() {
                 // to handle next steps
             }
         } catch (err) {
-            // See https://clerk.com/docs/custom-flows/error-handling
-            // for more info on error handling
             console.error(JSON.stringify(err, null, 2))
-        }
-    }, [])
-
-    const onSignUpPress = async () => {
-        if (!signUpLoaded) return
-
-        setLoading(true)
-
-        try {
-            const result = await signUp.create({ emailAddress, password  })
-
-            await signupSetActive({
-                session: result.createdSessionId
+            Toast.show({
+                type: 'error',
+                text1: 'Sign in failed',
+                text2: 'Please try again'
             })
-        }catch (e) {
-            console.log(e)
-
         } finally {
             setLoading(false)
         }
-    }
+    }, [])
 
     const onSignInPress = async () => {
         if (!isLoaded) {
             return
         }
+        setLoading(true)
 
         try {
             const signInAttempt = await signIn.create({
@@ -139,30 +94,15 @@ export default function Page() {
             }
         } catch (err: any) {
             console.error(JSON.stringify(err, null, 2))
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid credentials',
+                text2: 'Please check your email and password'
+            })
+        } finally {
+            setLoading(false)
         }
     }
-
-    // const { startOAuthFlow: appleAuth } = useOAuth({ strategy: "oauth_apple" })
-    // const { startOAuthFlow: googleAuth } = useOAuth({ strategy: "oauth_google" })
-    //
-    // const onSelectAuth = async (strategy: Strategy) => {
-    //     const selectedAuth = {
-    //         [Strategy.Google]: googleAuth,
-    //         [Strategy.Apple]: appleAuth,
-    //     }[strategy];
-    //
-    //     try {
-    //         const { createdSessionId, setActive } = await selectedAuth();
-    //
-    //         //if we get the createdSessionId the user is authenticated and set the active session using the id
-    //         if (createdSessionId) {
-    //             await setActive!({session: createdSessionId});
-    //             router.back();
-    //         }
-    //     } catch (err) {
-    //         console.error('Authorization Error', err);
-    //     }
-    // };
 
     return (
         <SafeAreaView className={'bg-slate-200 flex flex-1 '}>
@@ -196,17 +136,22 @@ export default function Page() {
                         <Separator message={'Or'} />
                     </View>
                     <View className={'flex flex-col gap-y-4'}>
-                        <CustomButton variant='outline' className='flex flex-row ' onPress={onPressGoogle} >
-                            <AntDesign name="google" size={24} color="black" />
-                            <Text className='text-lg text-black font-bold ml-4 tracking-wide' >
-                                Google
-                            </Text>
-                        </CustomButton>
-                        <CustomButton variant='outline' className='flex flex-row' onPress={onPressApple} >
-                            <AntDesign name="apple1" size={24} color="black" />
-                            <Text className='text-lg text-black font-bold tracking-wide ml-4' >
-                                Apple
-                            </Text>
+                        <CustomButton
+                            variant='outline'
+                            className='flex flex-row '
+                            onPress={onPressGoogle}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <ActivityIndicator color="black" />
+                            ) : (
+                                <>
+                                    <AntDesign name="google" size={24} color="black" />
+                                    <Text className='text-lg text-black font-bold ml-4 tracking-wide'>
+                                        Google
+                                    </Text>
+                                </>
+                            )}
                         </CustomButton>
                     </View>
                 </View>

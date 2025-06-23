@@ -1,11 +1,13 @@
 import * as React from 'react'
-import {TextInput, Button, View, SafeAreaView, Text} from 'react-native'
+import {TextInput, Button, View, SafeAreaView, Text, TouchableOpacity} from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import {Link, Stack, useRouter} from 'expo-router'
 import {Input} from "@/app/components/ui/input";
 import CustomButton from "@/app/components/ui/custom-button";
 import Separator from "@/app/components/ui/separator";
-import {AntDesign} from "@expo/vector-icons";
+import {AntDesign, Feather} from "@expo/vector-icons";
+import Toast from "react-native-toast-message";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function SignUpScreen() {
     const { isLoaded, signUp, setActive } = useSignUp()
@@ -15,6 +17,7 @@ export default function SignUpScreen() {
     const [password, setPassword] = React.useState('')
     const [pendingVerification, setPendingVerification] = React.useState(false)
     const [code, setCode] = React.useState('')
+    const [showPassword, setShowPassword] = React.useState(false)
 
     const onSignUpPress = async () => {
         if (!isLoaded) {
@@ -58,11 +61,53 @@ export default function SignUpScreen() {
             // See https://clerk.com/docs/custom-flows/error-handling
             // for more info on error handling
             console.error(JSON.stringify(err, null, 2))
+            Toast.show({
+                type: 'error',
+                text1: 'Invalid Code',
+                text2: 'Please check and try again'
+            })
         }
     }
 
-    return (
+    const PasswordRequirements = ({ password }: { password: string }) => {
+        const requirements = [
+            {
+                text: "At least 8 characters",
+                met: password.length >= 8
+            },
+            {
+                text: "One uppercase letter",
+                met: /[A-Z]/.test(password)
+            },
+            {
+                text: "One special character",
+                met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+            }
+        ];
 
+        return (
+            <View className="mb-4">
+                {requirements.map((req, index) => (
+                    <View key={index} className="flex-row items-center mb-1">
+                        <Feather
+                            name={req.met ? "check-circle" : "circle"}
+                            size={16}
+                            color={req.met ? "#22c55e" : "#9ca3af"}
+                        />
+                        <Text
+                            className={`text-xs ml-2 ${
+                                req.met ? 'text-green-600' : 'text-gray-500'
+                            }`}
+                        >
+                            {req.text}
+                        </Text>
+                    </View>
+                ))}
+            </View>
+        );
+    };
+
+    return (
         <SafeAreaView className='flex flex-1 bg-slate-200'>
 
             {!pendingVerification && (
@@ -78,13 +123,31 @@ export default function SignUpScreen() {
                                     placeholder="Email..."
                                     onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
                                 />
-                                <Input
-                                    value={password}
-                                    placeholder="Password..."
-                                    secureTextEntry={true}
-                                    onChangeText={(password) => setPassword(password)}
-                                    className='mb-5'
-                                />
+                                <View className='relative'>
+                                    <Input
+                                        value={password}
+                                        placeholder="Password..."
+                                        secureTextEntry={!showPassword}
+                                        onChangeText={(password) => setPassword(password)}
+                                        className='pr-12 mb-1' // Add padding-right for the icon
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => setShowPassword(!showPassword)}
+                                        className='absolute right-3 top-3'
+                                    >
+                                        <Ionicons
+                                            name={showPassword ? "eye-off" : "eye"}
+                                            size={24}
+                                            color="gray"
+                                        />
+                                    </TouchableOpacity>
+                                    <Text className="text-xs text-gray-400 text-center mb-2">
+                                        Compromised passwords will be rejected.
+                                    </Text>
+                                    {password.length > 0 && (
+                                        <PasswordRequirements password={password} />
+                                    )}
+                                </View>
                                 <CustomButton onPress={onSignUpPress}>
                                     <Text className='text-lg text-white font-extrabold ml-4 tracking-wide'>
                                         Submit
@@ -124,7 +187,10 @@ export default function SignUpScreen() {
             )}
             {pendingVerification && (
                 <>
-                    <TextInput value={code} placeholder="Code..." onChangeText={(code) => setCode(code)} />
+                    <Text className="text-center text-gray-600 dark:text-gray-400 mb-2">
+                        Enter the code sent to your email address then press "Verify Email"
+                    </Text>
+                    <Input value={code} placeholder="Code..." onChangeText={(code) => setCode(code)} />
                     <Button title="Verify Email" onPress={onPressVerify} />
                 </>
             )}

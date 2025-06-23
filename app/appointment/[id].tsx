@@ -178,9 +178,8 @@ export default function AppointmentIDPage() {
     const handleFollowUpSubmit = (data: FollowUpFormData) => {
         console.log("Follow up form data received in page:", data);
 
-        // 1. Combine the date part from the DatePicker and the time part from the TimePicker
-        // into a single Date object representing the user's intended LOCAL date and time.
-        const localDateTime = new Date(
+        // Simply combine the date and time as the user intended - no timezone conversion
+        const appointmentDateTime = new Date(
             data.date.getFullYear(),
             data.date.getMonth(),
             data.date.getDate(),
@@ -189,17 +188,10 @@ export default function AppointmentIDPage() {
             data.startTime.getSeconds()
         );
 
-        // 2. Get the device's actual timezone name (e.g., "America/Los_Angeles").
-        // This uses the robust Intl API.
-        const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        // 3. Convert the user's local date and time into the correct UTC equivalent.
-        // This is the correct point-in-time value to send to your backend.
-        const utcDate = fromZonedTime(localDateTime, deviceTimeZone);
         createAppointmentMutation.mutate({
             ...data,
-            date: utcDate, // A full Date object representing the correct instant in UTC
-            startTime: format(localDateTime, 'HH:mm:ss'), // A formatted "HH:mm:ss" string
+            date: appointmentDateTime, // Send the literal date/time the user selected
+            startTime: format(appointmentDateTime, 'HH:mm:ss'), // Use the same datetime for consistency
 
             // Pass other data from the form
             projectedDuration: data.projectedDuration,
