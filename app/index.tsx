@@ -1,6 +1,6 @@
 import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp, useSSO} from '@clerk/clerk-expo'
 import {Link, router, useLocalSearchParams, useRouter} from 'expo-router'
-import {ActivityIndicator, Button, SafeAreaView, Text, TextInput, View} from 'react-native'
+import {ActivityIndicator, Button, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import React, {useCallback, useEffect, useState} from "react";
 import {Input} from "@/app/components/ui/input";
 import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
@@ -11,6 +11,7 @@ import 'react-native-get-random-values';
 import Toast from "react-native-toast-message";
 import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export const useWarmUpBrowser = () => {
     useEffect(() => {
@@ -34,6 +35,7 @@ export default function Page() {
     const [password, setPassword] = useState('')
     const {signIn, setActive, isLoaded} = useSignIn()
     const {signUp, isLoaded: signUpLoaded, setActive: signupSetActive} = useSignUp()
+    const [ showPassword, setShowPassword ] = useState(false)
 
     //methods from clerk to preload browser and use SSO
     useWarmUpBrowser()
@@ -94,11 +96,31 @@ export default function Page() {
             }
         } catch (err: any) {
             console.error(JSON.stringify(err, null, 2))
-            Toast.show({
-                type: 'error',
-                text1: 'Invalid credentials',
-                text2: 'Please check your email and password'
-            })
+            if (err.errors?.[0]?.code === 'form_password_incorrect') {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Incorrect password',
+                    text2: 'Please check your password and try again'
+                })
+            } else if (err.errors?.[0]?.code === 'user_locked') {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Account locked',
+                    text2: 'Too many failed attempts. Please try again later'
+                })
+            }else if (err.errors?.[0]?.code === 'form_identifier_not_found') {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Account not found',
+                    text2: 'No account exists with this email'
+                })
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Sign in failed',
+                    text2: err.errors?.[0]?.message || 'Please check your credentials'
+                })
+            }
         } finally {
             setLoading(false)
         }
@@ -117,13 +139,26 @@ export default function Page() {
                             placeholder="Email..."
                             onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
                         />
-                        <Input
-                            value={password}
-                            placeholder="Password..."
-                            secureTextEntry={true}
-                            onChangeText={(password) => setPassword(password)}
-                            className='mb-5'
-                        />
+                        <View className='relative'>
+                            <Input
+                                value={password}
+                                placeholder="Password..."
+                                secureTextEntry={!showPassword}
+                                onChangeText={(password) => setPassword(password)}
+                                className={'mb-5'}
+
+                            />
+                            <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                                className='absolute right-3 top-3'
+                            >
+                                <Ionicons
+                                    name={showPassword ? "eye-off" : "eye"}
+                                    size={24}
+                                    color="gray"
+                                />
+                            </TouchableOpacity>
+                        </View>
                         <CustomButton onPress={() => onSignInPress()}>
                             <Text className='text-lg text-white font-extrabold ml-4 tracking-wide'>
                                 Submit

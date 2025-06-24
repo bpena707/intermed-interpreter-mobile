@@ -17,7 +17,17 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
     const agendaItemsMap: AgendaItemsMap = {};
 
     appointments.forEach((appointment) => {
-        const dateKey = appointment.date.split('T')[0];
+        const appointmentDate = parseISO(appointment.date);
+
+        // Format the date in local timezone (not UTC)
+        // This ensures 5:04 PM on 7/1 stays on 7/1, not 7/2
+        const year = appointmentDate.getFullYear();
+        const month = String(appointmentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(appointmentDate.getDate()).padStart(2, '0');
+        const dateKey = `${year}-${month}-${day}`;
+
+        console.log(`Appointment ${appointment.bookingId}: Raw date: ${appointment.date}, Parsed local date: ${dateKey}`);
+
 
         if (!agendaItemsMap[dateKey]) {
             agendaItemsMap[dateKey] = [];
@@ -48,7 +58,6 @@ export const formatDataForAgenda = (appointments: Appointment[]): AgendaItemsMap
     });
 
     // Sort each day's appointments by start time
-
     Object.keys(agendaItemsMap).forEach((dateKey) => {
         agendaItemsMap[dateKey].sort((a, b) => {
             // Provide a default "late" time if startTime is missing, to avoid errors
