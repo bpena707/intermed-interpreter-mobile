@@ -1,9 +1,8 @@
-import {SignedIn, SignedOut, useUser, useSignIn, useOAuth, useSignUp, useSSO} from '@clerk/clerk-expo'
-import {Link, router, useLocalSearchParams, useRouter} from 'expo-router'
-import {ActivityIndicator, Button, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native'
+import {useSignIn, useSSO, useUser} from '@clerk/clerk-expo'
+import {Link, router} from 'expo-router'
+import {ActivityIndicator, SafeAreaView, Text, TouchableOpacity, View} from 'react-native'
 import React, {useCallback, useEffect, useState} from "react";
 import {Input} from "@/app/components/ui/input";
-import {flex} from "nativewind/dist/postcss/to-react-native/properties/flex";
 import CustomButton from "@/app/components/ui/custom-button";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign} from "@expo/vector-icons";
@@ -29,12 +28,12 @@ export const useWarmUpBrowser = () => {
 WebBrowser.maybeCompleteAuthSession()
 
 export default function Page() {
-    const { type } = useLocalSearchParams<{ type: string }>()
+    // const { type } = useLocalSearchParams<{ type: string }>()
     const [loading, setLoading] = useState(false)
     const [emailAddress, setEmailAddress] = useState('')
     const [password, setPassword] = useState('')
     const {signIn, setActive, isLoaded} = useSignIn()
-    const {signUp, isLoaded: signUpLoaded, setActive: signupSetActive} = useSignUp()
+    // const {signUp, isLoaded: signUpLoaded, setActive: signupSetActive} = useSignUp()
     const [ showPassword, setShowPassword ] = useState(false)
 
     //methods from clerk to preload browser and use SSO
@@ -56,11 +55,15 @@ export default function Page() {
             // If sign in was successful, set the active session
             if (createdSessionId) {
                 setActive!({ session: createdSessionId })
+                // Redirect to root after successful sign in to handle statuses
+                router.replace('/')
             } else {
-                // If there is no `createdSessionId`,
-                // there are missing requirements, such as MFA
-                // Use the `signIn` or `signUp` returned from `startSSOFlow`
-                // to handle next steps
+                console.log('no session created')
+                Toast.show({
+                    type: 'error',
+                    text1: 'Sign in incomplete',
+                    text2: 'Please try again with email and password'
+                })
             }
         } catch (err) {
             console.error(JSON.stringify(err, null, 2))
@@ -138,6 +141,8 @@ export default function Page() {
                             value={emailAddress}
                             placeholder="Email..."
                             onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+                            textContentType="emailAddress" //ios
+                            autoComplete='email' //android
                         />
                         <View className='relative'>
                             <Input
@@ -146,6 +151,8 @@ export default function Page() {
                                 secureTextEntry={!showPassword}
                                 onChangeText={(password) => setPassword(password)}
                                 className={'mb-5'}
+                                textContentType={'password'} //ios
+                                autoComplete='password' //android
 
                             />
                             <TouchableOpacity
@@ -159,6 +166,16 @@ export default function Page() {
                                 />
                             </TouchableOpacity>
                         </View>
+
+                        <View className='flex items-center justify-center'>
+                            <TouchableOpacity
+                                onPress={() => router.push('/forgot-password')}
+                                className='self-end mb-3'
+                            >
+                                <Text className='text-blue-600 text-sm'>Forgot password?</Text>
+                            </TouchableOpacity>
+                        </View>
+
                         <CustomButton onPress={() => onSignInPress()}>
                             <Text className='text-lg text-white font-extrabold ml-4 tracking-wide'>
                                 Submit

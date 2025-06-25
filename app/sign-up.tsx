@@ -1,14 +1,14 @@
 import * as React from 'react'
-import {TextInput, Button, View, SafeAreaView, Text, TouchableOpacity, ActivityIndicator} from 'react-native'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {ActivityIndicator, SafeAreaView, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import {useSignUp, useSSO} from '@clerk/clerk-expo'
-import {Link, Stack, useRouter} from 'expo-router'
+import {Link, useRouter} from 'expo-router'
 import {Input} from "@/app/components/ui/input";
 import CustomButton from "@/app/components/ui/custom-button";
 import Separator from "@/app/components/ui/separator";
 import {AntDesign, Feather} from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {useCallback, useEffect, useRef, useState} from "react";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 
@@ -29,18 +29,20 @@ WebBrowser.maybeCompleteAuthSession()
 export default function SignUpScreen() {
     const { isLoaded, signUp, setActive } = useSignUp()
     const router = useRouter()
-
+    //two states to handle email and password
     const [emailAddress, setEmailAddress] = React.useState('')
     const [password, setPassword] = React.useState('')
+    //state to handle pending verification and code input for the pending verification flow
     const [pendingVerification, setPendingVerification] = React.useState(false)
     const [code, setCode] = React.useState('')
     const [showPassword, setShowPassword] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
-    const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
+    const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']); //code input as an array of digits for input code
     const inputRefs = useRef<Array<TextInput | null>>([]);
     const [isResending, setIsResending] = React.useState(false)
     const [resendTimer, setResendTimer] = React.useState(0);
 
+    //effect to handle the countdown for resend timer after user requests a new verification code
     React.useEffect(() => {
         if (resendTimer > 0) {
             const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
@@ -52,6 +54,7 @@ export default function SignUpScreen() {
     useWarmUpBrowser()
     const { startSSOFlow } = useSSO()
 
+    //stratedgy to handle Google SSO
     const onPressGoogle = useCallback(async () => {
         try {
             setLoading(true)
@@ -165,6 +168,7 @@ export default function SignUpScreen() {
         }
     }
 
+    //handles the verification code input and submission
     const onPressVerify = async () => {
         if (!isLoaded) {
             return
@@ -218,6 +222,7 @@ export default function SignUpScreen() {
         }
     }
 
+    // Component to display password requirements while user is typing to help them create a strong password
     const PasswordRequirements = ({ password }: { password: string }) => {
         const requirements = [
             {
@@ -258,6 +263,7 @@ export default function SignUpScreen() {
 
     return (
         <SafeAreaView className='flex flex-1 bg-slate-200'>
+            {/*if the page is not pending verification render the inputs for eamil and password*/}
             {!pendingVerification && (
                 <>
                     <View className={' items-center mt-10'}>
@@ -270,6 +276,8 @@ export default function SignUpScreen() {
                                     value={emailAddress}
                                     placeholder="Email..."
                                     onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+                                    textContentType="emailAddress" // iOS
+                                    autoComplete="email" // Android
                                 />
                                 <View className='relative'>
                                     <Input
@@ -278,6 +286,8 @@ export default function SignUpScreen() {
                                         secureTextEntry={!showPassword}
                                         onChangeText={(password) => setPassword(password)}
                                         className='pr-12 mb-1' // Add padding-right for the icon
+                                        textContentType="newPassword" // iOS - triggers password suggestions
+                                        autoComplete="password-new" // Android - for new passwords
                                     />
                                         <TouchableOpacity
                                             onPress={() => setShowPassword(!showPassword)}
@@ -308,6 +318,7 @@ export default function SignUpScreen() {
                             <View className='mb-10'>
                                 <Separator message={'Or'} />
                             </View>
+                            {/*Social sign up button*/}
                             <View className='flex flex-col gap-y-4'>
                                 <CustomButton
                                     variant='outline'
@@ -327,21 +338,6 @@ export default function SignUpScreen() {
                                     )}
                                 </CustomButton>
                             </View>
-
-                            {/*<View className={'flex flex-col gap-y-2'}>*/}
-                            {/*    <CustomButton variant='outline' className='flex flex-row '>*/}
-                            {/*        <AntDesign name="google" size={24} color="black" />*/}
-                            {/*        <Text className='text-lg text-black font-bold ml-4 tracking-wide'>*/}
-                            {/*            Google*/}
-                            {/*        </Text>*/}
-                            {/*    </CustomButton>*/}
-                            {/*    <CustomButton variant='outline' className='flex flex-row '>*/}
-                            {/*        <AntDesign name="apple1" size={24} color="black" />*/}
-                            {/*        <Text className='text-lg text-black font-bold tracking-wide ml-4'>*/}
-                            {/*            Apple*/}
-                            {/*        </Text>*/}
-                            {/*    </CustomButton>*/}
-                            {/*</View>*/}
                         </View>
                         <View className='mt-10'>
                             <Link href="/">
@@ -351,6 +347,7 @@ export default function SignUpScreen() {
                     </View>
                 </>
             )}
+            {/*Changes the state of the page once pending verification is triggered when user presses submit*/}
             {pendingVerification && (
                 <View className='flex-1 bg-slate-200 px-6'>
                     <View className='flex-1 justify-center'>
@@ -438,7 +435,7 @@ export default function SignUpScreen() {
                                 setIsResending(true);
 
                                 try {
-                                    // Resend the verification code
+                                    // clerk method to resend the verification code using the email strategy
                                     await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
 
                                     Toast.show({
@@ -450,7 +447,6 @@ export default function SignUpScreen() {
 
                                 } catch (err: any) {
                                     console.error('Resend error:', err);
-
                                     // Handle specific Clerk errors
                                     if (err.errors?.[0]?.code === 'verification_already_verified') {
                                         Toast.show({
@@ -472,6 +468,7 @@ export default function SignUpScreen() {
                             className='py-2'
                             disabled={isResending || resendTimer > 0}
                         >
+                            {/*Render text with the timer to indicate to user that the email code is being resent within the time frame and disables user press again*/}
                             <Text className={`text-center text-sm ${(isResending || resendTimer > 0) ? 'text-gray-400' : 'text-blue-600'}`}>
                                 {isResending ? 'Sending...' :
                                     resendTimer > 0 ? `Resend code in ${resendTimer}s` :
