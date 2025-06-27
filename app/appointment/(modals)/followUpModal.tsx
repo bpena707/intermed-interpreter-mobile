@@ -1,21 +1,16 @@
-import {ActivityIndicator, Modal, Pressable, SafeAreaView, ScrollView, Text, View} from "react-native";
+import {Modal, Pressable, SafeAreaView, Text, View} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/app/components/ui/card";
+import {Card, CardContent, CardHeader} from "@/app/components/ui/card";
 import {format, parse} from "date-fns";
 import DatePicker from "@/app/components/ui/date-picker";
 import TimePicker from "@/app/components/ui/time-picker";
 import {Input} from "@/app/components/ui/input";
-import {date, z} from "zod";
-import DropDownPicker from "react-native-dropdown-picker";
+import {z} from "zod";
 import DropDownSelect from "@/app/components/ui/dropdown-picker";
-import {useEffect, useRef, useState} from "react";
-import {useForm, Controller} from "react-hook-form";
-import {CustomSwitch} from "@/app/components/ui/switch";
+import {Controller, useForm} from "react-hook-form";
 import CustomButton from "@/app/components/ui/custom-button";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetFacilities} from "@/app/features/facilities/api/use-get-facilities";
-import { fromZonedTime } from 'date-fns-tz';
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 interface FollowUpModalProps {

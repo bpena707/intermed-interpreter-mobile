@@ -1,25 +1,13 @@
-import {
-    Keyboard,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    Pressable,
-    SafeAreaView, ScrollView,
-    Text,
-    TouchableWithoutFeedback,
-    View
-} from 'react-native';
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
+import {KeyboardAvoidingView, Modal, Platform, Pressable, SafeAreaView, Text, View} from 'react-native';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/app/components/ui/card";
 import CustomButton from "@/app/components/ui/custom-button";
-import {date, z} from "zod";
+import {z} from "zod";
 import {Controller, useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod";
-import {Input} from "@/app/components/ui/input";
 import {TextArea} from "@/app/components/ui/text-area";
 import {CustomSwitch} from "@/app/components/ui/switch";
 import {format, parse} from "date-fns";
 import TimePicker from "@/app/components/ui/time-picker";
-import {AntDesign, MaterialCommunityIcons} from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
