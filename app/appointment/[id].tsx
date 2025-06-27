@@ -28,6 +28,8 @@ import Map from "@/app/components/map";
 import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
 import Toast from "react-native-toast-message";
 import {fromZonedTime} from "date-fns-tz";
+import {Skeleton} from "@/app/components/ui/skeleton";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 export default function AppointmentIDPage() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -63,7 +65,26 @@ export default function AppointmentIDPage() {
         }
     },[refetchAppointment, refetchPatient, refetchFacility] )
 
-    if (isAppointmentLoading || isFacilityLoading || isPatientLoading) return <ActivityIndicator size='large' />
+    if (isAppointmentLoading || isFacilityLoading || isPatientLoading) {
+        return (
+            <SafeAreaView className={'flex-1 bg-gray-200'}>
+                <BackButton />
+                <ScrollView>
+                    <SkeletonPlaceholder>
+                        <View className='bg-white rounded-lg p-4 mb-1'>
+                            <View className='mb-4 gap-y-2'>
+                                <Skeleton height={20} width={80} borderRadius={20} style={{ marginBottom: 16 }} />
+                                <Skeleton height={200} width={'100%'} style={{ marginBottom: 8 }} />
+                                <Skeleton height={100} width={'100%'} />
+                            </View>
+                            <Skeleton height={150} width='100%' borderRadius={4} style={{ marginBottom: 16 }} />
+                            <Skeleton height={150} width={'100%'} />
+                        </View>
+                    </SkeletonPlaceholder>
+                </ScrollView>
+            </SafeAreaView>
+        )
+    }
 
     //parse the time string from the appointment object and format it to readable time
     const timeStringStartTime = appointment?.startTime;

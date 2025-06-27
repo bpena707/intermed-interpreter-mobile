@@ -4,6 +4,7 @@ import {useAuth} from "@clerk/clerk-expo";
 import axios from "axios";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+// export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export const useGetIndividualPatient = (id?: string) => {
     const { getToken, userId } = useAuth()
@@ -14,6 +15,8 @@ export const useGetIndividualPatient = (id?: string) => {
         queryKey: ['patient', userId, {id}],
         //queryFn is function that query will use to request data as promise which resloves data or a throws error if it fails
         queryFn: async () => {
+            // await delay(5000)
+
             if (!userId) {
                 console.warn("User ID is undefined in queryFn for getIndividualPatient. This shouldn't run if 'enabled' is set correctly.");
                 throw new Error('User ID is required to fetch individual patient.');

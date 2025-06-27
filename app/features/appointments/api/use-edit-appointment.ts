@@ -2,6 +2,8 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import axios, {AxiosError} from "axios";
 import {useAuth} from "@clerk/clerk-expo";
 import Toast from "react-native-toast-message";
+import {Animated} from "react-native";
+import delay = Animated.delay;
 
 // Define a type for the update data, excluding 'id'
 export type UpdateAppointmentType = {
@@ -79,6 +81,7 @@ export const useEditAppointment = (id: string) => {
     >({
         //mutation fetches the data from the api and updates with the PATCH method
         mutationFn: async (updatedData) => {
+
 
             if (!userId) {
                 throw new Error('UserId is required to create appointment')

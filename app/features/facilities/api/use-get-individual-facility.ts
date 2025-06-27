@@ -13,6 +13,7 @@ export const useGetIndividualFacility = (id?: string) => {
         //queryFn is function that query will use to request data as promise which resloves data or a throws error if it fails
         queryFn: async () => {
 
+
             if (!id) {
                 throw new Error('Facility ID is required to fetch facility')
             }

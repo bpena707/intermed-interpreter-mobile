@@ -3,6 +3,7 @@ import { Appointment } from '@/types/apiTypes';
 import {useAuth} from "@clerk/clerk-expo";
 import axios from "axios";
 
+
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const useGetIndividualAppointment = (id: string) => {

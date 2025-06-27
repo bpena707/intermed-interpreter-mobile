@@ -3,8 +3,12 @@ import { Appointment } from '@/types/apiTypes';
 import {useAuth, useUser} from "@clerk/clerk-expo";
 import axios from "axios";
 import {useCallback} from "react";
+import {Animated} from "react-native";
+
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
+
 
 export const useGetAppointments = () => {
     const { getToken, userId } = useAuth()
@@ -16,6 +20,8 @@ export const useGetAppointments = () => {
         queryKey: ['appointments', userId],
         //queryFn is function that query will use to request data as promise which resloves data or a throws error if it fails
         queryFn: async () => {
+
+
             if (!userId) {
                 throw new Error('UserId is required to fetch appointments')
             }
