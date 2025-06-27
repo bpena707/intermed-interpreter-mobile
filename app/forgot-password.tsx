@@ -1,6 +1,14 @@
 // app/forgot-password.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+    View,
+    Text,
+    SafeAreaView,
+    TouchableOpacity,
+    ActivityIndicator,
+    Platform,
+    KeyboardAvoidingView
+} from 'react-native';
 import { useAuth, useSignIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import { Input } from '@/app/components/ui/input';
@@ -99,6 +107,10 @@ export default function ForgotPasswordPage() {
 
     return (
         <SafeAreaView className='flex-1 bg-slate-200'>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                className='flex-1'
+            >
             <View className='flex-1 px-6'>
                 {/* Header */}
                 <View className='flex-row items-center mt-4 mb-8'>
@@ -264,6 +276,7 @@ export default function ForgotPasswordPage() {
                     </View>
                 )}
             </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
