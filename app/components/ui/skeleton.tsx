@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, ViewStyle, DimensionValue } from 'react-native';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+// app/components/ui/skeleton.tsx
+import React, { useEffect, useRef } from 'react';
+import { View, Animated, ViewStyle, DimensionValue } from 'react-native';
 
 interface SkeletonProps {
-    className?: string;
     width?: DimensionValue;
     height?: DimensionValue;
     borderRadius?: number;
@@ -15,19 +14,43 @@ export function Skeleton({
  height = 20,
  borderRadius = 8,
  style,
- ...props
-}: SkeletonProps) {
+ }: SkeletonProps) {
+    const fadeAnim = useRef(new Animated.Value(0.3)).current;
+
+    useEffect(() => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(fadeAnim, {
+                    toValue: 0.7,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(fadeAnim, {
+                    toValue: 0.3,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    }, [fadeAnim]);
+
     return (
-            <View
-                style={[
-                    {
-                        width,
-                        height,
-                        borderRadius,
-                    } as ViewStyle,
-                    style
-                ]}
-                {...props}
-            />
+        <Animated.View
+            style={[
+                {
+                    width,
+                    height,
+                    borderRadius,
+                    backgroundColor: '#E1E9EE',
+                    opacity: fadeAnim,
+                },
+                style,
+            ]}
+        />
     );
+}
+
+// Skeleton container for grouping
+export function SkeletonContainer({ children }: { children: React.ReactNode }) {
+    return <View>{children}</View>;
 }

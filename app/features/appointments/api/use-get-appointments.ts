@@ -5,10 +5,7 @@ import axios from "axios";
 import {useCallback} from "react";
 import {Animated} from "react-native";
 
-
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-
-
 
 export const useGetAppointments = () => {
     const { getToken, userId } = useAuth()
