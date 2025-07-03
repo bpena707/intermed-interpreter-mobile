@@ -59,7 +59,8 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": getUniqueIdentifier()
+      "package": getUniqueIdentifier(),
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
