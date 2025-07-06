@@ -10,6 +10,7 @@ import {format, parse} from "date-fns";
 import TimePicker from "@/app/components/ui/time-picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import Toast from "react-native-toast-message";
 
 
 type Props = {
@@ -32,13 +33,24 @@ type Props = {
     }
 }
 
+type CloseAppointmentFormInput = {
+    endTime: Date | undefined;
+    notes?: string;
+    followUp: boolean;
+    status: 'Closed';
+    isCertified?: boolean;
+}
+
+
 //zod schema for only for editable fields
 const closeAppointmentSchema = z.object({
     endTime: z.preprocess((arg) => {
         if (arg instanceof Date) return arg;
         if (typeof arg === "string") return new Date(arg);
         return arg;
-    }, z.date()).transform((date: Date) => {
+    }, z.date(
+        { required_error: "End time is required" }
+    )).transform((date: Date) => {
         const hh = String(date.getHours()).padStart(2, "0");
         const mm = String(date.getMinutes()).padStart(2, "0");
         const ss = String(date.getSeconds()).padStart(2, "0");
@@ -57,23 +69,23 @@ const AppointmentCloseModal = ({
     onClose,
     onSubmit,
     appointmentData,
-
 }: Props) => {
     const {
         control,
         handleSubmit,
-    } = useForm<CloseAppointmentFormData>({
+        formState: { errors },
+    } = useForm<CloseAppointmentFormInput>({
         resolver: zodResolver(closeAppointmentSchema),
         defaultValues: {
-            endTime: appointmentData.endTime || "",
+            endTime: undefined,
             notes: appointmentData.notes || undefined,
             followUp: false,
             status: 'Closed'
         }
     })
 
-    const handleFormSubmit = (data: CloseAppointmentFormData) => {
-        onSubmit(data)
+    const handleFormSubmit = (data: CloseAppointmentFormInput) => {
+        onSubmit(data as CloseAppointmentFormData)
         onClose()
     }
 
@@ -90,7 +102,6 @@ const AppointmentCloseModal = ({
     const formattedEndTime = parsedEndTime
         ? format(parsedEndTime, "hh:mm a")
         : "Not set"; // Or calculate based on duration
-
 
 
     return (
@@ -177,10 +188,19 @@ const AppointmentCloseModal = ({
                                                     <Controller
                                                         name='endTime'
                                                         control={control}
-                                                        render={({field: {onChange}}) => (
-                                                            <TimePicker
-                                                                onChange={onChange}
-                                                            />
+                                                        render={({field: {onChange, value}}) => (
+                                                            <>
+                                                                <TimePicker
+                                                                    onChange={onChange}
+                                                                    value={value}
+                                                                    error={!!errors.endTime}
+                                                                />
+                                                                {errors.endTime && (
+                                                                    <Text className='text-red-500 text-xs mt-1'>
+                                                                        {errors.endTime.message}
+                                                                    </Text>
+                                                                )}
+                                                            </>
                                                         )}
                                                     />
                                                 </View>
@@ -228,7 +248,21 @@ const AppointmentCloseModal = ({
                             </View>
                     </KeyboardAwareScrollView>
                     <View className='absolute bottom-0 left-0 right-0 h-24 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
-                        <CustomButton variant={'default'} onPress={handleSubmit(handleFormSubmit)}>
+                        <CustomButton
+                            variant={'default'}
+                            onPress={handleSubmit(handleFormSubmit, (errors) => {
+                                console.log("Validation errors:", errors);
+                                // Optionally show a toast
+                                if (errors.endTime) {
+                                    Toast.show({
+                                        type: 'error',
+                                        text1: 'Validation Error',
+                                        text2: errors.endTime.message || 'Please select an end time'
+                                    });
+                                    console.log("Please select an end time");
+                                }
+                            })}
+                        >
                             <Text className='text-white text-2xl font-semibold'>Submit</Text>
                         </CustomButton>
                     </View>
