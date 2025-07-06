@@ -1,7 +1,7 @@
 import {Modal, Pressable, SafeAreaView, Text, View} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import {Card, CardContent, CardHeader} from "@/app/components/ui/card";
-import {format, parse} from "date-fns";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/app/components/ui/card";
+import {format} from "date-fns";
 import DatePicker from "@/app/components/ui/date-picker";
 import TimePicker from "@/app/components/ui/time-picker";
 import {Input} from "@/app/components/ui/input";
@@ -12,7 +12,9 @@ import CustomButton from "@/app/components/ui/custom-button";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useGetFacilities} from "@/app/features/facilities/api/use-get-facilities";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import Toast from "react-native-toast-message";
 
+// the interface for the props that the FollowUpModal component will receive from its parent component
 interface FollowUpModalProps {
     id: string;
     visible: boolean;
@@ -27,46 +29,77 @@ interface FollowUpModalProps {
         patientName?: string;
         facilityName?: string;
         facilityAddress?: string;
-        startTime?: string;
-        endTime?: string;
         isCertified?: boolean;
+        formattedStartTime?: string;
+        formattedEndTime?: string;
     }
 }
 
+// Regular expression to validate the duration input format
 const intervalRegex = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/i;
 
+// schema for validating the follow-up form data that the user will fill out in the modal
+//data refinement ensures that either a facility is selected or a new address is provided
 const followUpSchema = z.object({
     date: z.date({ required_error: "Date is required" }),
     // Process startTime: if it's a Date, keep it; if it's a string, convert it;
     // then transform it to a formatted string "HH:mm:ss"
-    startTime: z.date({ required_error: "A start time is required." }),
-    projectedDuration: z.string().regex(intervalRegex, {message: 'Invalid duration format, e.g., 1h30m'}).optional(),
-    appointmentType: z.string(),
+    startTime: z.date({ required_error: "Start time is required." }),
+    projectedDuration: z.string().min(2, { message: "Duration is required. ie 1h30m or 1h or 30m" }).regex(intervalRegex, {message: 'Invalid duration format, e.g., 1h30m or 2h or 45m'}),
+    appointmentType: z.string().min(1, { message: "Appointment Type is required." }),
     notes: z.string().optional(),
     facilityId: z.string().optional(),
     newFacilityAddress: z.string().optional(),
     isCertified: z.boolean(),
-})
+}).superRefine((data, ctx) => {
+    // Check if neither facility field is filled
+    if (!data.facilityId && !data.newFacilityAddress) {
+        // Add error to both fields
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Please select a facility or provide a new address",
+            path: ['facilityId'],
+        });
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Please select a facility or provide a new address",
+            path: ['newFacilityAddress'],
+        });
+    }
+});
+
 
 export type FollowUpFormData = z.infer<typeof followUpSchema>;
 
+// types were added to ensure that the data passed to the onSubmit function matches the expected structure
+//especially for the date and startTime fields, which are Date objects and undefined if not set making the selection mandatory
+type FollowUpFormInput = {
+    date: Date | undefined;
+    startTime: Date | undefined;
+    projectedDuration: string;
+    appointmentType: string;
+    notes?: string;
+    facilityId?: string;
+    newFacilityAddress?: string;
+    isCertified: boolean;
+}
+
 const FollowUpModal = ({
-    id,
-    appointmentId,
     appointmentData,
     onSubmit,
     visible,
     onClose,
 }: FollowUpModalProps) => {
-    console.log("!!! FollowUpModal: Received 'visible' prop:", visible);
     const {
         control,
         handleSubmit,
-    } = useForm({
+        watch,
+        formState: { errors },
+    } = useForm<FollowUpFormInput>({
         resolver: zodResolver(followUpSchema),
         defaultValues: {
-            date: appointmentData?.date ? new Date(appointmentData.date) : new Date(),
-            startTime: new Date(),
+            date: undefined,
+            startTime: undefined,
             projectedDuration: '',
             appointmentType: '',
             notes: '',
@@ -76,23 +109,23 @@ const FollowUpModal = ({
         }
     })
 
+    // Fetch facilities using the custom hook.
     const {data: facilities, isLoading, isError} = useGetFacilities()
 
-    const listOfFacilities = facilities?.map((item) => ({
-        label: item.name,
-        value: item.id
-    })) || []
+    const listOfFacilities = [
+        { label: isLoading ? "Loading facilities..." : "No Facility Selected" , value: "" },
+        ...(facilities?.map((item) => {
+            const parts = item.address.split(',').map(s => s.trim());
+            const streetAddress = `${parts[0]} ${parts[1]}`;
+            return {
+                label: `${item.name} - ${streetAddress}`,
+                value: item.id
+            };
+        }) || [])
+    ];
 
-    // if (isLoading) {
-    //     return <ActivityIndicator />
-    // }
-    //
-    // if(isError) {
-    //     return <Text>Error fetching facilities</Text>
-    // }
-
-    const handleFormSubmit = (data: FollowUpFormData) => {
-        onSubmit(data)
+    const handleFormSubmit = (data: FollowUpFormInput) => {
+        onSubmit(data as FollowUpFormData);
         onClose()
         console.log("Submitting payload:", data)
     }
@@ -108,14 +141,6 @@ const FollowUpModal = ({
         {label: "Conference", value: "Conference"},
         {label: "Other", value: "Other"},
     ];
-
-    const timeStringStartTime = appointmentData.startTime;
-    const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
-    const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
-
-    const timeStringEndTime = appointmentData?.endTime;
-    const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
-    const formattedEndTime = format(parsedEndTime, "hh:mm a");
 
     return(
         <Modal
@@ -172,7 +197,7 @@ const FollowUpModal = ({
                                     </Text>
                                     <Text className='font-bold text-sm'>
                                         Duration:
-                                        <Text className='font-normal'> {formattedStartTime} - {formattedEndTime}</Text>
+                                        <Text className='font-normal'> {appointmentData.formattedStartTime} - {appointmentData.formattedEndTime}</Text>
                                     </Text>
                                 </CardContent>
                             </Card>
@@ -189,10 +214,20 @@ const FollowUpModal = ({
                                             <Controller
                                                 name={'date'}
                                                 control={control}
-                                                render={({field: {onChange}}) => (
-                                                    <DatePicker onChange={onChange} />
-                                                )
-                                                }
+                                                render={({field: {onChange, value}}) => (
+                                                    <>
+                                                        <DatePicker
+                                                            onChange={onChange}
+                                                            value={value}
+                                                            error={!!errors.date}
+                                                        />
+                                                        {errors.date && (
+                                                            <Text className='text-red-500 text-xs mt-1'>
+                                                                {errors.date.message}
+                                                            </Text>
+                                                        )}
+                                                    </>
+                                                )}
                                             />
                                         </View>
                                         <View>
@@ -202,8 +237,20 @@ const FollowUpModal = ({
                                             <Controller
                                                 name={'startTime'}
                                                 control={control}
-                                                render={({field: {onChange}}) => (
-                                                    <TimePicker onChange={onChange} />
+                                                render={({field: {onChange, value}}) => (
+                                                    <>
+                                                        <TimePicker
+                                                            onChange={onChange}
+                                                            value={value}
+                                                            error={!!errors.startTime}
+                                                        />
+                                                        {errors.startTime && (
+                                                            <Text className='text-red-500 text-xs mt-1'>
+                                                                {errors.startTime.message}
+                                                            </Text>
+                                                        )}
+                                                    </>
+
                                                 )}
                                             />
                                         </View>
@@ -215,12 +262,20 @@ const FollowUpModal = ({
                                                 name={'projectedDuration'}
                                                 control={control}
                                                 render={({field: {onChange, value}}) => (
-                                                    <Input
-                                                        value={value}
-                                                        onChange={onChange}
-                                                        placeholder='1h30m'
-                                                        onChangeText={(text) => onChange(text)}
-                                                    />
+                                                    <>
+                                                        <Input
+                                                            value={value}
+                                                            onChange={onChange}
+                                                            placeholder='1h30m'
+                                                            onChangeText={(text) => onChange(text)}
+                                                            className={errors.projectedDuration ? 'border-red-500' : ''}
+                                                        />
+                                                        {errors.projectedDuration && (
+                                                            <Text className='text-red-500 text-xs'>
+                                                                {errors.projectedDuration.message}
+                                                            </Text>
+                                                        )}
+                                                    </>
                                                 )}
                                             />
                                         </View>
@@ -232,13 +287,23 @@ const FollowUpModal = ({
                                                 name={'appointmentType'}
                                                 control={control}
                                                 render={({field: {onChange, value}}) => (
-                                                    <DropDownSelect
-                                                        items={appointmentOptions}
-                                                        value={value}
-                                                        onChange={(newValue: string | null) => {
-                                                            onChange(newValue ?? '')
-                                                        }}
-                                                    />
+                                                    <>
+                                                        <DropDownSelect
+                                                            items={appointmentOptions}
+                                                            value={value}
+                                                            onChange={(newValue: string | null) => {
+                                                                onChange(newValue ?? '')
+                                                            }}
+                                                            error={!!errors.appointmentType}
+                                                            placeholder='Select appointment type...'
+                                                        />
+                                                        {errors.appointmentType && (
+                                                            <Text className='text-red-500 text-xs mt-1'>
+                                                                {errors.appointmentType.message}
+                                                            </Text>
+                                                        )}
+                                                    </>
+
                                                 )}
                                             />
                                         </View>
@@ -246,8 +311,9 @@ const FollowUpModal = ({
                                 </CardContent>
                             </Card>
                             <Card className={'bg-gray-200 mt-3'}>
-                                <CardHeader className={'flex items-center justify-center'}>
-                                    <Text className='text-lg font-bold'>Location</Text>
+                                <CardHeader className={'flex items-center justify-center mb-1'}>
+                                    <CardTitle className='text-lg font-bold'>Location</CardTitle>
+                                    <CardDescription>Select a facility OR provide a new address if not listed</CardDescription>
                                 </CardHeader>
                                 <CardContent className={'flex flex-col'}>
                                     <View className={'flex flex-col gap-y-3'}>
@@ -259,13 +325,23 @@ const FollowUpModal = ({
                                                 name={'facilityId'}
                                                 control={control}
                                                 render={({field: {onChange, value}}) => (
-                                                    <DropDownSelect
-                                                        items={listOfFacilities}
-                                                        value={value}
-                                                        onChange={(newValue: string | null) => {
-                                                            onChange(newValue ?? '')
-                                                        }}
-                                                    />
+                                                    <>
+                                                        <DropDownSelect
+                                                            items={listOfFacilities}
+                                                            value={value}
+                                                            onChange={(newValue: string | null) => {
+                                                                onChange(newValue ?? '')
+                                                            }}
+                                                            placeholder={isError ? "Error loading facilities" : "Select a facility..."}
+                                                            error={!!errors.facilityId && !watch('newFacilityAddress')}
+                                                        />
+                                                        {errors.facilityId && !watch('newFacilityAddress') && (
+                                                            <Text className='text-red-500 text-xs mt-1'>
+                                                                {errors.facilityId.message}
+                                                            </Text>
+                                                        )}
+                                                    </>
+
                                                 )}
                                             />
                                         </View>
@@ -277,12 +353,20 @@ const FollowUpModal = ({
                                                 name={'newFacilityAddress'}
                                                 control={control}
                                                 render={({field: {onChange, value}}) => (
-                                                    <Input
-                                                        value={value}
-                                                        onChange={onChange}
-                                                        onChangeText={(text) => onChange(text)}
-                                                        placeholder='123 Main St, Anytown, CA 91234'
-                                                    />
+                                                    <>
+                                                        <Input
+                                                            value={value}
+                                                            onChange={onChange}
+                                                            onChangeText={(text) => onChange(text)}
+                                                            placeholder='123 Main St, Anytown, CA 91234'
+                                                            className={errors.facilityId && !watch('facilityId') ? 'border-red-500' : ''}
+                                                        />
+                                                        {errors.facilityId && !watch('facilityId') && (
+                                                            <Text className='text-red-500 text-xs mt-1'>
+                                                                Please provide a facility address or select from the list
+                                                            </Text>
+                                                        )}
+                                                    </>
                                                 )}
                                             />
                                         </View>
@@ -294,7 +378,17 @@ const FollowUpModal = ({
                 </View>
             </KeyboardAwareScrollView>
                 <View className='absolute bottom-0 left-0 right-0 h-28 bg-white  items-center border-t-gray-50 w-full p-2 z-50 border-t shadow-md inset-shadow-sm '>
-                    <CustomButton variant="default" onPress={handleSubmit(handleFormSubmit, (errors) => console.log("Validation Errors:", errors))}>
+                    <CustomButton
+                        variant="default"
+                        onPress={handleSubmit(handleFormSubmit, (errors) => {
+                            console.log("Validation errors:", errors);
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Missing Required Fields',
+                                text2: 'Please fill in all required fields'
+                            });
+                        })}
+                    >
                         <Text className='text-white text-2xl font-semibold' >Submit</Text>
                     </CustomButton>
                 </View>

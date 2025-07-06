@@ -81,9 +81,15 @@ const AppointmentCloseModal = ({
     const parsedStartTime = parse(timeStringStartTime || '', "HH:mm:ss", new Date());
     const formattedStartTime = format(parsedStartTime, "hh:mm aaa");
 
-    const timeStringEndTime = appointmentData?.projectedEndTime;
-    const parsedEndTime = parse(timeStringEndTime || '', "HH:mm:ss", new Date());
-    const formattedEndTime = format(parsedEndTime, "hh:mm a");
+    // In AppointmentCloseModal, update the parsing logic:
+    const timeStringEndTime = appointmentData?.projectedEndTime || appointmentData?.endTime;
+    const parsedEndTime = timeStringEndTime
+        ? parse(timeStringEndTime, "HH:mm:ss", new Date())
+        : null; // Don't parse if no end time exists
+
+    const formattedEndTime = parsedEndTime
+        ? format(parsedEndTime, "hh:mm a")
+        : "Not set"; // Or calculate based on duration
 
 
 

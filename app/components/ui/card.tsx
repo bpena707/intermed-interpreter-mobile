@@ -42,7 +42,7 @@ function CardDescription({
                          }: React.ComponentPropsWithoutRef<typeof Text>) {
     return (
         <Text
-            className={cn('text-sm text-gray-500', className)}
+            className={cn('text-xs text-gray-600', className)}
             {...props}
         />
     );

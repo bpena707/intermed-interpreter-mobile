@@ -1,20 +1,21 @@
 import DropDownPicker, {ItemType} from 'react-native-dropdown-picker';
 import {useEffect, useState} from "react";
 import {View} from "react-native";
-import {current} from "@react-native-community/cli-tools/build/releaseChecker";
 
 interface DropdownPickerProps {
     items: ItemType<string>[]
     onChange: (value: string | null) => void
     placeholder?: string
     value?: string
+    error?: boolean
 }
 
 const DropDownSelect = ({
     items,
     onChange,
     placeholder,
-    value: externalValue
+    value: externalValue,
+    error
 }: DropdownPickerProps) => {
     const [open, setOpen] = useState(false);
     const [internalValue, setInternalValue] = useState<string | null>(externalValue ?? null);
@@ -38,10 +39,22 @@ const DropDownSelect = ({
                 setValue={setInternalValue}
                 setItems={setDropDownItems}
                 placeholder={placeholder}
+                searchPlaceholderTextColor={'#4b5563'}
                 listMode={'SCROLLVIEW'}
                 searchable={true}
                 loading={loading}
-                style={{ width: '100%' }}
+                style={{
+                    width: '100%',
+                    borderColor: error ? '#ef4444' : '#e5e7eb', // Red border on error
+                    borderWidth: error ? 2 : 1,
+                }}
+                placeholderStyle={{
+                    color: error ? '#ef4444' : '#4b5563', // Red placeholder on error
+                }}
+                dropDownContainerStyle={{
+                    borderColor: error ? '#ef4444' : '#e5e7eb', // Red border on dropdown
+                    borderWidth: error ? 2 : 1,
+                }}
                 dropDownDirection={'TOP'} //dropdown direction was specified as top because if down, the z index appears behind other elements on the page
             />
         </View>

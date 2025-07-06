@@ -14,9 +14,8 @@ export interface AppointmentRequest  {
     patientId?:  string | null;
     facilityId?: string | null;
     interpreterId?: string | null;
-    newFacilityAddress?: string | null;
     isCertified?: boolean
-};
+}
 
 // Define the expected response type
 export interface AppointmentResponse  {
@@ -30,9 +29,8 @@ export interface AppointmentResponse  {
     patientId: string | null;
     facilityId: string | null;
     interpreterId: string | null;
-    newFacilityAddress: string | null;
     isCertified: boolean
-};
+}
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
 
@@ -98,7 +96,7 @@ export const useCreateAppointment = () => {
               type: 'success',
               text1: 'Follow Up request created successfully',
           });
-          queryClient.invalidateQueries({ queryKey: ["followups"] })
+          queryClient.invalidateQueries({ queryKey: ["appointments"] })
       },
       onError: (error) => {
           Toast.show({

@@ -176,8 +176,6 @@ export default function AppointmentIDPage() {
         }
     }
 
-
-
     //toggles modal visibility
     const toggleModalOpen = () => {
         setModalVisible(true);
@@ -238,6 +236,16 @@ export default function AppointmentIDPage() {
             data.startTime.getSeconds()
         );
 
+        //
+        let finalNotes = data.notes || '';
+        //check if user typed notes and provide a new address
+        if (data.newFacilityAddress) {
+            //combine the notes with the new facility address
+            finalNotes = data.notes
+                ? `${data.notes}\n\nNew Facility Address: ${data.newFacilityAddress}`
+                : `New Facility Address: ${data.newFacilityAddress}`; //if no notes, just use the new address
+        }
+
         createAppointmentMutation.mutate({
             ...data,
             date: appointmentDateTime, // Send the literal date/time the user selected
@@ -245,13 +253,12 @@ export default function AppointmentIDPage() {
 
             // Pass other data from the form
             projectedDuration: data.projectedDuration,
-            notes: data.notes,
+            notes: finalNotes,
             appointmentType: data.appointmentType,
             status: 'Interpreter Requested', // Set default status for new follow-up
             patientId: appointment?.patientId ?? '',
             facilityId: data.facilityId || appointment?.facilityId,
             interpreterId: appointment?.interpreterId,
-            newFacilityAddress: data.newFacilityAddress,
             isCertified: data.isCertified,
         });
     }
@@ -318,7 +325,7 @@ export default function AppointmentIDPage() {
                 appointmentId={appointment?.id ?? ''}
                 appointmentData={{
                     endTime: appointment?.endTime,
-                    projectedEndTime: appointment?.projectedEndTime,
+                    projectedEndTime: appointment?.projectedEndTime || appointment?.endTime,
                     projectedDuration: appointment?.projectedDuration,
                     startTime: appointment?.startTime,
                     notes: appointment?.notes ?? '',
@@ -336,16 +343,16 @@ export default function AppointmentIDPage() {
                 onSubmit={handleFollowUpSubmit}
                 appointmentId={appointment?.id ?? ''}
                 appointmentData={{
-                    projectedEndTime: appointment?.projectedEndTime,
-                    projectedDuration: appointment?.projectedDuration,
-                    notes: appointment?.notes,
-                    date: appointment?.date,
-                    patientName: `${patient?.firstName} ${patient?.lastName}`,
-                    facilityName: facility?.name,
-                    facilityAddress: facility?.address,
-                    startTime: appointment?.startTime,
-                    endTime: appointment?.endTime,
-                    isCertified: appointment?.isCertified,
+                    projectedEndTime: appointment?.projectedEndTime || appointment?.endTime || '', // Add fallback
+                    projectedDuration: appointment?.projectedDuration || '',
+                    notes: appointment?.notes || '',
+                    date: appointment?.date || new Date().toISOString(),
+                    patientName: `${patient?.firstName || ''} ${patient?.lastName || ''}`,
+                    facilityName: facility?.name || '',
+                    facilityAddress: facility?.address || '',
+                    isCertified: appointment?.isCertified || false,
+                    formattedStartTime: formattedStartTime,
+                    formattedEndTime: formattedEndTime,
                 }}
             />
             <BackButton />
