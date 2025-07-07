@@ -89,7 +89,7 @@ export const useGetAppointments = () => {
 
         // Step 2: Force a fresh fetch
         return query.refetch();
-    }, [queryClient, userId, query.refetch]);
+    }, [queryClient, userId]);
 
     return {
         ...query,

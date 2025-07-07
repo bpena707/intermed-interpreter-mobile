@@ -22,7 +22,7 @@ import {useCallback, useMemo, useRef, useState} from "react";
 const screenHeight = Dimensions.get('window').height;
 
 const AgendaComponent = () => {
-    const { data: appointment, isLoading, isError, refetchWithClearCache } = useGetAppointments();
+    const { data: appointments, isLoading, isError, refetchWithClearCache } = useGetAppointments();
     // const formattedData: any = formatDataForAgenda(appointment ?? []);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -44,7 +44,7 @@ const AgendaComponent = () => {
     // Memoize formatted data with a unique version to force updates
     const formattedData = useMemo(() => {
         console.log("Formatting and sorting agenda data...");
-        const formatted = formatDataForAgenda(appointment ?? []);
+        const formatted = formatDataForAgenda(appointments ?? []);
 
         // Add a timestamp to each item to ensure uniqueness
         Object.keys(formatted).forEach(dateKey => {
@@ -56,7 +56,7 @@ const AgendaComponent = () => {
 
         console.log("Formatted data with version:", formatted);
         return formatted;
-    }, [appointment]);
+    }, [appointments]);
 
     const dataKey = useMemo(() => {
         return JSON.stringify(Object.keys(formattedData).map(dateKey =>

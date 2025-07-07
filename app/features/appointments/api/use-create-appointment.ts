@@ -96,7 +96,7 @@ export const useCreateAppointment = () => {
               type: 'success',
               text1: 'Follow Up request created successfully',
           });
-          queryClient.invalidateQueries({ queryKey: ["appointments"] })
+          queryClient.invalidateQueries({ queryKey: ["appointments", userId] })
       },
       onError: (error) => {
           Toast.show({

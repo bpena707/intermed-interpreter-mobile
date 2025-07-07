@@ -131,9 +131,9 @@ export const useEditAppointment = (id: string) => {
                 type: 'success',
                 text1: 'Appointment updated successfully',
             })
-            queryClient.invalidateQueries({ queryKey: ["appointments"] })
-            queryClient.invalidateQueries({ queryKey: ["appointment", userId,  id,
-                ] });
+            queryClient.invalidateQueries({ queryKey: ["appointments", userId] })
+            queryClient.invalidateQueries({ queryKey: ["appointment", userId, id] });
+
         },
         onError: (error: AxiosError)=> {
 
