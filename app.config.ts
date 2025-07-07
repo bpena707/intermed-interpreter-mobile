@@ -31,7 +31,7 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
   ...config,
     "name": getAppName(),
     "slug": "intermed-interpreter-mobile",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -49,7 +49,7 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
     // This policy ties the updates to your app version.
     // When you change "version" above (e.g., to "1.0.1"), you'll need a new build.
     // Updates will only apply to builds with the same app version.
-    "1.1.0",
+    "1.1.1",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": getUniqueIdentifier()
