@@ -19,8 +19,6 @@ import {addHours, format, parse} from 'date-fns';
 import {router} from "expo-router";
 import {useCallback, useMemo, useRef, useState} from "react";
 
-const screenHeight = Dimensions.get('window').height;
-
 const AgendaComponent = () => {
     const { data: appointments, isLoading, isError, refetchWithClearCache } = useGetAppointments();
     // const formattedData: any = formatDataForAgenda(appointment ?? []);
