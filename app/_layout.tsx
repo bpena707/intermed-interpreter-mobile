@@ -1,14 +1,12 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import {isLoaded, useFonts} from 'expo-font';
-import {Navigator, Stack, useRouter, useSegments} from 'expo-router';
+import {useFonts} from 'expo-font';
+import {Slot, Stack, useRouter, useSegments} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 import 'react-native-reanimated';
 import * as SecureStore from 'expo-secure-store'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ClerkLoaded, ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
-import { Slot } from "expo-router";
 import Toast from "react-native-toast-message";
 
 const client = new QueryClient()

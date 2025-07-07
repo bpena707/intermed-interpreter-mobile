@@ -1,14 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Appointment } from '@/types/apiTypes';
 import {useAuth} from "@clerk/clerk-expo";
 import axios from "axios";
-import {queryClient} from "expo-dev-launcher/bundle/providers/QueryProvider";
+
 
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const useGetIndividualAppointment = (id: string) => {
     const { getToken, userId } = useAuth()
+    const queryClient = useQueryClient()
     //define the query
     const query = useQuery<Appointment>({
         enabled: !!id && !!userId,
