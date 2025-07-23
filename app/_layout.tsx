@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ClerkLoaded, ClerkProvider, useAuth, useUser} from "@clerk/clerk-expo";
 import Toast from "react-native-toast-message";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const client = new QueryClient()
 
@@ -45,10 +46,12 @@ const InitialLayout = () => {
     ...FontAwesome.font,
   });
 
+
   const router = useRouter()
     const {isLoaded, isSignedIn, userId} = useAuth()
     const { user } = useUser()
     const segments = useSegments()
+
 
     //check if the user has completed the onbaording process
     const onboardingComplete = user?.unsafeMetadata?.onboardingComplete
@@ -79,9 +82,14 @@ const InitialLayout = () => {
       }
   },[isSignedIn, onboardingComplete, isLoaded])
 
+    console.log('🚀 LAYOUT: About to call usePushNotifications...');
+    usePushNotifications()
+    console.log('🚀 LAYOUT: usePushNotifications called');
+
   if (!loaded || isLoaded) {
     return <Slot />;
   }
+
 
     return (
         <Stack>

@@ -31,7 +31,7 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
   ...config,
     "name": getAppName(),
     "slug": "intermed-interpreter-mobile",
-    "version": "1.1.1",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -49,10 +49,13 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
     // This policy ties the updates to your app version.
     // When you change "version" above (e.g., to "1.0.1"), you'll need a new build.
     // Updates will only apply to builds with the same app version.
-    "1.1.1",
+    "1.1.0",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": getUniqueIdentifier()
+      "bundleIdentifier": getUniqueIdentifier(),
+      "entitlements": {
+        "aps-environment": IS_DEV ? "development" : "production"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -78,6 +81,14 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
       "expo-secure-store",
       "expo-font",
       "expo-updates",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
