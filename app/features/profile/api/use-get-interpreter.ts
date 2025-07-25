@@ -1,4 +1,3 @@
-// src/hooks/useInterpreters.ts (or similar)
 
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from "@clerk/clerk-expo";

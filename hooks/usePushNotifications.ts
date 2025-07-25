@@ -1,11 +1,13 @@
-// Updated hooks/usePushNotifications.ts - NO CLERK DEPENDENCY
+// hooks/usePushNotifications.ts - WITH BACKEND SAVING
 import { useState, useEffect, useRef } from 'react';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { useAuth } from '@clerk/clerk-expo';
+import {  useUpdatePushToken } from "@/app/features/profile/api/use-update-push-token";
 
-// Set notification handler
+// Set notification handler from expo documents
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -28,12 +30,9 @@ async function registerForPushNotificationsAsync() {
         });
     }
 
-    console.log('📱 Checking if device is physical device...');
-    if (!Device.isDevice) {
-        console.log('❌ Must use physical device for Push Notifications');
-        return;
-    }
-    console.log('✅ Device is a physical device');
+    console.log('📱 Skipping device check for testing in simulator...');
+    console.log('📱 Platform:', Platform.OS);
+    // Skip device check entirely for testing
 
     console.log('🔔 Getting current notification permissions...');
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -81,6 +80,9 @@ async function registerForPushNotificationsAsync() {
 export const usePushNotifications = () => {
     console.log('🔔 PUSH HOOK: Starting usePushNotifications hook');
 
+    const { isSignedIn, isLoaded } = useAuth();
+    const updatePushTokenMutation = useUpdatePushToken();
+
     const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
     const [notification, setNotification] = useState<Notifications.Notification | undefined>();
 
@@ -88,20 +90,31 @@ export const usePushNotifications = () => {
     const responseListener = useRef<Notifications.Subscription>();
 
     useEffect(() => {
-        console.log('🔔 PUSH HOOK: useEffect running - registering for push notifications');
+        console.log('🔔 PUSH HOOK: useEffect running');
+        console.log('🔔 Auth status - isLoaded:', isLoaded, 'isSignedIn:', isSignedIn);
 
-        // Always register for push notifications when component mounts
-        registerForPushNotificationsAsync().then(token => {
-            console.log('🔔 PUSH HOOK: Registration function completed');
-            if (token) {
-                setExpoPushToken(token);
-                console.log('🔔 PUSH TOKEN READY:', token);
-            } else {
-                console.log('❌ No token received from registration');
-            }
-        }).catch(error => {
-            console.log('❌ Registration failed with error:', error);
-        });
+        // Only register for push notifications when user is signed in
+        if (isLoaded && isSignedIn) {
+            console.log('🔔 User is signed in - registering for push notifications');
+
+            registerForPushNotificationsAsync().then(token => {
+                console.log('🔔 PUSH HOOK: Registration function completed');
+                if (token) {
+                    setExpoPushToken(token);
+                    console.log('🔔 PUSH TOKEN READY:', token);
+
+                    // Save token to backend
+                    console.log('🔔 Saving token to backend...');
+                    updatePushTokenMutation.mutate({ token });
+                } else {
+                    console.log('❌ No token received from registration');
+                }
+            }).catch(error => {
+                console.log('❌ Registration failed with error:', error);
+            });
+        } else {
+            console.log('🔔 User not signed in yet - skipping push notification registration');
+        }
 
         console.log('🔔 Setting up notification listeners...');
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
@@ -123,7 +136,7 @@ export const usePushNotifications = () => {
                 Notifications.removeNotificationSubscription(responseListener.current);
             }
         };
-    }, []); // No dependencies - runs once
+    }, [isLoaded, isSignedIn]); // Re-run when auth state changes
 
     return {
         expoPushToken,

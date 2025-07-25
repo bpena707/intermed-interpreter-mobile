@@ -1,3 +1,4 @@
+//this hook is used to patch the push token for notifications specifically for the patch/me/token route
 
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
@@ -13,7 +14,10 @@ export const useUpdatePushToken = () => {
         mutationFn: async ({ token }: { token: string }) => {
             if (!apiUrl) throw new Error("API URL not configured");
 
+            // CORRECTED URL - matches your interpreter routes pattern
             const url = `${apiUrl}/interpreters/me/push-token`;
+            console.log('🔔 Calling API URL:', url);
+
             const authToken = await getToken();
 
             return axios.patch(url, { token }, {
