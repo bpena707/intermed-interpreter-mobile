@@ -4,6 +4,9 @@ import Colors from "@/constants/Colors";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import CustomButton from "@/app/components/ui/custom-button";
 import {useClerk} from "@clerk/clerk-expo";
+import {useRouter} from "expo-router";
+import {useGetAvailableOffers} from "@/app/features/appointments/api/use-get-available-offers";
+import Octicons from '@expo/vector-icons/Octicons';
 
 interface IndexHeaderProps {
     onSearchPress: () => void; // Function to call when search is pressed
@@ -13,6 +16,11 @@ const IndexHeader = ({
     onSearchPress,
 }: IndexHeaderProps) => {
     const { signOut } = useClerk()
+    const router = useRouter()
+
+    const {data: offers} = useGetAvailableOffers()
+
+    const offerCount = offers?.length || 0
 
     return (
         <SafeAreaView style={{flex:1, backgroundColor: '#fff'}}>
@@ -22,7 +30,6 @@ const IndexHeader = ({
                             <View >
                                 <FontAwesome name="sign-out" size={20} color="black" className='border-none' />
                             </View>
-
                         </CustomButton>
                             <TouchableOpacity style={styles.searchButton} onPress={onSearchPress}>
                                 <Ionicons name={'search'} size={20} />
@@ -32,8 +39,17 @@ const IndexHeader = ({
                                     </Text>
                                 </View>
                             </TouchableOpacity>
-                        <TouchableOpacity style={styles.alertButton} >
-                            <FontAwesome name={'bell'} size={20} color={'#000'} />
+                        <TouchableOpacity onPress={() => router.push('/appointment/offers')}  style={styles.alertButton} >
+                            <Octicons name="bell" size={20} color="black" />
+                            {offerCount > 0 && (
+                                <View
+                                    className="absolute right-0 top-0 bg-blue-500 rounded-full w-4 h-4 items-center justify-center"
+                                >
+                                    <Text className={'text-white'}>
+                                        {offerCount}
+                                    </Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                     </View>
                 </View>

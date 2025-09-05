@@ -20,6 +20,8 @@ import Toast from "react-native-toast-message";
 import {useUser} from "@clerk/clerk-expo";
 import {MaterialIcons} from "@expo/vector-icons";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { AddressAutocomplete } from "@/app/components/ui/google-places-autocomplete";
+import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 
 
 //schema to validate onboarding form
@@ -28,6 +30,9 @@ const onBoardingSchema = z.object({
     lastName: z.string(),
     email: z.string().email(),
     phoneNumber: z.string(),
+    address: z.string().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
     // targetLanguages: z.array(z.string()),
     // isCertified: z.boolean(),
 })
@@ -39,11 +44,16 @@ export default function onboardingScreen () {
     const mutation = useCreateInterpreter()
     const { user } = useUser()
     const [loading, setLoading] = useState(false)
-    const {control, handleSubmit, formState: { errors }} = useForm<OnBoardingValues>({
+    const {control, handleSubmit, setValue, formState: { errors }} = useForm<OnBoardingValues>({
         resolver: zodResolver(onBoardingSchema)
     })
 
     const onSubmit = (values: OnBoardingValues) => {
+        console.log('Submitting with address:', {
+            address: values.address,
+            latitude: values.latitude,
+            longitude: values.longitude,
+        });
         mutation.mutate(values, {
             onSuccess: () => {
                 Toast.show({
@@ -64,13 +74,21 @@ export default function onboardingScreen () {
     }
 
     return (
-        <SafeAreaView className='flex flex-1 bg-slate-400'>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                className='flex-1'
+        <SafeAreaView
+            className='flex flex-1 bg-slate-400'
+        >
+            <KeyboardAwareScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                enableOnAndroid={true}  // Enable on Android
+                enableAutomaticScroll={true}  // Auto scroll to focused input
+                extraHeight={100}  // Extra height when keyboard shows
+                extraScrollHeight={20}  // Additional scroll height
+                enableResetScrollToCoords={false}  // Don't reset scroll position
+                keyboardOpeningTime={250}  // Match keyboard animation
+                viewIsInsideTabBar={false}  // Set true if inside tab navigator
+                keyboardShouldPersistTaps="handled"  // Critical for autocomplete dropdown
+                showsVerticalScrollIndicator={false}
             >
-            <ScrollView
-                className='flex-1 contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}' >
                 {/*welcome screen */}
                 <View className='items-center mb-4'>
                     <View className='w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full items-center justify-center mb-2 shadow-lg'>
@@ -85,8 +103,32 @@ export default function onboardingScreen () {
                 </View>
 
                 {/*input fields*/}
-
                 <View className='space-y-4 p-2'>
+                    <View className='mb-2'>
+                        <Controller
+                            control={control}
+                            name={'address'}
+                            render={({ field: { onChange, value }}) => (
+                                <AddressAutocomplete
+                                    value={value}
+                                    onSelectAddress={(data) =>{
+                                        setValue('address', data.address)
+                                        if (data.latitude) setValue('latitude', data.latitude)
+                                        if (data.longitude) setValue('longitude', data.longitude)
+                                        if (errors.address) {
+                                            // This will clear the error message
+                                            setValue('address', data.address, { shouldValidate: true });
+                                        }
+                                    }}
+                                    placeholder={'Enter address...'}
+                                    label={'Billing Address'}
+                                    description={'*Billing address is used to determine area of coverage'}
+                                    error={errors.address?.message}
+                                />
+                            )}
+                        />
+                        {errors.firstName && <Text>{errors.firstName.message}</Text>}
+                    </View>
                     <View>
                         <View className='flex-row items-center mb-2'>
                             <Ionicons name="person-outline" size={20} color="#6B7280" />
@@ -163,7 +205,6 @@ export default function onboardingScreen () {
                             control={control}
                             name={'phoneNumber'}
                             render={({ field: { onChange, value }}) => (
-
                                 <Input
                                     placeholder={'5551234567 '}
                                     value={value}
@@ -190,8 +231,7 @@ export default function onboardingScreen () {
                         )}
                     </CustomButton>
                 </View>
-            </ScrollView>
-            </KeyboardAvoidingView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     )
 }

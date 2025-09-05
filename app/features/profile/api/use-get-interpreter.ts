@@ -7,9 +7,13 @@ export interface InterpreterProfile {
     id: string;
     firstName: string;
     lastName: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
     email: string;
     phoneNumber: string;
     isCertified: boolean;
+
     // Add other fields if selected in API
 }
 

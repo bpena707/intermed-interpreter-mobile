@@ -8,6 +8,9 @@ interface OnBoardingType  {
     lastName: string,
     email: string,
     phoneNumber: string,
+    address?: string,
+    latitude?: number,
+    longitude?: number,
     // targetLanguages: string[],
     // isCertified: boolean,
 }
@@ -38,26 +41,46 @@ export const useCreateInterpreter = () => {
 
             const url = `${apiUrl}/interpreters`
             console.log(`Making POST request to:, ${url}`)
+            // In your hook, before the axios call:
+            console.log("Sending to API:", payload)
 
-            const response = await axios.post(
-                url,
-                payload,
-                {
-                    headers: {
-                        Authorization: `Bearer ${await getToken()}`
-                    },
-                    timeout: 5000
+            try {
+                const response = await axios.post(
+                    url,
+                    payload,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${await getToken()}`
+                        },
+                        timeout: 5000
+                    }
+                )
+
+                if (response.status != 201 && response.status != 200) {
+                    throw new Error('Failed to create interpreter')
                 }
-            )
+                await user?.update(({
+                    unsafeMetadata: {
+                        onboardingComplete: true
+                    }
+                }))
 
-            if (response.status != 201 && response.status != 200) {
-                throw new Error('Failed to create interpreter')
+                return response.data
+            }catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.error("API Error Response:", error.response?.data);
+                    console.error("API Error Status:", error.response?.status);
+                    console.error("Request that failed:", error.config?.data);
+
+                    // Throw a more descriptive error
+                    const errorMessage = error.response?.data?.error ||
+                        error.response?.data?.details ||
+                        error.response?.data?.message ||
+                        'Failed to create interpreter';
+                    throw new Error(errorMessage);
+                }
+                throw error;
             }
-            await user?.update(({
-                unsafeMetadata: {
-                    onboardingComplete: true
-                }
-            }))
         },
         onSuccess: () => {
             Toast.show({
