@@ -59,7 +59,7 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/notifications-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": getUniqueIdentifier(),
