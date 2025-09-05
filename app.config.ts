@@ -59,7 +59,7 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/notifications-icon.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": getUniqueIdentifier(),
@@ -84,7 +84,7 @@ export default({ config  }: ConfigContext ): ExpoConfig => ({
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/notification-icon.png",
+          "icon": "./assets/images/notifications-icon.png",
           "color": "#ffffff",
           "defaultChannel": "default"
         }
