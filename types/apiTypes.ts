@@ -27,6 +27,8 @@ export interface Appointment {
     id: string;
     bookingId: string;
     date: string;
+    adminNotes: string
+    interpreterNotes: string
     notes: string | null;
     startTime: string;
     endTime: string;

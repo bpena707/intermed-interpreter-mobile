@@ -18,6 +18,9 @@ import {AntDesign, FontAwesome6} from "@expo/vector-icons";
 import {addHours, format, parse} from 'date-fns';
 import {router} from "expo-router";
 import {useCallback, useMemo, useRef, useState} from "react";
+import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 
 const AgendaComponent = () => {
     const { data: appointments, isLoading, isError, refetchWithClearCache } = useGetAppointments();
@@ -88,28 +91,71 @@ const AgendaComponent = () => {
         const parsedEndTime = appointment.endTime ? parse(timeStringEndTime, "HH:mm:ss", new Date()) : addHours(parsedStartTime, 2)
         const formattedEndTime = format(parsedEndTime, "hh:mm a")
 
-        const appointmentType = () => {
+        // const appointmentType = () => {
+        //     switch (appointment.appointmentType) {
+        //         case 'Follow-Up':
+        //             return {
+        //                 backgroundColor: 'rgba(37, 99, 235, 0.85)',
+        //                 textColor: 'rgba(29, 78, 216, 1)',
+        //             }
+        //         case 'Initial':
+        //             return 'rgba(255, 159, 127, 0.5)'
+        //         case 'IME/AME':
+        //             return 'rgba(128, 128, 0, 0.5)'
+        //         case 'Second-Opinion':
+        //             return 'rgba(128, 0, 0, 0.5)'
+        //         case 'QME':
+        //             return 'rgba(255, 215, 0, 0.5)'
+        //         case 'Conference':
+        //             return 'rgba(128, 0, 128, 0.85)'
+        //         case 'IEP':
+        //             return 'rgba(255, 105, 180, 0.85)'
+        //         case 'Other':
+        //             return 'rgba(112, 128, 144, 0.5)'
+        //
+        //     }
+        //
+        // }
+
+        const getAppointmentStyles = (appointment: any) => {
             switch (appointment.appointmentType) {
                 case 'Follow-Up':
-                    return 'rgba(70, 130, 180, 0.5)'
+                    return {
+                        backgroundColor: 'rgba(59, 130, 246, 0.90)', // The darker blue button
+                        textColor: 'white' // An even darker blue text
+                    };
                 case 'Initial':
-                    return 'rgba(255, 159, 127, 0.5)'
+                    return {
+                        backgroundColor: 'rgba(34, 139, 34, 0.90)',
+                        textColor: 'rgba(255, 255, 255, 1)' // White text
+                    };
                 case 'IME/AME':
-                    return 'rgba(128, 128, 0, 0.5)'
-                case 'Second-Opinion':
-                    return 'rgba(128, 0, 0, 0.5)'
+                    return {
+                        backgroundColor: 'rgba(255, 69, 0, 0.90)',
+                        textColor: 'rgba(255, 255, 255, 1)' // White text
+                    };
                 case 'QME':
-                    return 'rgba(255, 215, 0, 0.5)'
+                    return {
+                        backgroundColor: 'rgba(220, 20, 60, 0.90)',
+                        textColor: 'rgba(255, 255, 255, 1)' // White text
+                    };
+                case 'Second-Opinion':
+                    return {
+                        backgroundColor: 'rgba(139, 0, 139, 0.90)',
+                        textColor: 'rgba(255, 255, 255, 1)' // White text
+                    };
                 case 'Conference':
-                    return 'rgba(128, 0, 128, 0.5)'
-                case 'IEP':
-                    return 'rgba(255, 105, 180, 0.5)'
-                case 'Other':
-                    return 'rgba(112, 128, 144, 0.5)'
-
+                    return {
+                        backgroundColor: 'rgba(0, 139, 139, 0.90)',
+                        textColor: 'rgba(255, 255, 255, 1)' // White text
+                    };
+                default:
+                    return {
+                        backgroundColor: 'rgba(112, 128, 144, 0.5)',
+                        textColor: 'rgba(255, 255, 255, 1)'
+                    };
             }
-
-        }
+        };
 
         const appointmentStatus = () => {
             switch (appointment?.status) {
@@ -158,17 +204,29 @@ const AgendaComponent = () => {
             }
         }
 
+        const appointmentStyles = getAppointmentStyles(appointment);
+
         return(
                 <TouchableOpacity
-                    style={[styles.item, { height: appointment.height, backgroundColor: appointmentType() }]}
-                    className='flex-row justify-between items-center '
+                    style={[styles.item, { height: appointment.height, backgroundColor: appointmentStyles.backgroundColor }]}
+                    className='flex-row justify-between items-center'
                     onPress={() => router.push(`/appointment/${appointment.id}`)}
                 >
-                    <View className='justify-center gap-y-1'>
-                        <Text className='capitalize' >{appointment.patient} {appointment.patientLastName} ({appointment.bookingId})</Text>
-                        <Text>{formattedStartTime}-{formattedEndTime}</Text>
-                        <Text className='capitalize'>{appointment.facility}</Text>
-                        <Text>{appointmentStatus()}</Text>
+                    <View className='justify-center gap-y-1 '>
+                        <View className={'flex flex-row items-center gap-x-1'}>
+                            <Ionicons name="person-circle-outline" size={12} color="white" />
+                            <Text className='capitalize' style={{ color: appointmentStyles.textColor }} >{appointment.patient} {appointment.patientLastName} ({appointment.bookingId})</Text>
+                        </View>
+
+                        <View className={'flex flex-row items-center gap-x-1 '}>
+                            <Feather name="clock" size={12} color="white"  />
+                            <Text className={'text-white  '}>{formattedStartTime}-{formattedEndTime}</Text>
+                        </View>
+                        <View className={'flex flex-row items-center gap-x-1'}>
+                            <Ionicons name="location-outline" size={12} color="white" />
+                            <Text className='capitalize text-white'>{appointment.facility}</Text>
+                        </View>
+                        <Text className={'text-white'}>{appointmentStatus()}</Text>
                     </View>
                     <View>
                         <AntDesign name="rightcircleo" size={24} color="#D8DCE2" />

@@ -23,7 +23,8 @@ type Props = {
         endTime?: string;
         projectedEndTime?: string;
         projectedDuration?: string;
-        notes?: string;
+        // notes?: string;
+        interpreterNotes?: string
         date?: string;
         patientName?: string;
         facilityName?: string;
@@ -35,7 +36,8 @@ type Props = {
 
 type CloseAppointmentFormInput = {
     endTime: Date | undefined;
-    notes?: string;
+    // notes?: string;
+    interpreterNotes?: string;
     followUp: boolean;
     status: 'Closed';
     isCertified?: boolean;
@@ -56,7 +58,8 @@ const closeAppointmentSchema = z.object({
         const ss = String(date.getSeconds()).padStart(2, "0");
         return `${hh}:${mm}:${ss}`;
     }),
-    notes: z.string().optional(),
+    // notes: z.string().optional(),
+    interpreterNotes: z.string().default(''),
     followUp: z.boolean(),
     status: z.literal('Closed'), //literal is fixed value closed to change appointment status to close
     isCertified: z.boolean().optional(),
@@ -78,7 +81,8 @@ const AppointmentCloseModal = ({
         resolver: zodResolver(closeAppointmentSchema),
         defaultValues: {
             endTime: undefined,
-            notes: appointmentData.notes || undefined,
+            // notes: appointmentData.notes || undefined,
+            interpreterNotes: appointmentData.interpreterNotes || undefined,
             followUp: false,
             status: 'Closed'
         }
@@ -207,7 +211,7 @@ const AppointmentCloseModal = ({
                                                 <View className='flex flex-col'>
                                                     <Text className='font-bold text-lg'>Notes</Text>
                                                     <Controller
-                                                        name='notes'
+                                                        name='interpreterNotes'
                                                         control={control}
                                                         render={({field: {onChange, value}}) => (
                                                             <TextArea

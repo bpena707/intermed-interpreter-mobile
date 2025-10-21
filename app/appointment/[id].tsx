@@ -1,17 +1,8 @@
-import {
-    ActivityIndicator, Linking,
-    Platform, RefreshControl,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import {Linking, Platform, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {useLocalSearchParams} from "expo-router";
 import {useGetIndividualAppointment} from "@/app/features/appointments/api/use-get-individual-appointment";
 import {useGetIndividualFacility} from "@/app/features/facilities/api/use-get-individual-facility";
 import {useGetIndividualPatient} from "@/app/features/patients/api/use-get-individual-patient";
-
 import CustomButton from "@/app/components/ui/custom-button";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/app/components/ui/card";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -19,18 +10,13 @@ import {addHours, format, parse} from "date-fns";
 import {formatPhoneNumber, trimAddress} from "@/lib/utils";
 import {BackButton} from "@/app/components/ui/back-button";
 import {useEditAppointment} from "@/app/features/appointments/api/use-edit-appointment";
-import {useCallback, useEffect, useState} from "react";
-import AppointmentCloseModal from "@/app/appointment/(modals)/appointmentCloseModal";
-import {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
-import {FollowUpFormData} from "@/app/appointment/(modals)/followUpModal";
-import FollowUpModal from "@/app/appointment/(modals)/followUpModal";
+import {useCallback, useState} from "react";
+import AppointmentCloseModal, {CloseAppointmentFormData} from "@/app/appointment/(modals)/appointmentCloseModal";
+import FollowUpModal, {FollowUpFormData} from "@/app/appointment/(modals)/followUpModal";
 import Map from "@/app/components/map";
 import {useCreateAppointment} from "@/app/features/appointments/api/use-create-appointment";
 import Toast from "react-native-toast-message";
-import {fromZonedTime} from "date-fns-tz";
-import { Skeleton, SkeletonContainer } from '@/app/components/ui/skeleton'
-
-
+import {Skeleton} from '@/app/components/ui/skeleton'
 
 export default function AppointmentIDPage() {
     //this series of functions is used to get the appointment id from the url, and then use that id to get the appointment data,
@@ -73,7 +59,7 @@ export default function AppointmentIDPage() {
                 <ScrollView>
                     <View>
                         {/* First Card */}
-                        <Card className='rounded-none rounded-t-lg'>
+                        <Card className='rounded-sm rounded-t-lg'>
                             <CardHeader>
                                 <Skeleton height={24} width={200} style={{ marginBottom: 8 }} />
                                 <Skeleton height={16} width={120} />
@@ -187,6 +173,8 @@ export default function AppointmentIDPage() {
 
     //this function handles the appointment status update button. when user clicks the button, it updates the appointment status to the new status
    const handleUpdateStatus = (newStatus: string) => {
+        if (!appointment) return
+
          editMutation.mutate({
              ...appointment,
            status: newStatus,
@@ -199,7 +187,8 @@ export default function AppointmentIDPage() {
             {
             ...appointment,         // keep other appointment fields
             endTime: data.endTime as string,   // update with the new end time from the form casted as string for zod useEditAppointment hook
-            notes: data.notes,       // update notes
+            // notes: data.notes,       // update notes
+                interpreterNotes: data.interpreterNotes,
             status: data.status,     // should be "Closed"
             },
             {
@@ -268,14 +257,22 @@ export default function AppointmentIDPage() {
         switch (appointment?.status) {
             case 'Pending Confirmation':
                 return (
-                    <CustomButton className='mt-8' variant='confirm' onPress={() => handleUpdateStatus('Confirmed')}>
+                    <CustomButton
+                        className='mt-8'
+                        variant='confirm'
+                        onPress={() => handleUpdateStatus('Confirmed')}
+                        disabled={isAppointmentLoading}
+                    >
                         <Text className='text-white text-2xl font-semibold'>Confirm</Text>
                     </CustomButton>
                 )
             case 'Confirmed':
                 return (
                     <View className='flex flex-col gap-y-2'>
-                        <CustomButton className='h-12' onPress={toggleModalOpen} >
+                        <CustomButton
+                            className='h-12'
+                            onPress={toggleModalOpen}
+                        >
                             <Text className='text-white text-2xl font-semibold'>Close</Text>
                         </CustomButton>
                         {/*<CustomButton className='h-12' variant='destructive'>*/}
@@ -328,8 +325,9 @@ export default function AppointmentIDPage() {
                     projectedEndTime: appointment?.projectedEndTime || appointment?.endTime,
                     projectedDuration: appointment?.projectedDuration,
                     startTime: appointment?.startTime,
-                    notes: appointment?.notes ?? '',
+                    // notes: appointment?.notes ?? '',
                     date: appointment?.date,
+                    interpreterNotes: appointment?.interpreterNotes,
                     patientName: `${patient?.firstName} ${patient?.lastName}`,
                     facilityName: facility?.name,
                     facilityAddress: facility?.address,
@@ -357,7 +355,7 @@ export default function AppointmentIDPage() {
             />
             <BackButton />
             <ScrollView
-                className={''}
+                className={'p-2'}
                 refreshControl={
                     <RefreshControl
                         refreshing={isRefreshing}
@@ -367,7 +365,7 @@ export default function AppointmentIDPage() {
                 }
             >
                 <View>
-                    <Card className={'rounded-none rounded-t-lg'}>
+                    <Card className={'rounded-2xl'}>
                         <CardHeader className='pl-1'>
                             <CardTitle className='flex-row justify-between mb-2' >
                                 <Text >{certificationStatus} / ID# {appointment?.bookingId}</Text>
@@ -395,8 +393,8 @@ export default function AppointmentIDPage() {
                         </CardFooter>
                     </Card>
                 </View>
-                <View className='mt-1'>
-                    <Card className={'rounded-none'}>
+                <View className='mt-2'>
+                    <Card className={'rounded-2xl'}>
                         <CardHeader >
                             <CardTitle>
                                 <Text>Patient</Text>
@@ -415,8 +413,8 @@ export default function AppointmentIDPage() {
                         </CardContent>
                     </Card>
                 </View>
-                <View className='mt-1'>
-                    <Card className={'rounded-none'}>
+                <View className='mt-2'>
+                    <Card className={'rounded-2xl'}>
                         <CardHeader >
                             <CardTitle>
                                 <Text>Appointment Details</Text>
@@ -430,6 +428,7 @@ export default function AppointmentIDPage() {
                                     <Text className='capitalize'>Appointment Type: {appointment.appointmentType}</Text>
                                     <Text>Projected Duration: {appointment.projectedDuration}</Text>
                                     <Text>Duration: {formattedStartTime} - {formattedEndTime}</Text>
+                                    <Text>Notes: {appointment.adminNotes}</Text>
                                 </View>
                             ) : (
                                 <Text>Facility not found</Text>

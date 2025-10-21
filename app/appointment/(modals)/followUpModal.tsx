@@ -345,31 +345,31 @@ const FollowUpModal = ({
                                                 )}
                                             />
                                         </View>
-                                        <View>
-                                            <Text className='font-bold text-sm pl-1.5'>
-                                                If facility is not listed, please provide the full facility address and we will add it to the system:
-                                            </Text>
-                                            <Controller
-                                                name={'newFacilityAddress'}
-                                                control={control}
-                                                render={({field: {onChange, value}}) => (
-                                                    <>
-                                                        <Input
-                                                            value={value}
-                                                            onChange={onChange}
-                                                            onChangeText={(text) => onChange(text)}
-                                                            placeholder='123 Main St, Anytown, CA 91234'
-                                                            className={errors.facilityId && !watch('facilityId') ? 'border-red-500' : ''}
-                                                        />
-                                                        {errors.facilityId && !watch('facilityId') && (
-                                                            <Text className='text-red-500 text-xs mt-1'>
-                                                                Please provide a facility address or select from the list
-                                                            </Text>
-                                                        )}
-                                                    </>
-                                                )}
-                                            />
-                                        </View>
+                                        {/*<View>*/}
+                                        {/*    <Text className='font-bold text-sm pl-1.5'>*/}
+                                        {/*        If facility is not listed, please provide the full facility address and we will add it to the system:*/}
+                                        {/*    </Text>*/}
+                                        {/*    <Controller*/}
+                                        {/*        name={'newFacilityAddress'}*/}
+                                        {/*        control={control}*/}
+                                        {/*        render={({field: {onChange, value}}) => (*/}
+                                        {/*            <>*/}
+                                        {/*                <Input*/}
+                                        {/*                    value={value}*/}
+                                        {/*                    onChange={onChange}*/}
+                                        {/*                    onChangeText={(text) => onChange(text)}*/}
+                                        {/*                    placeholder='123 Main St, Anytown, CA 91234'*/}
+                                        {/*                    className={errors.facilityId && !watch('facilityId') ? 'border-red-500' : ''}*/}
+                                        {/*                />*/}
+                                        {/*                {errors.facilityId && !watch('facilityId') && (*/}
+                                        {/*                    <Text className='text-red-500 text-xs mt-1'>*/}
+                                        {/*                        Please provide a facility address or select from the list*/}
+                                        {/*                    </Text>*/}
+                                        {/*                )}*/}
+                                        {/*            </>*/}
+                                        {/*        )}*/}
+                                        {/*    />*/}
+                                        {/*</View>*/}
                                     </View>
                                 </CardContent>
                             </Card>

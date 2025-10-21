@@ -11,6 +11,7 @@ export type UpdateAppointmentType = {
     startTime?: string; // Format: 'HH:MM:SS'
     endTime?: string; // Format: 'HH:MM:SS' or null
     notes?: string | null;
+    interpreterNotes: string | undefined;
     appointmentType?: string | null;
     projectedDuration?: string | null;
     status?: string | null; // e.g., 'Pending', 'Confirmed', etc.
@@ -28,6 +29,7 @@ export type AppointmentResponseType = {
     startTime: string;
     endTime: string | null;
     notes: string | null;
+    interpreterNotes: string | undefined;
     projectedDuration: string | null;
     appointmentType: string | null;
     status: string | null;

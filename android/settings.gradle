@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'intermedinterpretermobile'
+rootProject.name = 'intermed-interpreter-mobile'
 
 dependencyResolutionManagement {
   versionCatalogs {
